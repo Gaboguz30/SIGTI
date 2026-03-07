@@ -6,6 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.auvenix.sigti.databinding.ActivityAuthEntryBinding
 import com.auvenix.sigti.ui.role.RoleActivity
 import com.auvenix.sigti.ui.auth.LoginActivity
+import android.util.Log
+import com.google.firebase.firestore.FirebaseFirestore
+
 
 class AuthEntryActivity : AppCompatActivity() {
 
@@ -15,6 +18,22 @@ class AuthEntryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityAuthEntryBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val db = FirebaseFirestore.getInstance()
+
+        val prueba = hashMapOf(
+            "nombre" to "Vianca",
+            "correo" to "prueba@gmail.com"
+        )
+
+        db.collection("usuarios")
+            .add(prueba)
+            .addOnSuccessListener {
+                Log.d("FIREBASE", "Datos guardados")
+            }
+            .addOnFailureListener {
+                Log.d("FIREBASE", "Error")
+            }
 
         // Botón principal (ej: "Aceptar y continuar")
         binding.btnAcceptContinue.setOnClickListener {
@@ -37,3 +56,5 @@ class AuthEntryActivity : AppCompatActivity() {
         }
     }
 }
+
+

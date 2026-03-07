@@ -22,3 +22,6 @@ class ExampleInstrumentedTest {
         assertEquals("com.auvenix.sigti", appContext.packageName)
     }
 }
+
+
+
