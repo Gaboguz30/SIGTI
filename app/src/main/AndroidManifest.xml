@@ -15,13 +15,19 @@
         android:theme="@style/Theme.SIGTI"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ui.home.ChatActivity"
+            android:name=".ui.support.ReportActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.home.JobRequestActivity"
+            android:name=".ui.support.ReviewsActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.home.WorkerProfileActivity"
+            android:name=".ui.chat.ChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.request.NewRequestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.profile.WorkerProfileActivity"
             android:exported="false" />
         <activity
             android:name=".ui.auth.ForgotPasswordActivity"

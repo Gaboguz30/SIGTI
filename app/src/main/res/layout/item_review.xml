@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="20dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="0dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="#E0E0E0">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="16dp">
+
+        <View
+            android:id="@+id/vReviewAvatar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_launcher_background"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvReviewName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="Nombre del Cliente"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/vReviewAvatar"
+            app:layout_constraintTop_toTopOf="@+id/vReviewAvatar" />
+
+        <TextView
+            android:id="@+id/tvReviewDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12 Mayo 2025"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/vReviewAvatar" />
+
+        <TextView
+            android:id="@+id/tvReviewStars"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="★★★★★"
+            android:textColor="#FFB300"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/tvReviewName"
+            app:layout_constraintTop_toBottomOf="@+id/tvReviewName" />
+
+        <TextView
+            android:id="@+id/tvReviewText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Comentario de la reseña aquí..."
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/vReviewAvatar"
+            app:layout_constraintTop_toBottomOf="@+id/vReviewAvatar" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

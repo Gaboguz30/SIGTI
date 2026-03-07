@@ -49,12 +49,13 @@ android {
 
 dependencies {
 
+// 1. Importa el BoM (esto es como el director de orquesta de las versiones)
+    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
 
-    // 🔹 Firebase
-    implementation("com.google.firebase:firebase-firestore-ktx:25.1.1")
-    implementation("com.google.firebase:firebase-auth-ktx:23.1.0")
-    implementation("com.google.firebase:firebase-analytics-ktx:22.1.2")
-
+    // 2. Agrega las librerías SIN el "-ktx"
+    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-analytics")
 
     // Material
     implementation("com.google.android.material:material:1.12.0")

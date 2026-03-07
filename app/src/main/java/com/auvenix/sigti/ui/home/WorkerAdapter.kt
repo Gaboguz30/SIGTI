@@ -1,64 +1,61 @@
 package com.auvenix.sigti.ui.home
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.auvenix.sigti.R
-import com.auvenix.sigti.databinding.ItemWorkerBinding
+import com.google.android.material.button.MaterialButton
 
+// 1. Un modelo de datos sencillo para probar (luego esto vendrá de tu Firebase)
+data class Worker(
+    val name: String,
+    val profession: String,
+    val rating: String,
+    val price: String,
+    val distance: String
+)
+
+// 2. El Adaptador
 class WorkerAdapter(
-    private var workers: List<Worker>,
-    private val onProfileClick: (Worker) -> Unit
+    private val workerList: List<Worker>,
+    private val onProfileClick: (Worker) -> Unit // Acción para cuando le den clic al botón
 ) : RecyclerView.Adapter<WorkerAdapter.WorkerViewHolder>() {
 
-    fun updateList(newList: List<Worker>) {
-        workers = newList
-        notifyDataSetChanged()
+    // 3. El ViewHolder (Busca los elementos en tu XML)
+    class WorkerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val tvName: TextView = itemView.findViewById(R.id.tvWorkerName)
+        val tvProfession: TextView = itemView.findViewById(R.id.tvWorkerProfession)
+        val tvRating: TextView = itemView.findViewById(R.id.tvWorkerRating)
+        val tvPrice: TextView = itemView.findViewById(R.id.tvWorkerPrice)
+        val tvDistance: TextView = itemView.findViewById(R.id.tvWorkerDistance)
+        val btnViewProfile: MaterialButton = itemView.findViewById(R.id.btnViewProfile)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkerViewHolder {
-        val binding = ItemWorkerBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
-        return WorkerViewHolder(binding)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_worker, parent, false)
+        return WorkerViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: WorkerViewHolder, position: Int) {
-        holder.bind(workers[position])
+        val worker = workerList[position]
+
+        // Asignamos los datos a la tarjeta
+        holder.tvName.text = worker.name
+        holder.tvProfession.text = worker.profession
+        holder.tvRating.text = "★ ${worker.rating}"
+        holder.tvPrice.text = "$${worker.price}\n/hora"
+        holder.tvDistance.text = worker.distance
+
+        // Evento del botón "Ver Perfil"
+        holder.btnViewProfile.setOnClickListener {
+            onProfileClick(worker)
+        }
     }
 
-    override fun getItemCount(): Int = workers.size
-
-    inner class WorkerViewHolder(
-        private val binding: ItemWorkerBinding
-    ) : RecyclerView.ViewHolder(binding.root) {
-
-        fun bind(worker: Worker) {
-            binding.tvWorkerName.text = worker.name
-            binding.tvJob.text = worker.job
-            binding.tvAvailability.text = "Disponibilidad: ${worker.availability}"
-            binding.tvRating.text = worker.rating.toString()
-            binding.tvDistance.text = worker.distance
-            binding.tvPrice.text = worker.price
-
-            if (worker.isSelected) {
-                binding.cardWorker.strokeWidth = 4
-                binding.cardWorker.setCardBackgroundColor(
-                    ContextCompat.getColor(binding.root.context, R.color.blue_light_bg)
-                )
-            } else {
-                binding.cardWorker.strokeWidth = 0
-                binding.cardWorker.setCardBackgroundColor(
-                    ContextCompat.getColor(binding.root.context, R.color.white)
-                )
-            }
-
-            binding.btnViewProfile.setOnClickListener {
-                onProfileClick(worker)
-            }
-        }
+    override fun getItemCount(): Int {
+        return workerList.size
     }
 }

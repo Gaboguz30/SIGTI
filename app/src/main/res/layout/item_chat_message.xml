@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="4dp">
+
+    <LinearLayout
+        android:id="@+id/llLeftChat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginEnd="48dp"
+        android:background="@drawable/bg_chat_left"
+        android:backgroundTint="#F5F5F5"
+        android:padding="12dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvLeftMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mensaje recibido"
+            android:textColor="@color/black"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llRightChat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginStart="48dp"
+        android:background="@drawable/bg_chat_right"
+        android:backgroundTint="#1976D2"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/tvRightMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mensaje enviado"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+</LinearLayout>
