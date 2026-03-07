@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#1A1A1A</color>
+    <color name="gray_text">#757575</color>
+    <color name="gray_light">#D1D1D1</color>
+    <color name="blue_primary">#1F5BFF</color>
+    <color name="blue_soft">#E8EFFF</color>
+    <color name="error_red">#B00020</color>
+    <color name="social_button_bg">#F5F5F5</color>
+    <color name="sigti_blue">#1A73E8</color>
+
+</resources>

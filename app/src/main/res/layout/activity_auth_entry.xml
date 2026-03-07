@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="36dp"
+    android:gravity="center"
+    android:background="@color/white">
+
+
+    <!-- Logo -->
+    <ImageView
+        android:id="@+id/imgLogo"
+        android:layout_width="200dp"
+        android:layout_height="180dp"
+        android:src="@drawable/logo_sigti_2" />
+
+    <TextView
+        android:id="@+id/al_hacer_cl"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:gravity="center"
+        android:textColor="@color/gray_text"
+        android:textSize="14sp"
+        android:lineSpacingExtra="6dp"
+        android:text="Al hacer click en continuar, usted acepta nuestros Terminos de Servicio y Politica de Privacidad"
+        android:translationY="0sp" />
+
+    <Button
+        android:id="@+id/btnAcceptContinue"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="@color/sigti_blue"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:text="Aceptar y continuar" />
+
+    <com.google.android.material.button.MaterialButton
+        style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+        android:id="@+id/btnGoogle"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="@color/social_button_bg"
+        app:icon="@drawable/icon_google"
+        app:iconGravity="textStart"
+        app:iconPadding="12dp"
+        app:iconTint="@null"
+        android:text="Continuar con Google"
+        android:textAllCaps="false"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+
+    <com.google.android.material.button.MaterialButton
+        style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+        android:id="@+id/btnFacebook"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_marginTop="12dp"
+        android:backgroundTint="@color/social_button_bg"
+        app:icon="@drawable/icon_facebook"
+        app:iconGravity="textStart"
+        app:iconPadding="12dp"
+        app:iconTint="@null"
+        android:textColor="@color/black"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:text="Continuar con Facebook" />
+
+    <TextView
+        android:id="@+id/tvLoginLink"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/gray_text"
+        android:textSize="14sp"
+        android:layout_marginTop="18dp"
+        android:text="¿Ya tienes cuenta? Iniciar sesión" />
+
+</LinearLayout>
