@@ -14,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import com.auvenix.sigti.R // Asegúrate de tener tus strings
+import com.auvenix.sigti.ui.home.HomeActivity
 
 class AuthEntryActivity : AppCompatActivity() {
 
@@ -74,18 +75,35 @@ class AuthEntryActivity : AppCompatActivity() {
         auth.signInWithCredential(credential).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
                 val user = auth.currentUser
+                val uid = user?.uid ?: ""
 
-                // MANDAMOS A ROLE ACTIVITY CON LA BANDERA "IS_GOOGLE"
-                val intent = Intent(this, RoleActivity::class.java).apply {
-                    putExtra("IS_GOOGLE", true)
-                    putExtra("EXTRA_NOMBRE_COMPLETO", user?.displayName)
-                    putExtra("EXTRA_EMAIL", user?.email)
-                    putExtra("EXTRA_UID", user?.uid)
-                }
-                startActivity(intent)
-                finish()
-            } else {
-                Toast.makeText(this, "Error al autenticar con Firebase", Toast.LENGTH_SHORT).show()
+                // --- AQUÍ ESTÁ LA MAGIA ---
+                val db = FirebaseFirestore.getInstance()
+                db.collection("users").document(uid).get()
+                    .addOnSuccessListener { document ->
+                        if (document.exists()) {
+                            // CASO 1: El usuario YA EXISTE en Firestore
+                            Log.d("AUTH", "Usuario viejo, directo al Home")
+                            val intent = Intent(this, HomeActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                            finish()
+                        } else {
+                            // CASO 2: Es un USUARIO NUEVO
+                            Log.d("AUTH", "Usuario nuevo, a elegir rol")
+                            val intent = Intent(this, RoleActivity::class.java).apply {
+                                putExtra("IS_GOOGLE", true)
+                                putExtra("EXTRA_NOMBRE_COMPLETO", user?.displayName)
+                                putExtra("EXTRA_EMAIL", user?.email)
+                                putExtra("EXTRA_UID", uid)
+                            }
+                            startActivity(intent)
+                            finish()
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Error al verificar usuario: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
             }
         }
     }
