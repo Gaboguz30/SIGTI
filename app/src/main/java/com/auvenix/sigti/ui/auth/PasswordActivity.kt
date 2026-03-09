@@ -2,20 +2,26 @@ package com.auvenix.sigti.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import com.auvenix.sigti.databinding.ActivityPasswordBinding
+import com.google.firebase.auth.FirebaseAuth
 
 class PasswordActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPasswordBinding
+    private lateinit var auth: FirebaseAuth // 1. Agregamos Firebase Auth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPasswordBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Recibir datos previos (mínimo email y role)
+        // 2. Inicializamos Firebase Auth
+        auth = FirebaseAuth.getInstance()
+
+        // Recibir datos previos
         val role = intent.getStringExtra(EXTRA_ROLE).orEmpty()
         val email = intent.getStringExtra(EXTRA_EMAIL).orEmpty()
 
@@ -26,23 +32,49 @@ class PasswordActivity : AppCompatActivity() {
 
             val pass = binding.etPassword.text.toString()
 
-            // Siguiente: verificar correo
-            val i = Intent(this, VerifyEmailActivity::class.java).apply {
-                putExtra(EXTRA_ROLE, role)
-                putExtra(EXTRA_EMAIL, email)
-                putExtra(EXTRA_PASSWORD, pass)
+            // Bloqueamos el botón para evitar doble clic
+            binding.btnContinuar.isEnabled = false
 
-                // reenviar lo demás si lo traes
-                forwardIfPresent(this@PasswordActivity.intent, this, EXTRA_NOMBRE)
-                forwardIfPresent(this@PasswordActivity.intent, this, EXTRA_AP_PATERNO)
-                forwardIfPresent(this@PasswordActivity.intent, this, EXTRA_AP_MATERNO)
-                forwardIfPresent(this@PasswordActivity.intent, this, EXTRA_FECHA_NAC)
-                forwardIfPresent(this@PasswordActivity.intent, this, EXTRA_GENERO)
-            }
-            startActivity(i)
+            // 3. CREAMOS LA CUENTA EN FIREBASE Y MANDAMOS EL CORREO
+            auth.createUserWithEmailAndPassword(email, pass)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        // Se creó la cuenta, enviamos el correo de verificación
+                        auth.currentUser?.sendEmailVerification()?.addOnCompleteListener { emailTask ->
+                            if (emailTask.isSuccessful) {
+
+                                // 4. ARMAMOS LA MALETA (Intent)
+                                val i = Intent(this, VerifyEmailActivity::class.java).apply {
+                                    putExtra(EXTRA_ROLE, role)
+                                    putExtra(EXTRA_EMAIL, email)
+                                    putExtra(EXTRA_PASSWORD, pass)
+
+                                    // AQUÍ GUARDAMOS SI MARCÓ EL CHECKBOX DE RECÚERDAME
+                                    putExtra(EXTRA_RECORDAR, binding.cbRecuerdame.isChecked)
+
+                                    // Pasamos el resto de los datos
+                                    forwardIfPresent(this@PasswordActivity.intent, this, EXTRA_NOMBRE)
+                                    forwardIfPresent(this@PasswordActivity.intent, this, EXTRA_AP_PATERNO)
+                                    forwardIfPresent(this@PasswordActivity.intent, this, EXTRA_AP_MATERNO)
+                                    forwardIfPresent(this@PasswordActivity.intent, this, EXTRA_FECHA_NAC)
+                                    forwardIfPresent(this@PasswordActivity.intent, this, EXTRA_GENERO)
+                                }
+                                startActivity(i)
+                                finish() // Cerramos esta pantalla
+                            } else {
+                                binding.btnContinuar.isEnabled = true
+                                Toast.makeText(this, "Error al enviar correo", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        binding.btnContinuar.isEnabled = true
+                        Toast.makeText(this, "Error: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
         }
     }
 
+    // --- TODO ESTO SE QUEDA IGUAL QUE TU CÓDIGO ORIGINAL ---
     private fun setupRealtimeValidation() {
         binding.etPassword.doAfterTextChanged {
             binding.tilPassword.error = null
@@ -54,16 +86,8 @@ class PasswordActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Reglas:
-     * - 8+ chars
-     * - primera letra mayúscula
-     * - al menos 1 número
-     * - al menos 1 especial
-     */
     private fun validatePasswords(showErrors: Boolean): Boolean {
         var ok = true
-
         val pass = binding.etPassword.text?.toString().orEmpty()
         val pass2 = binding.etConfirmPassword.text?.toString().orEmpty()
 
@@ -71,12 +95,10 @@ class PasswordActivity : AppCompatActivity() {
             ok = false
             if (showErrors) binding.tilPassword.error = "Obligatorio"
         }
-
         if (pass2.isBlank()) {
             ok = false
             if (showErrors) binding.tilConfirmPassword.error = "Obligatorio"
         }
-
         if (pass.isNotBlank()) {
             val errors = passwordRuleErrors(pass)
             if (errors.isNotEmpty()) {
@@ -88,25 +110,21 @@ class PasswordActivity : AppCompatActivity() {
                 }
             }
         }
-
         if (pass.isNotBlank() && pass2.isNotBlank() && pass != pass2) {
             ok = false
             if (showErrors) binding.tilConfirmPassword.error = "Las contraseñas no coinciden"
         }
-
         return ok
     }
 
     private fun passwordRuleErrors(pass: String): List<String> {
         val errs = mutableListOf<String>()
-
         if (pass.length < 8) errs.add("Mínimo 8 caracteres")
         val first = pass.firstOrNull()
         if (first == null || !first.isUpperCase()) errs.add("La primera letra debe ser mayúscula")
         if (!pass.any { it.isDigit() }) errs.add("Debe contener al menos 1 número")
         val special = "!@#\$%^&*()_+-=[]{};':\"\\|,.<>/?`~"
         if (!pass.any { it in special }) errs.add("Debe contener al menos 1 carácter especial")
-
         return errs
     }
 
@@ -120,12 +138,13 @@ class PasswordActivity : AppCompatActivity() {
         const val EXTRA_ROLE = "extra_role"
         const val EXTRA_EMAIL = "extra_email"
         const val EXTRA_PASSWORD = "extra_password"
-
-        // extras opcionales (si ya los usas)
         const val EXTRA_NOMBRE = "extra_nombre"
         const val EXTRA_AP_PATERNO = "extra_ap_paterno"
         const val EXTRA_AP_MATERNO = "extra_ap_materno"
         const val EXTRA_FECHA_NAC = "extra_fecha_nac"
         const val EXTRA_GENERO = "extra_genero"
+
+        // AGREGAMOS LA CONSTANTE DEL CHECKBOX AQUÍ
+        const val EXTRA_RECORDAR = "extra_recordar"
     }
 }

@@ -15,6 +15,9 @@
         android:theme="@style/Theme.SIGTI"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".ui.auth.GoogleCompleteProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.support.ReportActivity"
             android:exported="false" />
         <activity

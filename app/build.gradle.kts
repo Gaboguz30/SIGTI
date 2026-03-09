@@ -49,6 +49,9 @@ android {
 
 dependencies {
 
+    // Esta es la que necesitas para el Login de Google
+    implementation("com.google.android.gms:play-services-auth:21.0.0")
+
 // 1. Importa el BoM (esto es como el director de orquesta de las versiones)
     implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
 
