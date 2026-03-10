@@ -19,63 +19,41 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <!-- HEADER -->
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="25dp">
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
                 <ImageView
                     android:id="@+id/btnBackReport"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@android:drawable/ic_menu_revert"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:tint="@color/black" />
 
                 <TextView
-                    android:id="@+id/tvReportTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
                     android:text="Reporte"
-                    android:textColor="@color/black"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    app:layout_constraintStart_toEndOf="@+id/btnBackReport"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:layout_marginStart="12dp"/>
+            </LinearLayout>
 
-                <TextView
-                    android:id="@+id/tvReportSubtitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Incidencias y soporte"
-                    android:textSize="12sp"
-                    app:layout_constraintStart_toStartOf="@+id/tvReportTitle"
-                    app:layout_constraintTop_toBottomOf="@+id/tvReportTitle" />
 
-                <TextView
-                    android:id="@+id/btnHelp"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ayuda"
-                    android:textColor="#1976D2"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            <!-- ALERTA 911 -->
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                app:cardBackgroundColor="#FFEBEE"
                 app:cardCornerRadius="12dp"
-                app:cardElevation="0dp"
                 app:strokeColor="#D32F2F"
-                app:strokeWidth="1dp">
+                app:strokeWidth="1dp"
+                app:cardBackgroundColor="#FFEBEE">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -86,154 +64,152 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Si estás en peligro inmediato:"
+                        android:text="Si estás en peligro inmediato"
                         android:textColor="#D32F2F"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Busca un lugar seguro y llama a emergencias."
-                        android:textColor="#D32F2F"
-                        android:textSize="14sp" />
+                        android:textStyle="bold"/>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnCall911"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:backgroundTint="#D32F2F"
                         android:text="Llamar al 911"
-                        android:textColor="@android:color/white"
-                        app:cornerRadius="8dp" />
+                        android:layout_marginTop="10dp"
+                        android:backgroundTint="#D32F2F"
+                        android:textColor="@android:color/white"/>
                 </LinearLayout>
+
             </com.google.android.material.card.MaterialCardView>
 
+
+            <!-- INCIDENTE -->
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="Tipo de Incidente"
-                android:textColor="@color/black"
-                android:textStyle="bold" />
+                android:text="Tipo de incidente"
+                android:textStyle="bold"
+                android:layout_marginTop="24dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
-                <AutoCompleteTextView
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inputIncidentType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Incumplimiento / Maltrato / Fraude / Otro"
-                    android:inputType="none" />
+                    android:hint="Ej. Fraude, mal servicio"/>
             </com.google.android.material.textfield.TextInputLayout>
+
+
+            <!-- SERVICIO -->
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Relacionado con"
-                android:textColor="@color/black"
-                android:textStyle="bold" />
+                android:text="ID del servicio"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
-                <AutoCompleteTextView
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inputRequestId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Solicitud (Yunque-0123)"
-                    android:inputType="none" />
+                    android:hint="Ej. SERV-001"/>
             </com.google.android.material.textfield.TextInputLayout>
+
+
+            <!-- FECHA -->
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:text="Fecha"
-                android:textColor="@color/black"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
+                android:layout_height="wrap_content">
+
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inputDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="dd/mm/aaaa"
-                    android:inputType="date" />
+                    android:hint="Seleccionar fecha"
+                    android:focusable="false"/>
             </com.google.android.material.textfield.TextInputLayout>
+
+
+            <!-- DESCRIPCION -->
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:text="Descripción"
-                android:textColor="@color/black"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp">
+                android:layout_height="wrap_content">
+
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inputDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Cuenta qué pasó, la hora y evidencias..."
-                    android:inputType="textMultiLine"
-                    android:gravity="top|start"
-                    android:minLines="4" />
+                    android:minLines="4"
+                    android:gravity="top"
+                    android:hint="Describe lo sucedido"/>
             </com.google.android.material.textfield.TextInputLayout>
+
+
+            <!-- EVIDENCIA -->
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Adjuntar evidencia (opcional)"
-                android:textColor="@color/black"
-                android:textStyle="bold" />
+                android:text="Adjuntar evidencia"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAddEvidence"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
-                android:layout_height="60dp"
-                android:layout_marginTop="8dp"
-                android:text="+ Foto / Video / Documento"
-                android:textColor="#1976D2"
-                app:cornerRadius="8dp"
-                app:strokeColor="#1976D2"
-                app:strokeWidth="1dp" />
+                android:layout_height="wrap_content"
+                android:text="Seleccionar archivo"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_marginTop="8dp"/>
+
+
+            <!-- ENVIAR -->
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSubmitReport"
                 android:layout_width="match_parent"
-                android:backgroundTint="@color/sigti_blue"
                 android:layout_height="56dp"
+                android:text="Enviar reporte"
                 android:layout_marginTop="32dp"
-                android:layout_marginBottom="16dp"
-                android:text="Enviar Reporte"
-                android:textSize="16sp"
-                app:cornerRadius="8dp" />
+                android:backgroundTint="@color/sigti_blue"
+                android:textColor="@android:color/white"/>
 
         </LinearLayout>
+
     </androidx.core.widget.NestedScrollView>
+
+
+    <!-- BOTTOM NAV -->
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationReport"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/white"
-        app:elevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/bottom_nav_menu" />
+        app:menu="@menu/bottom_nav_menu"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

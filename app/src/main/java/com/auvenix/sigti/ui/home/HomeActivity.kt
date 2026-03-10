@@ -7,8 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.auvenix.sigti.R
-// Importa tu Activity del Perfil cuando la creemos
-// import com.auvenix.sigti.ui.profile.WorkerProfileActivity
+import com.auvenix.sigti.ui.chat.ChatListActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class HomeActivity : AppCompatActivity() {
 
@@ -16,10 +16,12 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
-        // 1. Buscamos el RecyclerView en el diseño
+        // ================================
+        // LISTA DE TRABAJADORES
+        // ================================
+
         val rvWorkers = findViewById<RecyclerView>(R.id.rvWorkers)
 
-        // 2. Creamos datos de prueba igualitos a tu diseño
         val dummyWorkers = listOf(
             Worker("Vianca Ramírez", "Electricista", "4.8", "250", "2 km"),
             Worker("Amairany Solís", "Plomero", "4.9", "200", "5 km"),
@@ -27,19 +29,61 @@ class HomeActivity : AppCompatActivity() {
             Worker("Leonardo Gonzalo", "Herrero", "4.2", "180", "3 km")
         )
 
-        // 3. Configuramos la lista para que sea vertical
         rvWorkers.layoutManager = LinearLayoutManager(this)
 
-        // 4. Le asignamos el adaptador con los datos
         rvWorkers.adapter = WorkerAdapter(dummyWorkers) { selectedWorker ->
-            // ¿Qué pasa cuando le dan clic a "Ver Perfil"?
-            Toast.makeText(this, "Abriendo perfil de ${selectedWorker.name}", Toast.LENGTH_SHORT).show()
 
-            /// Creamos el "Intent" que es el puente para saltar a la otra pantalla
-            val intent = Intent(this, com.auvenix.sigti.ui.profile.WorkerProfileActivity::class.java)
+            Toast.makeText(
+                this,
+                "Abriendo perfil de ${selectedWorker.name}",
+                Toast.LENGTH_SHORT
+            ).show()
 
-            // Iniciamos la pantalla
+            val intent = Intent(
+                this,
+                com.auvenix.sigti.ui.profile.WorkerProfileActivity::class.java
+            )
+
             startActivity(intent)
+        }
+
+        // ================================
+        // BOTTOM NAVIGATION
+        // ================================
+
+        val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+
+        bottomNavigation.setOnItemSelectedListener { item ->
+
+            when (item.itemId) {
+
+                R.id.nav_home -> true
+
+                R.id.nav_chat -> {
+
+                    val intent = Intent(this, ChatListActivity::class.java)
+
+                    // evita abrir múltiples ventanas
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+
+                    startActivity(intent)
+                    finish()
+
+                    true
+                }
+
+                R.id.nav_profile -> {
+                    Toast.makeText(this, "Perfil", Toast.LENGTH_SHORT).show()
+                    true
+                }
+
+                R.id.nav_notifications -> {
+                    Toast.makeText(this, "Alertas", Toast.LENGTH_SHORT).show()
+                    true
+                }
+
+                else -> false
+            }
         }
     }
 }

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "481832143591",
+    "firebase_url": "https://sigti-78e4c-default-rtdb.firebaseio.com",
+    "project_id": "sigti-78e4c",
+    "storage_bucket": "sigti-78e4c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:481832143591:android:9bf19a137efa40717a3042",
+        "android_client_info": {
+          "package_name": "com.auvenix.sigti"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "481832143591-1bfnfu0283c1nlra7dvpmo205n5asccv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.auvenix.sigti",
+            "certificate_hash": "b9c0e92d86fcc6b681003d68f36b6f65ed664429"
+          }
+        },
+        {
+          "client_id": "481832143591-4u5eaicppsvob7b114du5ek1klap8jql.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCN-61XIDA9kw1Ov357qSwBNq5ZOmYDtM8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "481832143591-4u5eaicppsvob7b114du5ek1klap8jql.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

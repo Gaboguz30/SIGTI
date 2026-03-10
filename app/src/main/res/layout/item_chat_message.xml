@@ -6,43 +6,64 @@
     android:paddingHorizontal="16dp"
     android:paddingVertical="4dp">
 
+    <!-- MENSAJE IZQUIERDA -->
     <LinearLayout
         android:id="@+id/llLeftChat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_gravity="start"
         android:layout_marginEnd="48dp"
         android:background="@drawable/bg_chat_left"
         android:backgroundTint="#F5F5F5"
-        android:padding="12dp"
+        android:padding="10dp"
         android:visibility="gone">
 
         <TextView
             android:id="@+id/tvLeftMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mensaje recibido"
             android:textColor="@color/black"
-            android:textSize="14sp" />
+            android:textSize="14sp"/>
+
+        <TextView
+            android:id="@+id/tvLeftTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:textColor="#888"
+            android:layout_gravity="end"
+            android:layout_marginTop="2dp"/>
     </LinearLayout>
 
+
+    <!-- MENSAJE DERECHA -->
     <LinearLayout
         android:id="@+id/llRightChat"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_gravity="end"
         android:layout_marginStart="48dp"
         android:background="@drawable/bg_chat_right"
         android:backgroundTint="#1976D2"
-        android:padding="12dp">
+        android:padding="10dp">
 
         <TextView
             android:id="@+id/tvRightMessage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Mensaje enviado"
             android:textColor="@android:color/white"
-            android:textSize="14sp" />
+            android:textSize="14sp"/>
+
+        <TextView
+            android:id="@+id/tvRightTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:textColor="#E3F2FD"
+            android:layout_gravity="end"
+            android:layout_marginTop="2dp"/>
     </LinearLayout>
 
 </LinearLayout>

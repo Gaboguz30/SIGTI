@@ -59,6 +59,9 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-database-ktx:20.3.0")
+    implementation("com.google.firebase:firebase-storage-ktx")
 
     // Material
     implementation("com.google.android.material:material:1.12.0")
@@ -69,6 +72,9 @@ dependencies {
 
     // OkHttp logging
     implementation("com.squareup.okhttp3:logging-interceptor:5.3.2")
+
+
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

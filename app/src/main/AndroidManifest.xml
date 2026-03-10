@@ -14,60 +14,83 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SIGTI"
         android:usesCleartextTraffic="true">
+
         <activity
             android:name=".ui.auth.GoogleCompleteProfileActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.support.ReportActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.support.ReviewsActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.chat.ChatActivity"
             android:exported="false" />
+
+        <!-- ESTA FALTABA -->
+        <activity
+            android:name=".ui.chat.ChatListActivity"
+            android:exported="false" />
+
         <activity
             android:name=".ui.request.NewRequestActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.profile.WorkerProfileActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.auth.ForgotPasswordActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.auth.PasswordActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.profile.PrestadorExtraActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.auth.AuthEntryActivity"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
+
         <activity
             android:name=".ui.home.HomeActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.auth.VerifyEmailActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.register.RegisterGeneralActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.role.RoleActivity"
             android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="false" />
+
     </application>
 
 </manifest>

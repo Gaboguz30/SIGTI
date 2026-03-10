@@ -153,26 +153,6 @@
                 app:layout_constraintStart_toStartOf="@+id/tvProfileName"
                 app:layout_constraintTop_toBottomOf="@+id/tvProfileProfession" />
 
-            <TextView
-                android:id="@+id/tvProfileExperience"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
-                android:text="Experiencia: 2 Años"
-                android:textSize="13sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tvProfileProfession" />
-
-            <TextView
-                android:id="@+id/tvProfileDistance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
-                android:text="Distancia: 1.5 km"
-                android:textSize="13sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tvProfileRating" />
-
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRequest"
                 android:layout_width="0dp"
@@ -201,39 +181,18 @@
                 app:layout_constraintStart_toEndOf="@+id/btnRequest"
                 app:layout_constraintTop_toTopOf="@+id/btnRequest" />
 
-            <com.google.android.material.tabs.TabLayout
-                android:id="@+id/tabLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:layout_marginTop="16dp"
-                app:layout_constraintTop_toBottomOf="@+id/btnRequest"
-                app:tabIndicatorColor="#1976D2"
-                app:tabSelectedTextColor="#1976D2"
-                app:tabTextColor="@color/black">
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Servicios" />
-
-                <com.google.android.material.tabs.TabItem
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Portafolio" />
-            </com.google.android.material.tabs.TabLayout>
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvServices"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:nestedScrollingEnabled="false"
-                app:layout_constraintTop_toBottomOf="@+id/tabLayout"
+                app:layout_constraintTop_toBottomOf="@+id/btnRequest"
                 tools:itemCount="3"
                 tools:listitem="@layout/item_service" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
