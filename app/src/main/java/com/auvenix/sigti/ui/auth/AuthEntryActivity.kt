@@ -55,6 +55,24 @@ class AuthEntryActivity : AppCompatActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        // 1. Revisamos si Firebase dice que ya hay alguien logueado
+        val usuarioActual = FirebaseAuth.getInstance().currentUser
+
+        if (usuarioActual != null) {
+            // 2. Si hay alguien, ¡vámonos directo al Home!
+            val intent = Intent(this, HomeActivity::class.java)
+
+            // 3. LA BANDERA (Flag): Esto es como quemar el puente atrás de ti.
+            // Evita que si el usuario le da "atrás", regrese al Login.
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+            startActivity(intent)
+            finish() // Cerramos la pantalla del portero
+        }
+    }
+
     // 3. Recibir el resultado de Google
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -68,6 +86,7 @@ class AuthEntryActivity : AppCompatActivity() {
             }
         }
     }
+
 
     // 4. Autenticar en Firebase y mandar a RoleActivity
     private fun firebaseAuthWithGoogle(idToken: String) {

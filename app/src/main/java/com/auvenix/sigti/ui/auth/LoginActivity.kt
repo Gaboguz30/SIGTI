@@ -10,6 +10,7 @@ import com.auvenix.sigti.databinding.ActivityLoginBinding
 import com.auvenix.sigti.session.SessionManager
 import com.auvenix.sigti.ui.home.HomeActivity
 import com.auvenix.sigti.ui.role.RoleActivity
+import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
 
@@ -30,22 +31,26 @@ class LoginActivity : AppCompatActivity() {
         setupClearErrors()
 
         binding.btnLogin.setOnClickListener {
-            if (!validate(showErrors = true)) return@setOnClickListener
-
-            val email = binding.etEmail.text.toString().trim()
+            val correo = binding.etEmail.text.toString()
             val pass = binding.etPassword.text.toString()
 
-            // ✅ Por ahora: stub (hasta conectar backend)
-            // Simulamos login exitoso si password no está vacía
-            Toast.makeText(this, "Login OK (stub)", Toast.LENGTH_SHORT).show()
-
-            // Cuando conectemos backend, aquí guardaremos token:
-            // session.saveToken(token)
-
-            startActivity(Intent(this, HomeActivity::class.java))
-            finishAffinity()
+            // 1. Le pedimos a Firebase que revise los datos
+            FirebaseAuth.getInstance().signInWithEmailAndPassword(correo, pass)
+                .addOnCompleteListener { task ->
+                    // 2. ¡ESTA ES LA CLAVE! Preguntamos si la tarea fue exitosa
+                    if (task.isSuccessful) {
+                        // SÍ FUE EXITOSA: Contraseña correcta, pásale al Home
+                        val intent = Intent(this, HomeActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        // NO FUE EXITOSA: Contraseña mal o el usuario no existe
+                        Toast.makeText(this, "Híjole carnal, los datos no coinciden.", Toast.LENGTH_SHORT).show()
+                        // El botón se queda ahí para que lo intente de nuevo
+                    }
+                }
         }
-
 
         // Ir a registro (tu flujo arranca en RoleActivity)
         binding.tvGoRegister.setOnClickListener {

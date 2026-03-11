@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.auvenix.sigti.R
 import com.auvenix.sigti.ui.chat.ChatListActivity
+import com.auvenix.sigti.ui.profile.ProfileActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class HomeActivity : AppCompatActivity() {
@@ -73,7 +74,14 @@ class HomeActivity : AppCompatActivity() {
                 }
 
                 R.id.nav_profile -> {
-                    Toast.makeText(this, "Perfil", Toast.LENGTH_SHORT).show()
+                    // ¡CONECTAMOS EL CABLE! Vamos al Perfil
+                    val intent = Intent(this, ProfileActivity::class.java)
+                    startActivity(intent)
+
+                    // Quitamos la animación de salto para que se sienta fluido
+                    overridePendingTransition(0, 0)
+
+                    // Opcional: finish() si no quieres que el usuario regrese al Home con el botón "Atrás"
                     true
                 }
 
