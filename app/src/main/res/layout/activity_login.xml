@@ -4,22 +4,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:fillViewport="true"
-    android:padding="24dp">
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="28dp">
 
         <ImageView
             android:id="@+id/ivLogo"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_gravity="end"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/logo_sigti_2"/>
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_gravity="end
+"
+            android:contentDescription="Logo SIGTI"
+            android:src="@drawable/logo_sigti_2"
+            android:layout_marginBottom="24dp"/>
 
         <TextView
             android:id="@+id/tvTitle"
@@ -27,73 +28,112 @@
             android:layout_height="wrap_content"
             android:text="Iniciar sesión"
             android:textStyle="bold"
-            android:textSize="26sp"
-            android:layout_marginBottom="14dp" />
+            android:textColor="@color/black"
+            android:textSize="36sp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bienvenido de nuevo a SIGTI."
+            android:textColor="#757575"
+            android:textSize="16sp"
+            android:layout_marginBottom="40dp" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilEmail"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Correo"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="10dp"
-            app:boxCornerRadiusTopEnd="10dp"
-            app:boxCornerRadiusBottomStart="10dp"
-            app:boxCornerRadiusBottomEnd="10dp">
+            android:hint="Correo Electrónico"
+            android:layout_marginBottom="16dp"
+            app:startIconDrawable="@android:drawable/ic_dialog_email"
+            app:startIconTint="@color/sigti_blue"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEmail"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:inputType="textEmailAddress" />
+                android:layout_height="wrap_content"
+                android:paddingStart="48dp"
+                android:inputType="textEmailAddress"
+                android:textSize="16sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilPassword"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:hint="Contraseña"
-            app:boxBackgroundMode="outline"
+            app:startIconDrawable="@android:drawable/ic_lock_lock"
+            app:startIconTint="@color/sigti_blue"
             app:endIconMode="password_toggle"
-            app:boxCornerRadiusTopStart="10dp"
-            app:boxCornerRadiusTopEnd="10dp"
-            app:boxCornerRadiusBottomStart="10dp"
-            app:boxCornerRadiusBottomEnd="10dp">
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPassword"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:inputType="textPassword" />
+                android:layout_height="wrap_content"
+                android:paddingStart="48dp"
+                android:inputType="textPassword"
+                android:textSize="16sp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Olvidé mi contraseña -->
         <TextView
             android:id="@+id/tvForgotPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginVertical="5dp"
             android:text="Olvidé mi contraseña"
-            android:layout_marginTop="10dp" />
+            android:textColor="@color/sigti_blue"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="40dp"
+            android:layout_gravity="end"
+            android:clickable="true"
+            android:focusable="true"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/sigti_blue"
+            android:layout_height="60dp"
+            app:backgroundTint="@color/sigti_blue"
             android:text="Iniciar sesión"
-            app:cornerRadius="12dp"
-            android:layout_marginTop="10dp"/>
+            android:textSize="18sp"
+            android:textAllCaps="false"
+            app:cornerRadius="16dp"
+            android:layout_marginBottom="24dp"/>
 
-        <TextView
-            android:id="@+id/tvGoRegister"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="¿No tienes cuenta? Regístrate"
-            android:layout_marginTop="5dp"
-            android:layout_marginLeft="5dp"/>
+            android:orientation="horizontal"
+            android:gravity="center">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="¿No tienes cuenta? "
+                android:textColor="#757575"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/tvGoRegister"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Regístrate"
+                android:textColor="@color/sigti_blue"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:clickable="true"
+                android:focusable="true"/>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

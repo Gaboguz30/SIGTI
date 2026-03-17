@@ -2,113 +2,124 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
+    android:layout_marginHorizontal="8dp"
     android:layout_marginVertical="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="2dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
     app:strokeWidth="1dp"
-    android:background="@color/white"
-    app:strokeColor="@color/white">
+    app:strokeColor="#EAEAEA"
+    app:cardBackgroundColor="@color/white"> <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:padding="16dp">
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
 
-        <ImageView
+        <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivWorkerProfile"
             android:layout_width="60dp"
             android:layout_height="60dp"
-            android:background="@drawable/ic_launcher_background"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            tools:ignore="ContentDescription" />
+            android:background="#F5F5F5"
+            android:src="@android:drawable/ic_menu_gallery"
+            android:padding="12dp"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent"/>
 
-        <TextView
-            android:id="@+id/tvWorkerName"
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="-15dp"
-            android:text="Nombre del Prestador"
-            android:textColor="@color/black"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/tvWorkerPrice"
-            app:layout_constraintStart_toEndOf="@+id/ivWorkerProfile"
-            app:layout_constraintTop_toTopOf="@+id/ivWorkerProfile" />
+            android:orientation="vertical"
+            android:layout_marginStart="16dp">
 
-        <TextView
-            android:id="@+id/tvWorkerProfession"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="Oficio"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="@+id/tvWorkerName"
-            app:layout_constraintTop_toBottomOf="@+id/tvWorkerName" />
+            <TextView
+                android:id="@+id/tvWorkerName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Nombre Apellido"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"/>
 
-        <TextView
-            android:id="@+id/tvWorkerAvailability"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Disponibilidad: Hoy"
-            android:textSize="12sp"
-            app:layout_constraintStart_toStartOf="@+id/tvWorkerName"
-            app:layout_constraintTop_toBottomOf="@+id/tvWorkerProfession" />
+            <TextView
+                android:id="@+id/tvWorkerProfession"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Especialidad"
+                android:textSize="14sp"
+                android:textColor="#757575"
+                android:layout_marginTop="2dp"/>
 
-        <TextView
-            android:id="@+id/tvWorkerRating"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="★ 4.8"
-            android:textColor="#FFB300"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="@+id/tvWorkerName"
-            app:layout_constraintTop_toBottomOf="@+id/tvWorkerAvailability" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp">
 
-        <TextView
-            android:id="@+id/tvWorkerDistance"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="2 km"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="@+id/tvWorkerRating"
-            app:layout_constraintStart_toEndOf="@+id/tvWorkerRating"
-            app:layout_constraintTop_toTopOf="@+id/tvWorkerRating" />
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@android:drawable/star_on"
+                    app:tint="#FFC107"/> <TextView
+                android:id="@+id/tvWorkerRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4.8"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="12dp"/>
 
-        <TextView
-            android:id="@+id/tvWorkerPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="$250\ndesde"
-            android:textAlignment="viewEnd"
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@android:drawable/ic_dialog_map"
+                    app:tint="#9E9E9E"/>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnViewProfile"
-            android:layout_width="wrap_content"
-            android:layout_height="35dp"
-            android:layout_marginTop="40dp"
-            android:text="Ver Perfil"
-            android:backgroundTint="@color/sigti_blue"
-            android:textSize="12sp"
-            app:cornerRadius="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvWorkerPrice" />
+                <TextView
+                    android:id="@+id/tvWorkerDistance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2 km"
+                    android:textSize="14sp"
+                    android:textColor="#757575"
+                    android:layout_marginStart="4dp"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+
+                <TextView
+                    android:id="@+id/tvWorkerPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$250/hr"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/sigti_blue"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnViewProfile"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ver Perfil"
+        android:textColor="@color/sigti_blue"
+        app:strokeColor="@color/sigti_blue"
+        app:strokeWidth="1dp"
+        app:cornerRadius="10dp"
+        android:layout_marginTop="16dp"/>
+
+</LinearLayout>
 </com.google.android.material.card.MaterialCardView>

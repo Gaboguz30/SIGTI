@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import com.auvenix.sigti.databinding.ActivityRegisterGeneralBinding
 import com.auvenix.sigti.ui.auth.PasswordActivity
-import com.auvenix.sigti.ui.profile.PrestadorExtraActivity
+import com.auvenix.sigti.ui.register.PrestadorExtraActivity
 import java.util.Calendar
 
 class RegisterGeneralActivity : AppCompatActivity() {

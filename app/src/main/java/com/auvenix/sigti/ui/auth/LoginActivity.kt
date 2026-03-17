@@ -30,6 +30,13 @@ class LoginActivity : AppCompatActivity() {
 
         setupClearErrors()
 
+        // 1. Escuchamos el clic en el TEXTO de "Olvidé mi contraseña"
+        binding.tvForgotPassword.setOnClickListener {
+            // 2. Armamos la maleta y abrimos la pantalla de recuperación
+            val intent = Intent(this, ForgotPasswordActivity::class.java)
+            startActivity(intent)
+        }
+
         binding.btnLogin.setOnClickListener {
             val correo = binding.etEmail.text.toString()
             val pass = binding.etPassword.text.toString()
