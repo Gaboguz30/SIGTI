@@ -29,14 +29,6 @@ class ProviderProfileActivity : AppCompatActivity() {
     }
 
     private fun setupButtons() {
-        // Clics de ejemplo
-        binding.btnBankDetails.setOnClickListener {
-            Toast.makeText(this, "Configurando cuenta bancaria...", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.btnSupport.setOnClickListener {
-            Toast.makeText(this, "Contactando a Soporte SIGTI...", Toast.LENGTH_SHORT).show()
-        }
 
         // EL BOTÓN IMPORTANTE: Cerrar Sesión
         binding.btnLogout.setOnClickListener {

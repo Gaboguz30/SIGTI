@@ -12,9 +12,7 @@ data class Review(val name: String, val date: String, val text: String)
 class ReviewAdapter(private val reviews: List<Review>) : RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder>() {
 
     class ReviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvName: TextView = itemView.findViewById(R.id.tvReviewName)
         val tvDate: TextView = itemView.findViewById(R.id.tvReviewDate)
-        val tvText: TextView = itemView.findViewById(R.id.tvReviewText)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReviewViewHolder {
@@ -24,9 +22,7 @@ class ReviewAdapter(private val reviews: List<Review>) : RecyclerView.Adapter<Re
 
     override fun onBindViewHolder(holder: ReviewViewHolder, position: Int) {
         val review = reviews[position]
-        holder.tvName.text = review.name
         holder.tvDate.text = review.date
-        holder.tvText.text = review.text
     }
 
     override fun getItemCount() = reviews.size

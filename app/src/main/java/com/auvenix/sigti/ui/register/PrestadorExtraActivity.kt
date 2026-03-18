@@ -57,8 +57,8 @@ class PrestadorExtraActivity : AppCompatActivity() {
         // Inflamos (fabricamos) un molde nuevo usando el layout row_oficio.xml
         val vistaOficio: View = LayoutInflater.from(this).inflate(R.layout.row_oficio, null)
 
-        // Buscamos el botoncito de eliminar DENTRO de este molde específico
-        val btnEliminar = vistaOficio.findViewById<ImageButton>(R.id.btnRemoveOficio)
+        // Cambiamos ImageButton por MaterialButton
+        val btnEliminar = vistaOficio.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnRemoveOficio)
 
         // Si el usuario le da al botoncito de basurero, borramos esta fila entera de la caja
         btnEliminar.setOnClickListener {
