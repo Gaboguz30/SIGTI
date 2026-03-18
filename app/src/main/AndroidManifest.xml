@@ -15,6 +15,9 @@
         android:theme="@style/Theme.SIGTI"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".ui.provider.chat.ProviderChatActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.home.UserNotificationsActivity"
             android:exported="false" />
         <activity
@@ -51,7 +54,7 @@
             android:name=".ui.support.ReviewsActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.chat.ChatActivity"
+            android:name=".ui.chat.ChatDetailActivity"
             android:exported="false" /> <!-- ESTA FALTABA -->
         <activity
             android:name=".ui.chat.ChatListActivity"

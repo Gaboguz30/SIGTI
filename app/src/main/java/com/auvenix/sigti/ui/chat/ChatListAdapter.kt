@@ -44,7 +44,7 @@ class ChatListAdapter(
 
         holder.itemView.setOnClickListener {
 
-            val intent = Intent(holder.itemView.context, ChatActivity::class.java)
+            val intent = Intent(holder.itemView.context, ChatDetailActivity::class.java)
             intent.putExtra("serviceId", chat.serviceId)
             holder.itemView.context.startActivity(intent)
         }

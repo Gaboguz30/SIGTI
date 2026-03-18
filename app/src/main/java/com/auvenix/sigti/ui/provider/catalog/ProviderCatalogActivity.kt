@@ -6,8 +6,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.auvenix.sigti.R
 import com.auvenix.sigti.databinding.ActivityProviderCatalogBinding
+
+// IMPORTS
 import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
 import com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity
+import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
 import com.auvenix.sigti.ui.provider.profile.ProviderProfileActivity
 
 class ProviderCatalogActivity : AppCompatActivity() {
@@ -20,14 +23,11 @@ class ProviderCatalogActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupNavigationBar()
-        setupFab() // <--- Llamamos a la lógica del botón flotante
+        setupFab()
     }
 
     private fun setupFab() {
-        // Escuchamos el clic en el Botón Flotante (+)
         binding.fabAddService.setOnClickListener {
-            // Aquí en el futuro abriremos otra pantalla o un cuadrito de diálogo
-            // para que escriba el nombre de su servicio y cuánto cobra.
             Toast.makeText(this, "Abriendo formulario de Nuevo Servicio...", Toast.LENGTH_SHORT).show()
         }
     }
@@ -43,6 +43,10 @@ class ProviderCatalogActivity : AppCompatActivity() {
                 }
                 R.id.nav_provider_jobs -> {
                     startActivity(Intent(this, ProviderJobsActivity::class.java))
+                    overridePendingTransition(0, 0); finish(); true
+                }
+                R.id.nav_provider_chat -> {
+                    startActivity(Intent(this, ProviderChatActivity::class.java))
                     overridePendingTransition(0, 0); finish(); true
                 }
                 R.id.nav_provider_catalog -> true // Ya estamos aquí

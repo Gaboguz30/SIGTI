@@ -12,6 +12,11 @@
         android:title="Trabajos" />
 
     <item
+        android:id="@+id/nav_provider_chat"
+        android:icon="@android:drawable/ic_menu_send"
+        android:title="Chat" />
+
+    <item
         android:id="@+id/nav_provider_catalog"
         android:icon="@android:drawable/ic_menu_manage"
         android:title="Catálogo" />

@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.auvenix.sigti.R
-import com.auvenix.sigti.ui.chat.ChatActivity
+import com.auvenix.sigti.ui.chat.ChatDetailActivity
 import com.auvenix.sigti.ui.request.NewRequestActivity
 import com.auvenix.sigti.ui.support.ReportActivity
 import com.google.android.material.button.MaterialButton
@@ -49,7 +49,7 @@ class WorkerProfileActivity : AppCompatActivity() {
 
         btnChat.setOnClickListener {
 
-            val intent = Intent(this, ChatActivity::class.java)
+            val intent = Intent(this, ChatDetailActivity::class.java)
             startActivity(intent)
         }
 

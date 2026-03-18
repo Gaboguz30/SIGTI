@@ -1,4 +1,4 @@
-package com.auvenix.sigti.ui.provider.jobs
+package com.auvenix.sigti.ui.provider.chat
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,34 +6,32 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.auvenix.sigti.R
-import com.auvenix.sigti.databinding.ActivityProviderJobsBinding
+import com.auvenix.sigti.databinding.ActivityProviderChatBinding
 
 // IMPORTS
 import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
-import com.auvenix.sigti.ui.provider.home.RequestAdapter
-import com.auvenix.sigti.ui.provider.home.ServiceRequest
-import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
+import com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity
 import com.auvenix.sigti.ui.provider.catalog.ProviderCatalogActivity
 import com.auvenix.sigti.ui.provider.profile.ProviderProfileActivity
 
-class ProviderJobsActivity : AppCompatActivity() {
+class ProviderChatActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityProviderJobsBinding
-    private val requestList = mutableListOf<ServiceRequest>()
-    private lateinit var adapter: RequestAdapter
+    private lateinit var binding: ActivityProviderChatBinding
+    private val chatList = mutableListOf<ChatModel>()
+    private lateinit var adapter: ChatListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityProviderJobsBinding.inflate(layoutInflater)
+        binding = ActivityProviderChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setupRecyclerView()
-        cargarTrabajos()
+        cargarChatsFalsos()
         setupBottomNavigation()
     }
 
     private fun setupBottomNavigation() {
-        binding.bottomNavigationProvider.selectedItemId = R.id.nav_provider_jobs
+        binding.bottomNavigationProvider.selectedItemId = R.id.nav_provider_chat
 
         binding.bottomNavigationProvider.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -41,11 +39,11 @@ class ProviderJobsActivity : AppCompatActivity() {
                     startActivity(Intent(this, ProviderHomeActivity::class.java))
                     overridePendingTransition(0, 0); finish(); true
                 }
-                R.id.nav_provider_jobs -> true // Ya estamos aquí
-                R.id.nav_provider_chat -> {
-                    startActivity(Intent(this, ProviderChatActivity::class.java))
+                R.id.nav_provider_jobs -> {
+                    startActivity(Intent(this, ProviderJobsActivity::class.java))
                     overridePendingTransition(0, 0); finish(); true
                 }
+                R.id.nav_provider_chat -> true // Ya estamos aquí
                 R.id.nav_provider_catalog -> {
                     startActivity(Intent(this, ProviderCatalogActivity::class.java))
                     overridePendingTransition(0, 0); finish(); true
@@ -60,20 +58,18 @@ class ProviderJobsActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        adapter = RequestAdapter(
-            requestList = requestList,
-            onAccept = { req -> Toast.makeText(this, "Aceptaste: ${req.clientName}", Toast.LENGTH_SHORT).show() },
-            onReject = { req -> Toast.makeText(this, "Rechazaste: ${req.clientName}", Toast.LENGTH_SHORT).show() }
-        )
-        binding.rvJobsList.layoutManager = LinearLayoutManager(this)
-        binding.rvJobsList.adapter = adapter
+        adapter = ChatListAdapter(chatList) { chat ->
+            Toast.makeText(this, "Abriendo chat con: ${chat.name}", Toast.LENGTH_SHORT).show()
+        }
+        binding.rvChats.layoutManager = LinearLayoutManager(this)
+        binding.rvChats.adapter = adapter
     }
 
-    private fun cargarTrabajos() {
-        requestList.clear()
-        requestList.add(ServiceRequest("1", "Reparación de cortocircuito", "Vianca", "A 1.5 km"))
-        requestList.add(ServiceRequest("2", "Instalación de tubería PVC", "Roberto", "A 3.2 km"))
-        requestList.add(ServiceRequest("3", "Revisión de centro de carga", "Edgar", "A 5.0 km"))
+    private fun cargarChatsFalsos() {
+        chatList.clear()
+        chatList.add(ChatModel("1", "Vianca Ramírez", "¡Muchas gracias por la reparación!", "14:52"))
+        chatList.add(ChatModel("2", "Roberto Sánchez", "¿A qué hora llegas mañana al domicilio?", "Ayer"))
+        chatList.add(ChatModel("3", "Edgar Ramírez", "Te mandé la foto del medidor, revísala.", "Lunes"))
         adapter.notifyDataSetChanged()
     }
 }

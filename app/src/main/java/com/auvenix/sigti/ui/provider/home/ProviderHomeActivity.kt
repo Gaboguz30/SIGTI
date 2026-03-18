@@ -9,9 +9,12 @@ import com.auvenix.sigti.R
 import com.auvenix.sigti.databinding.ActivityProviderHomeBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+
+// IMPORTS DE TUS OTRAS PANTALLAS
 import com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity
-import com.auvenix.sigti.ui.provider.profile.ProviderProfileActivity
+import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
 import com.auvenix.sigti.ui.provider.catalog.ProviderCatalogActivity
+import com.auvenix.sigti.ui.provider.profile.ProviderProfileActivity
 
 class ProviderHomeActivity : AppCompatActivity() {
 
@@ -24,61 +27,36 @@ class ProviderHomeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityProviderHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 1. Cargamos toda la información de la pantalla
         fetchProviderData()
         setupRecyclerView()
         fetchRequests()
-
-        // 2. Activamos el menú inferior
         setupBottomNavigation()
     }
 
     private fun setupBottomNavigation() {
-        // Le indicamos que el botón de Inicio debe estar marcado visualmente
         binding.bottomNavigationProvider.selectedItemId = R.id.nav_provider_home
 
         binding.bottomNavigationProvider.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_provider_home -> {
-                    // Ya estamos en Inicio, no hacemos nada
-                    true
-                }
+                R.id.nav_provider_home -> true // Ya estamos aquí
                 R.id.nav_provider_jobs -> {
-                    // TODO: Cuando ya tengas tu archivo ProviderJobsActivity.kt, borra las diagonales (//) de abajo:
-
-                    val intent = Intent(this, ProviderJobsActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-                    startActivity(intent)
-                    overridePendingTransition(0, 0)
-
-                    Toast.makeText(this, "Aquí iremos a Trabajos", Toast.LENGTH_SHORT).show()
-                    true
+                    startActivity(Intent(this, ProviderJobsActivity::class.java))
+                    overridePendingTransition(0, 0); finish(); true
+                }
+                R.id.nav_provider_chat -> {
+                    startActivity(Intent(this, ProviderChatActivity::class.java))
+                    overridePendingTransition(0, 0); finish(); true
                 }
                 R.id.nav_provider_catalog -> {
-                    // TODO: Cuando ya tengas tu archivo ProviderCatalogActivity.kt, borra las diagonales (//) de abajo:
-
-                    val intent = Intent(this, ProviderCatalogActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-                    startActivity(intent)
-                    overridePendingTransition(0, 0)
-
-                    Toast.makeText(this, "Aquí iremos a Catálogo", Toast.LENGTH_SHORT).show()
-                    true
+                    startActivity(Intent(this, ProviderCatalogActivity::class.java))
+                    overridePendingTransition(0, 0); finish(); true
                 }
                 R.id.nav_provider_profile -> {
-                    // TODO: Cuando ya tengas tu archivo ProviderProfileActivity.kt, borra las diagonales (//) de abajo:
-
-                    val intent = Intent(this, ProviderProfileActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
-                    startActivity(intent)
-                    overridePendingTransition(0, 0)
-
-                    Toast.makeText(this, "Aquí iremos a Perfil", Toast.LENGTH_SHORT).show()
-                    true
+                    startActivity(Intent(this, ProviderProfileActivity::class.java))
+                    overridePendingTransition(0, 0); finish(); true
                 }
                 else -> false
             }
@@ -87,7 +65,6 @@ class ProviderHomeActivity : AppCompatActivity() {
 
     private fun fetchProviderData() {
         val uid = auth.currentUser?.uid ?: return
-
         db.collection("users").document(uid).get()
             .addOnSuccessListener { doc ->
                 if (doc.exists()) {
@@ -104,23 +81,18 @@ class ProviderHomeActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         adapter = RequestAdapter(
             requestList = requestList,
-            onAccept = { req ->
-                Toast.makeText(this, "Aceptaste el trabajo: ${req.title}", Toast.LENGTH_SHORT).show()
-            },
-            onReject = { req ->
-                Toast.makeText(this, "Rechazaste el trabajo: ${req.title}", Toast.LENGTH_SHORT).show()
-            }
+            onAccept = { req -> Toast.makeText(this, "Aceptaste: ${req.title}", Toast.LENGTH_SHORT).show() },
+            onReject = { req -> Toast.makeText(this, "Rechazaste: ${req.title}", Toast.LENGTH_SHORT).show() }
         )
         binding.rvRequests.layoutManager = LinearLayoutManager(this)
         binding.rvRequests.adapter = adapter
     }
 
     private fun fetchRequests() {
-        // Datos de prueba para que veas el diseño
         requestList.clear()
-        requestList.add(ServiceRequest("1", "Fuga de agua en tubería principal", "Roberto Sánchez", "A 2.5 km"))
-        requestList.add(ServiceRequest("2", "Instalación de pastilla termomagnética", "Vianca Ramírez", "A 1.1 km"))
-        requestList.add(ServiceRequest("3", "Impermeabilización de azotea", "Edgar Ramírez", "A 4.0 km"))
+        requestList.add(ServiceRequest("1", "Fuga de agua en tubería", "Roberto Sánchez", "A 2.5 km"))
+        requestList.add(ServiceRequest("2", "Instalación de pastilla", "Vianca Ramírez", "A 1.1 km"))
+        requestList.add(ServiceRequest("3", "Impermeabilización", "Edgar Ramírez", "A 4.0 km"))
         adapter.notifyDataSetChanged()
     }
 }

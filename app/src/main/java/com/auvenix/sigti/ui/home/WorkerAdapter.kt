@@ -8,22 +8,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.auvenix.sigti.R
 import com.google.android.material.button.MaterialButton
 
-// 1. Un modelo de datos sencillo para probar (luego esto vendrá de tu Firebase)
+// 🔥 IMPORTANTE: ahora tiene UID
 data class Worker(
-    val name: String,
-    val profession: String,
-    val rating: String,
-    val price: String,
-    val distance: String
+    val uid: String = "",
+    val name: String = "",
+    val profession: String = "",
+    val rating: String = "",
+    val price: String = "",
+    val distance: String = ""
 )
 
-// 2. El Adaptador
 class WorkerAdapter(
     private val workerList: List<Worker>,
-    private val onProfileClick: (Worker) -> Unit // Acción para cuando le den clic al botón
+    private val onProfileClick: (Worker) -> Unit
 ) : RecyclerView.Adapter<WorkerAdapter.WorkerViewHolder>() {
 
-    // 3. El ViewHolder (Busca los elementos en tu XML)
     class WorkerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvName: TextView = itemView.findViewById(R.id.tvWorkerName)
         val tvProfession: TextView = itemView.findViewById(R.id.tvWorkerProfession)
@@ -40,22 +39,19 @@ class WorkerAdapter(
     }
 
     override fun onBindViewHolder(holder: WorkerViewHolder, position: Int) {
+
         val worker = workerList[position]
 
-        // Asignamos los datos a la tarjeta
         holder.tvName.text = worker.name
         holder.tvProfession.text = worker.profession
         holder.tvRating.text = "★ ${worker.rating}"
-        holder.tvPrice.text = "$${worker.price}\n/hora"
+        holder.tvPrice.text = "$${worker.price}/hora"
         holder.tvDistance.text = worker.distance
 
-        // Evento del botón "Ver Perfil"
         holder.btnViewProfile.setOnClickListener {
             onProfileClick(worker)
         }
     }
 
-    override fun getItemCount(): Int {
-        return workerList.size
-    }
+    override fun getItemCount(): Int = workerList.size
 }

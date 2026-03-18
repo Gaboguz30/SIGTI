@@ -12,7 +12,7 @@ import com.google.firebase.database.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ChatActivity : AppCompatActivity() {
+class ChatDetailActivity : AppCompatActivity() {
 
     private val chatMessages = mutableListOf<ChatMessage>()
     private lateinit var adapter: ChatAdapter
@@ -24,7 +24,7 @@ class ChatActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_chat)
+        setContentView(R.layout.activity_chat_detail)
 
         val rvChatMessages = findViewById<RecyclerView>(R.id.rvChatMessages)
         val etMessageInput = findViewById<EditText>(R.id.etMessageInput)
