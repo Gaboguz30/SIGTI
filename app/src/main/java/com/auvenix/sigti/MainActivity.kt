@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
             "correo" to "prueba@gmail.com"
         )
 
-        db.collection("usuarios")
+        db.collection("users")
             .add(prueba)
             .addOnSuccessListener {
                 Log.d("FIREBASE", "Datos guardados")

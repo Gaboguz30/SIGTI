@@ -93,7 +93,7 @@ class PasswordActivity : AppCompatActivity() {
         )
 
         // C. Lo guardamos en el Archivero "Usuarios"
-        db.collection("Usuarios").document(uid).set(expedienteUsuario)
+        db.collection("users").document(uid).set(expedienteUsuario)
             .addOnSuccessListener {
                 // Si el archivista terminó bien, llamamos al Cartero
                 enviarCorreoDeVerificacion(role, email, pass)

@@ -38,14 +38,11 @@ class ProfileActivity : AppCompatActivity() {
             Toast.makeText(this, "Mis Datos próximamente...", Toast.LENGTH_SHORT).show()
         }
 
-        binding.btnSupport.setOnClickListener {
-            Toast.makeText(this, "Abriendo Soporte Técnico...", Toast.LENGTH_SHORT).show()
-        }
     }
 
     private fun cargarDatosDesdeFirebase() {
         val uid = auth.currentUser?.uid ?: return
-        db.collection("Usuarios").document(uid).get() // <-- Asegúrate de que apunte a "Usuarios"
+        db.collection("users").document(uid).get() // <-- Asegúrate de que apunte a "Usuarios"
             .addOnSuccessListener { doc ->
                 if (doc.exists()) {
                     val nombre = doc.getString("nombre") ?: "Usuario"
