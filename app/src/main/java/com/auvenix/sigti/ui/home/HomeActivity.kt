@@ -43,7 +43,7 @@ class HomeActivity : AppCompatActivity() {
                     startActivity(Intent(this, UserMapActivity::class.java))
                     overridePendingTransition(0, 0); finish(); true
                 }
-                // ✅ FIX 5: nav_chat ahora abre ChatListActivity (la que tiene la lógica real de Firebase)
+
                 R.id.nav_chat -> {
                     startActivity(Intent(this, ChatListActivity::class.java))
                     overridePendingTransition(0, 0); finish(); true

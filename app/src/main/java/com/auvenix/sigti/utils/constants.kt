@@ -7,7 +7,7 @@ object Constants {
     //Notificaciones
     const val COLLECTION_USERS         = "users"
     const val COLLECTION_CHATS         = "chats"
-    const val COLLECTION_NOTIFICATIONS = "notifications"
+    const val COLLECTION_NOTIFICATIONS = "com/auvenix/sigti/ui/notifications"
 
     //  Base de datos
     const val NODE_CONVERSATIONS = "conversations"

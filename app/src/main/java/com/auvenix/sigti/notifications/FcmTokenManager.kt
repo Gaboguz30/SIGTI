@@ -1,4 +1,4 @@
-package notifications
+package com.auvenix.sigti.notifications
 
 import android.util.Log
 import com.auvenix.sigti.utils.Constants
