@@ -5,38 +5,22 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.auvenix.sigti.R
 import com.auvenix.sigti.databinding.ActivityUserChatsBinding
+import com.auvenix.sigti.ui.chat.ChatListActivity
 import com.auvenix.sigti.ui.profile.ProfileActivity
 
 class UserChatsActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityUserChatsBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityUserChatsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.bottomNavigation.selectedItemId = R.id.nav_chat
-
-        binding.bottomNavigation.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> {
-                    startActivity(Intent(this, HomeActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
-                }
-                R.id.nav_map -> {
-                    startActivity(Intent(this, UserMapActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
-                }
-                R.id.nav_chat -> true
-                R.id.nav_notifications -> {
-                    startActivity(Intent(this, UserNotificationsActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
-                }
-                R.id.nav_profile -> {
-                    startActivity(Intent(this, ProfileActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
-                }
-                else -> false
-            }
-        }
+        // ✅ FIX 5: Esta pantalla ya no es un callejón sin salida.
+        //    Redirige inmediatamente a ChatListActivity que tiene
+        //    la lógica real de Firebase Realtime Database.
+        startActivity(Intent(this, ChatListActivity::class.java))
+        finish()
     }
 }

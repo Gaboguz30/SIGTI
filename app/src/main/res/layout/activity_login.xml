@@ -77,6 +77,16 @@
             app:boxCornerRadiusBottomStart="12dp"
             app:boxCornerRadiusBottomEnd="12dp">
 
+            <CheckBox
+                android:id="@+id/cbRememberMe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Recordar mi correo"
+                android:textColor="#757575"
+                android:textSize="14sp"
+                android:layout_marginTop="12dp"
+                android:buttonTint="@color/sigti_blue" />
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPassword"
                 android:layout_width="match_parent"

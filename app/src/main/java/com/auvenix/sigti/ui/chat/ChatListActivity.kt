@@ -1,10 +1,16 @@
 package com.auvenix.sigti.ui.chat
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.auvenix.sigti.R
+import com.auvenix.sigti.utils.Constants
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import java.text.SimpleDateFormat
@@ -18,52 +24,48 @@ class ChatListActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // ESTE layout existe y coincide con tu XML
         setContentView(R.layout.activity_chat_list)
 
         recycler = findViewById(R.id.rvChats)
-
         recycler.layoutManager = LinearLayoutManager(this)
 
         adapter = ChatListAdapter(chats)
         recycler.adapter = adapter
 
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val myUid = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
         val ref = FirebaseDatabase.getInstance()
-            .getReference("conversations")
-            .child(uid)
+            .getReference(Constants.NODE_CONVERSATIONS)
+            .child(myUid)
 
         ref.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(snapshot: DataSnapshot) {
-
                 chats.clear()
 
                 for (chatSnapshot in snapshot.children) {
+                    val serviceId   = chatSnapshot.key ?: continue
+                    val lastMessage = chatSnapshot.child("lastMessage").getValue(String::class.java) ?: ""
+                    val timestamp   = chatSnapshot.child("timestamp").getValue(Long::class.java) ?: 0L
+                    val withName = chatSnapshot.child("withName").getValue(String::class.java)
+                        ?: "Usuario"
 
-                    val serviceId = chatSnapshot.key ?: continue
-
-                    val lastMessage = chatSnapshot
-                        .child("lastMessage")
-                        .getValue(String::class.java) ?: ""
-
-                    val timestamp = chatSnapshot
-                        .child("timestamp")
-                        .getValue(Long::class.java) ?: 0L
-
-                    val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-                    val time = sdf.format(Date(timestamp))
+                    val time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(timestamp))
 
                     chats.add(
                         ChatPreview(
-                            serviceId = serviceId,
-                            name = serviceId,
+                            serviceId   = serviceId,
+                            name        = withName,  //NOMBRE REAL DEL USUARIO
                             lastMessage = lastMessage,
-                            time = time
+                            time        = time
                         )
                     )
+                }
+
+                // Ordenar por más reciente
+                chats.sortByDescending { chat ->
+                    snapshot.child(chat.serviceId)
+                        .child("timestamp").getValue(Long::class.java) ?: 0L
                 }
 
                 adapter.notifyDataSetChanged()
@@ -73,3 +75,4 @@ class ChatListActivity : AppCompatActivity() {
         })
     }
 }
+

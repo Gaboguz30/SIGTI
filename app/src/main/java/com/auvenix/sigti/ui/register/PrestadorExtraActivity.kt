@@ -4,7 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.ImageButton
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -14,15 +15,15 @@ import com.auvenix.sigti.R
 import com.auvenix.sigti.databinding.ActivityPrestadorExtraBinding
 import com.auvenix.sigti.ui.auth.PasswordActivity
 
-
 class PrestadorExtraActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPrestadorExtraBinding
 
+    private val OFICIOS = listOf("Albañil", "Electricista", "Plomero", "Carpintero")
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        // Activamos ViewBinding
         binding = ActivityPrestadorExtraBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -32,43 +33,42 @@ class PrestadorExtraActivity : AppCompatActivity() {
             insets
         }
 
-        // 1. Agregamos el primer oficio por defecto para que no salga vacía la pantalla
         agregarFilaOficio()
 
-        // 2. Escuchamos el botón de "+ Agregar otro oficio"
         binding.btnAddOficio.setOnClickListener {
             agregarFilaOficio()
         }
 
-        // 3. Botón para simular subir la INE (Esto lo conectaremos a la cámara después)
         binding.btnUploadIne.setOnClickListener {
             Toast.makeText(this, "Abriendo galería...", Toast.LENGTH_SHORT).show()
             binding.tvIneStatus.text = "INE_Frontal.jpg (Cargada con éxito)"
-            binding.tvIneStatus.setTextColor(android.graphics.Color.parseColor("#4CAF50")) // Verde
+            binding.tvIneStatus.setTextColor(android.graphics.Color.parseColor("#4CAF50"))
         }
 
-        // 4. Botón Continuar: Mandamos todo a la pantalla de Password
         binding.btnContinuarExtra.setOnClickListener {
             procesarDatosYContinuar()
         }
     }
 
     private fun agregarFilaOficio() {
-        // Inflamos (fabricamos) un molde nuevo usando el layout row_oficio.xml
         val vistaOficio: View = LayoutInflater.from(this).inflate(R.layout.row_oficio, null)
 
-        // Cambiamos ImageButton por MaterialButton
-        val btnEliminar = vistaOficio.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnRemoveOficio)
-
-        // Si el usuario le da al botoncito de basurero, borramos esta fila entera de la caja
-        btnEliminar.setOnClickListener {
-            binding.llOficiosContainer.removeView(vistaOficio)
+        // ✅ Configurar el dropdown con la lista de oficios
+        val autoComplete = vistaOficio.findViewById<AutoCompleteTextView>(R.id.etOficioNombre)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, OFICIOS)
+        autoComplete.setAdapter(adapter)
+        autoComplete.threshold = 0
+        autoComplete.setOnClickListener { autoComplete.showDropDown() }
+        autoComplete.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) autoComplete.showDropDown()
         }
 
-        // Metemos el molde recién fabricado a nuestra "Caja de Cartón" (llOficiosContainer)
+        // Botón eliminar fila
+        vistaOficio.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnRemoveOficio)
+            .setOnClickListener { binding.llOficiosContainer.removeView(vistaOficio) }
+
         binding.llOficiosContainer.addView(vistaOficio)
     }
-
 
     private fun procesarDatosYContinuar() {
         val ciudad = binding.etCiudad.text.toString().trim()
@@ -77,57 +77,55 @@ class PrestadorExtraActivity : AppCompatActivity() {
             return
         }
 
-        // 1. Recolectamos los oficios de la Caja de Cartón (Igual que antes)
         val listaOficios = ArrayList<String>()
-        val cantidadMoldes = binding.llOficiosContainer.childCount
 
-        for (i in 0 until cantidadMoldes) {
-            val molde = binding.llOficiosContainer.getChildAt(i)
-            val etNombre = molde.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etOficioNombre)
-            val etAnios = molde.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etOficioAnios)
+        for (i in 0 until binding.llOficiosContainer.childCount) {
+            val fila = binding.llOficiosContainer.getChildAt(i)
 
-            val nombreOficio = etNombre?.text.toString().trim()
-            val aniosExp = etAnios?.text.toString().trim()
+            val autoComplete = fila.findViewById<AutoCompleteTextView>(R.id.etOficioNombre)
+            val etAnios = fila.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.etOficioAnios)
 
-            if (nombreOficio.isNotEmpty() && aniosExp.isNotEmpty()) {
-                listaOficios.add("$nombreOficio|$aniosExp")
+            val nombreOficio = autoComplete?.text.toString().trim()
+            val aniosTexto   = etAnios?.text.toString().trim()
+
+            // ✅ Validar que el oficio sea de la lista y los años tengan máximo 2 dígitos
+            when {
+                nombreOficio.isEmpty() -> {
+                    Toast.makeText(this, "Selecciona un oficio en la fila ${i + 1}", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                !OFICIOS.contains(nombreOficio) -> {
+                    Toast.makeText(this, "Oficio inválido en fila ${i + 1}. Selecciona de la lista.", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                aniosTexto.isEmpty() -> {
+                    Toast.makeText(this, "Ingresa los años de experiencia en fila ${i + 1}", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                aniosTexto.length > 2 -> {
+                    // No debería pasar por el maxLength="2" del XML, pero como seguridad extra:
+                    Toast.makeText(this, "Máximo 99 años de experiencia", Toast.LENGTH_SHORT).show()
+                    return
+                }
+                else -> listaOficios.add("$nombreOficio|$aniosTexto")
             }
         }
 
         if (listaOficios.isEmpty()) {
-            android.widget.Toast.makeText(this, "Agrega al menos un oficio con sus años de experiencia", android.widget.Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Agrega al menos un oficio", Toast.LENGTH_LONG).show()
             return
         }
 
-        // ==========================================================
-        // 2. EL SWITCH LÓGICO DEL AGENTE DE TRÁNSITO
-        // ==========================================================
-
-        // Buscamos en la maleta si la pantalla anterior nos avisó que es de Google
-        // (Asegúrate de mandar este "extra_is_google" desde tu pantalla de Google SignIn)
         val vieneDeGoogle = intent.getBooleanExtra("extra_is_google", false)
 
         if (vieneDeGoogle) {
-            // 🚪 CAMINO VIP (Google)
-            // Aquí en el futuro guardaremos directo en Firestore
-            android.widget.Toast.makeText(this, "Usuario de Google: Guardando en BD y yendo a Planes...", android.widget.Toast.LENGTH_SHORT).show()
-
-            // Y lo mandamos a la caja registradora (ProviderPlansActivity)
-            // (Aún te marcará error en ProviderPlansActivity porque no lo hemos creado)
-            /* val i = Intent(this, com.auvenix.sigti.ui.provider.plans.ProviderPlansActivity::class.java)
-            startActivity(i)
-            finish()
-            */
-
+            Toast.makeText(this, "Usuario de Google: Guardando en BD...", Toast.LENGTH_SHORT).show()
         } else {
-            // 🚪 CAMINO LARGO (Correo)
-            // Aún no tiene cuenta, lo mandamos a PasswordActivity con la maleta llena
-            val i = Intent(this, PasswordActivity::class.java).apply {
-                putExtras(intent) // Pasamos lo que venía de la pantalla anterior
+            startActivity(Intent(this, PasswordActivity::class.java).apply {
+                putExtras(intent)
                 putExtra("extra_ciudad", ciudad)
                 putStringArrayListExtra("extra_oficios", listaOficios)
-            }
-            startActivity(i)
+            })
         }
     }
 }

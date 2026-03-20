@@ -10,10 +10,14 @@ import com.google.android.material.button.MaterialButton
 
 // El molde de datos (Cajita)
 data class ServiceRequest(
-    val id: String = "",
-    val title: String = "",
-    val clientName: String = "",
-    val distance: String = ""
+    val id         : String = "",
+    val title      : String = "",
+    val description: String = "",
+    val clientName : String = "",
+    val clientId   : String = "",
+    val oficio     : String = "",
+    val distance   : String = "",
+    val status     : String = "pending"
 )
 
 // El Adaptador que controla la lista

@@ -5,22 +5,27 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.auvenix.sigti.R
 import com.auvenix.sigti.databinding.ActivityAuthEntryBinding
+import notifications.FcmTokenManager
+import com.auvenix.sigti.ui.home.HomeActivity
+import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
 import com.auvenix.sigti.ui.role.RoleActivity
+import com.auvenix.sigti.utils.Constants
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
-import com.auvenix.sigti.R // Asegúrate de tener tus strings
-import com.auvenix.sigti.ui.home.HomeActivity
 
 class AuthEntryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAuthEntryBinding
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+
     private val RC_SIGN_IN = 9001
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,100 +35,128 @@ class AuthEntryActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        // 1. Configurar Google Sign-In
+        // Configurar Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id)) // ID de Firebase
+            .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        // Botón "Aceptar y continuar" (Registro manual)
+        // Botón "Aceptar y continuar" — registro manual
         binding.btnAcceptContinue.setOnClickListener {
-            val intent = Intent(this, RoleActivity::class.java)
-            intent.putExtra("IS_GOOGLE", false) // Flujo normal
-            startActivity(intent)
+            startActivity(Intent(this, RoleActivity::class.java).apply {
+                putExtra(Constants.EXTRA_IS_GOOGLE, false)
+            })
         }
 
-        // 2. BOTÓN GOOGLE
+        // Botón Google
         binding.btnGoogle.setOnClickListener {
-            val signInIntent = googleSignInClient.signInIntent
-            startActivityForResult(signInIntent, RC_SIGN_IN)
+            startActivityForResult(googleSignInClient.signInIntent, RC_SIGN_IN)
         }
 
+        // Link a Login
         binding.tvLoginLink.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
         }
     }
 
+    // ======================================================
+    //  AUTO-LOGIN: Si ya hay sesión activa, redirige al home
+    // ======================================================
     override fun onStart() {
         super.onStart()
-        // 1. Revisamos si Firebase dice que ya hay alguien logueado
-        val usuarioActual = FirebaseAuth.getInstance().currentUser
-
-        if (usuarioActual != null) {
-            // 2. Si hay alguien, ¡vámonos directo al Home!
-            val intent = Intent(this, HomeActivity::class.java)
-
-            // 3. LA BANDERA (Flag): Esto es como quemar el puente atrás de ti.
-            // Evita que si el usuario le da "atrás", regrese al Login.
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-
-            startActivity(intent)
-            finish() // Cerramos la pantalla del portero
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            redireccionarSegunRol(currentUser.uid)
         }
     }
 
-    // 3. Recibir el resultado de Google
+    // ======================================================
+    //  RESULTADO DEL FLUJO GOOGLE
+    // ======================================================
+    @Deprecated("Use Activity Result API in future versions")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
+
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
-                val account = task.getResult(com.google.android.gms.common.api.ApiException::class.java)!!
+                val account = task.getResult(ApiException::class.java)!!
                 firebaseAuthWithGoogle(account.idToken!!)
-            } catch (e: Exception) {
-                Log.w("GOOGLE", "Google sign in failed", e)
+            } catch (e: ApiException) {
+                Log.w("GOOGLE_AUTH", "Google sign-in falló: ${e.statusCode}")
+                Toast.makeText(this, "Error al iniciar sesión con Google", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-
-    // 4. Autenticar en Firebase y mandar a RoleActivity
+    // ======================================================
+    //  AUTENTICACIÓN CON FIREBASE + GOOGLE
+    // ======================================================
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
+
         auth.signInWithCredential(credential).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
-                val user = auth.currentUser
-                val uid = user?.uid ?: ""
+                val user = auth.currentUser ?: return@addOnCompleteListener
+                val uid  = user.uid
 
-                // --- AQUÍ ESTÁ LA MAGIA ---
-                val db = FirebaseFirestore.getInstance()
-                db.collection("users").document(uid).get()
+                FirebaseFirestore.getInstance()
+                    .collection(Constants.COLLECTION_USERS)
+                    .document(uid)
+                    .get()
                     .addOnSuccessListener { document ->
                         if (document.exists()) {
-                            // CASO 1: El usuario YA EXISTE en Firestore
-                            Log.d("AUTH", "Usuario viejo, directo al Home")
-                            val intent = Intent(this, HomeActivity::class.java)
-                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                            startActivity(intent)
-                            finish()
+                            // Usuario ya registrado — guardar token FCM y redirigir
+                            FcmTokenManager.saveCurrentToken()
+                            redireccionarSegunRol(uid)
                         } else {
-                            // CASO 2: Es un USUARIO NUEVO
-                            Log.d("AUTH", "Usuario nuevo, a elegir rol")
-                            val intent = Intent(this, RoleActivity::class.java).apply {
-                                putExtra("IS_GOOGLE", true)
-                                putExtra("EXTRA_NOMBRE_COMPLETO", user?.displayName)
-                                putExtra("EXTRA_EMAIL", user?.email)
-                                putExtra("EXTRA_UID", uid)
-                            }
-                            startActivity(intent)
+                            // Usuario nuevo — completar perfil
+                            startActivity(Intent(this, RoleActivity::class.java).apply {
+                                putExtra(Constants.EXTRA_IS_GOOGLE,    true)
+                                putExtra(Constants.EXTRA_NOMBRE,       user.displayName)
+                                putExtra(Constants.EXTRA_EMAIL_GOOGLE, user.email)
+                                putExtra(Constants.EXTRA_UID,          uid)
+                            })
                             finish()
                         }
                     }
                     .addOnFailureListener { e ->
-                        Toast.makeText(this, "Error al verificar usuario: ${e.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this,
+                            "Error al verificar usuario: ${e.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+            } else {
+                Toast.makeText(this, "Autenticación fallida con Firebase", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    // ======================================================
+    //  REDIRECCIÓN SEGÚN ROL (igual que LoginActivity)
+    // ======================================================
+    private fun redireccionarSegunRol(uid: String) {
+        FirebaseFirestore.getInstance()
+            .collection(Constants.COLLECTION_USERS)
+            .document(uid)
+            .get()
+            .addOnSuccessListener { doc ->
+                if (!doc.exists()) return@addOnSuccessListener
+
+                val rol = doc.getString(Constants.FIELD_ROL)
+                    ?: doc.getString(Constants.FIELD_ROLE)
+
+                val intent = if (rol == Constants.ROLE_PROVIDER) {
+                    Intent(this, ProviderHomeActivity::class.java)
+                } else {
+                    Intent(this, HomeActivity::class.java)
+                }
+
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            }
     }
 }

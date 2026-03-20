@@ -21,9 +21,9 @@ class PasswordActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
-        db = FirebaseFirestore.getInstance()
+        db   = FirebaseFirestore.getInstance()
 
-        val role = intent.getStringExtra(EXTRA_ROLE).orEmpty()
+        val role  = intent.getStringExtra(EXTRA_ROLE).orEmpty()
         val email = intent.getStringExtra(EXTRA_EMAIL).orEmpty()
 
         setupRealtimeValidation()
@@ -39,7 +39,7 @@ class PasswordActivity : AppCompatActivity() {
                     if (task.isSuccessful) {
                         val uid = auth.currentUser?.uid
                         if (uid != null) {
-                            guardarExpedienteEnBD(uid, role, email, pass)
+                            guardarExpedienteEnBD(uid, role, email)
                         } else {
                             binding.btnContinuar.isEnabled = true
                             Toast.makeText(this, "Error: No se pudo obtener el UID", Toast.LENGTH_LONG).show()
@@ -52,36 +52,35 @@ class PasswordActivity : AppCompatActivity() {
         }
     }
 
-    private fun guardarExpedienteEnBD(uid: String, role: String, email: String, pass: String) {
+    private fun guardarExpedienteEnBD(uid: String, role: String, email: String) {
         val listaOficiosCruda = intent.getStringArrayListExtra("extra_oficios") ?: arrayListOf()
         val oficiosProcesados = listaOficiosCruda.map { stringCrudo ->
             val partes = stringCrudo.split("|")
             mapOf(
-                "nombre" to (partes.getOrNull(0) ?: ""),
+                "nombre"            to (partes.getOrNull(0) ?: ""),
                 "anios_experiencia" to (partes.getOrNull(1)?.toIntOrNull() ?: 0)
             )
         }
 
-        // CORREGIDO: Nombres de variables unificados
         val expedienteUsuario = hashMapOf(
-            "uid" to uid,
-            "role" to role,
-            "email" to email,
-            "nombre" to intent.getStringExtra(EXTRA_NOMBRE).orEmpty(),
-            "apPaterno" to intent.getStringExtra(EXTRA_AP_PATERNO).orEmpty(),
-            "apMaterno" to intent.getStringExtra(EXTRA_AP_MATERNO).orEmpty(),
-            "fechaNac" to intent.getStringExtra(EXTRA_FECHA_NAC).orEmpty(),
-            "genero" to intent.getStringExtra(EXTRA_GENERO).orEmpty(),
-            "ciudad" to intent.getStringExtra("extra_ciudad").orEmpty(),
-            "oficios" to oficiosProcesados,
-            "plan_actual" to "FREE",
+            "uid"                     to uid,
+            "role"                    to role,
+            "email"                   to email,
+            "nombre"                  to intent.getStringExtra(EXTRA_NOMBRE).orEmpty(),
+            "apPaterno"               to intent.getStringExtra(EXTRA_AP_PATERNO).orEmpty(),
+            "apMaterno"               to intent.getStringExtra(EXTRA_AP_MATERNO).orEmpty(),
+            "fechaNac"                to intent.getStringExtra(EXTRA_FECHA_NAC).orEmpty(),
+            "genero"                  to intent.getStringExtra(EXTRA_GENERO).orEmpty(),
+            "ciudad"                  to intent.getStringExtra("extra_ciudad").orEmpty(),
+            "oficios"                 to oficiosProcesados,
+            "plan_actual"             to "FREE",
             "trabajos_realizados_mes" to 0,
-            "fechaRegistro" to com.google.firebase.firestore.FieldValue.serverTimestamp()
+            "fechaRegistro"           to com.google.firebase.firestore.FieldValue.serverTimestamp()
         )
 
         db.collection("users").document(uid).set(expedienteUsuario)
             .addOnSuccessListener {
-                enviarCorreoDeVerificacion(role, email, pass)
+                enviarCorreoDeVerificacion(role, email)
             }
             .addOnFailureListener { e ->
                 binding.btnContinuar.isEnabled = true
@@ -89,13 +88,12 @@ class PasswordActivity : AppCompatActivity() {
             }
     }
 
-    private fun enviarCorreoDeVerificacion(role: String, email: String, pass: String) {
+    private fun enviarCorreoDeVerificacion(role: String, email: String) {
         auth.currentUser?.sendEmailVerification()?.addOnCompleteListener { emailTask ->
             if (emailTask.isSuccessful) {
                 val i = Intent(this, VerifyEmailActivity::class.java).apply {
-                    putExtra(EXTRA_ROLE, role)
-                    putExtra(EXTRA_EMAIL, email)
-                    putExtra(EXTRA_PASSWORD, pass)
+                    putExtra(EXTRA_ROLE,    role)
+                    putExtra(EXTRA_EMAIL,   email)
                     putExtra(EXTRA_RECORDAR, binding.cbRecuerdame.isChecked)
                 }
                 startActivity(i)
@@ -120,7 +118,7 @@ class PasswordActivity : AppCompatActivity() {
 
     private fun validatePasswords(showErrors: Boolean): Boolean {
         var ok = true
-        val pass = binding.etPassword.text?.toString().orEmpty()
+        val pass  = binding.etPassword.text?.toString().orEmpty()
         val pass2 = binding.etConfirmPassword.text?.toString().orEmpty()
 
         if (pass.isBlank()) {
@@ -161,14 +159,13 @@ class PasswordActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val EXTRA_ROLE = "extra_role"
-        const val EXTRA_EMAIL = "extra_email"
-        const val EXTRA_PASSWORD = "extra_password"
-        const val EXTRA_NOMBRE = "extra_nombre"
-        const val EXTRA_AP_PATERNO = "extra_ap_paterno"
-        const val EXTRA_AP_MATERNO = "extra_ap_materno"
-        const val EXTRA_FECHA_NAC = "extra_fecha_nac"
-        const val EXTRA_GENERO = "extra_genero"
-        const val EXTRA_RECORDAR = "extra_recordar"
+        const val EXTRA_ROLE        = "extra_role"
+        const val EXTRA_EMAIL       = "extra_email"
+        const val EXTRA_NOMBRE      = "extra_nombre"
+        const val EXTRA_AP_PATERNO  = "extra_ap_paterno"
+        const val EXTRA_AP_MATERNO  = "extra_ap_materno"
+        const val EXTRA_FECHA_NAC   = "extra_fecha_nac"
+        const val EXTRA_GENERO      = "extra_genero"
+        const val EXTRA_RECORDAR    = "extra_recordar"
     }
 }
