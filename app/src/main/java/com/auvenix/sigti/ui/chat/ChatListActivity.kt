@@ -1,71 +1,73 @@
-package com.auvenix.sigti.ui.chat
+package com.auvenix.sigti.ui.provider.chat
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.auvenix.sigti.R
-import com.auvenix.sigti.utils.Constants
+import com.auvenix.sigti.databinding.ActivityProviderChatBinding
+import com.auvenix.sigti.ui.chat.ChatDetailActivity
+import com.auvenix.sigti.ui.provider.catalog.ProviderCatalogActivity
+import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
+import com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity
+import com.auvenix.sigti.ui.provider.profile.ProviderProfileActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-class ChatListActivity : AppCompatActivity() {
+class ProviderChatActivity : AppCompatActivity() {
 
-    private lateinit var recycler: RecyclerView
-    private lateinit var adapter: ChatListAdapter
-    private val chats = mutableListOf<ChatPreview>()
+    private lateinit var binding : ActivityProviderChatBinding
+    private val chatList         = mutableListOf<ChatModel>()
+    private lateinit var adapter : ChatListAdapter
+    private lateinit var dbRef   : DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_chat_list)
+        binding = ActivityProviderChatBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        recycler = findViewById(R.id.rvChats)
-        recycler.layoutManager = LinearLayoutManager(this)
+        setupRecyclerView()
+        loadChatsFromFirebase()     // ✅ datos reales
+        setupBottomNavigation()
+    }
 
-        adapter = ChatListAdapter(chats)
-        recycler.adapter = adapter
+    // ══════════════════════════════════════════════════════
+    //  DATOS REALES — lee conversaciones del prestador
+    //  Ruta: conversations/{uid}/{serviceId}
+    // ══════════════════════════════════════════════════════
+    private fun loadChatsFromFirebase() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
 
-        val myUid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        dbRef = FirebaseDatabase.getInstance()
+            .getReference("conversations")
+            .child(uid)
 
-        val ref = FirebaseDatabase.getInstance()
-            .getReference(Constants.NODE_CONVERSATIONS)
-            .child(myUid)
-
-        ref.addValueEventListener(object : ValueEventListener {
+        dbRef.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(snapshot: DataSnapshot) {
-                chats.clear()
+                chatList.clear()
 
-                for (chatSnapshot in snapshot.children) {
-                    val serviceId   = chatSnapshot.key ?: continue
-                    val lastMessage = chatSnapshot.child("lastMessage").getValue(String::class.java) ?: ""
-                    val timestamp   = chatSnapshot.child("timestamp").getValue(Long::class.java) ?: 0L
-                    val withName = chatSnapshot.child("withName").getValue(String::class.java)
-                        ?: "Usuario"
+                for (child in snapshot.children) {
+                    val serviceId   = child.key ?: continue
+                    val lastMessage = child.child("lastMessage").getValue(String::class.java) ?: ""
+                    val withName    = child.child("withName").getValue(String::class.java) ?: "Usuario"
+                    val timestamp   = child.child("timestamp").getValue(Long::class.java) ?: 0L
 
                     val time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(timestamp))
 
-                    chats.add(
-                        ChatPreview(
-                            serviceId   = serviceId,
-                            name        = withName,  //NOMBRE REAL DEL USUARIO
-                            lastMessage = lastMessage,
-                            time        = time
-                        )
-                    )
+                    chatList.add(ChatModel(
+                        id          = serviceId,
+                        name        = withName,
+                        lastMessage = lastMessage,
+                        time        = time
+                    ))
                 }
 
-                // Ordenar por más reciente
-                chats.sortByDescending { chat ->
-                    snapshot.child(chat.serviceId)
-                        .child("timestamp").getValue(Long::class.java) ?: 0L
+                // Ordenar por más reciente primero
+                chatList.sortByDescending { chat ->
+                    snapshot.child(chat.id).child("timestamp").getValue(Long::class.java) ?: 0L
                 }
 
                 adapter.notifyDataSetChanged()
@@ -74,5 +76,44 @@ class ChatListActivity : AppCompatActivity() {
             override fun onCancelled(error: DatabaseError) {}
         })
     }
-}
 
+    private fun setupRecyclerView() {
+        adapter = ChatListAdapter(chatList) { chat ->
+            // ✅ Abre el chat en tiempo real con serviceId y nombre del contacto
+            val intent = Intent(this, ChatDetailActivity::class.java).apply {
+                putExtra("serviceId",   chat.id)
+                putExtra("contactName", chat.name)
+            }
+            startActivity(intent)
+        }
+        binding.rvChats.layoutManager = LinearLayoutManager(this)
+        binding.rvChats.adapter = adapter
+    }
+
+    private fun setupBottomNavigation() {
+        binding.bottomNavigationProvider.selectedItemId = R.id.nav_provider_chat
+
+        binding.bottomNavigationProvider.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_provider_home -> {
+                    startActivity(Intent(this, ProviderHomeActivity::class.java))
+                    overridePendingTransition(0, 0); finish(); true
+                }
+                R.id.nav_provider_jobs -> {
+                    startActivity(Intent(this, ProviderJobsActivity::class.java))
+                    overridePendingTransition(0, 0); finish(); true
+                }
+                R.id.nav_provider_chat -> true
+                R.id.nav_provider_catalog -> {
+                    startActivity(Intent(this, ProviderCatalogActivity::class.java))
+                    overridePendingTransition(0, 0); finish(); true
+                }
+                R.id.nav_provider_profile -> {
+                    startActivity(Intent(this, ProviderProfileActivity::class.java))
+                    overridePendingTransition(0, 0); finish(); true
+                }
+                else -> false
+            }
+        }
+    }
+}

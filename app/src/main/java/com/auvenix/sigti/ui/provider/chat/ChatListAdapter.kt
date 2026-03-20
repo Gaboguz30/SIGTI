@@ -7,7 +7,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.auvenix.sigti.R
 
-// Modelo exclusivo del chat del prestador
 data class ChatModel(
     val id         : String = "",
     val name       : String = "",
@@ -16,29 +15,31 @@ data class ChatModel(
 )
 
 class ChatListAdapter(
-    private val chats  : List<ChatModel>,
-    private val onClick: (ChatModel) -> Unit
-) : RecyclerView.Adapter<ChatListAdapter.ViewHolder>() {
+    private val chatList   : List<ChatModel>,
+    private val onChatClick: (ChatModel) -> Unit
+) : RecyclerView.Adapter<ChatListAdapter.ChatViewHolder>() {
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ChatViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvName       : TextView = view.findViewById(R.id.tvUserName)
         val tvLastMessage: TextView = view.findViewById(R.id.tvLastMessage)
         val tvTime       : TextView = view.findViewById(R.id.tvTime)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_chat_preview, parent, false)
-        return ViewHolder(view)
+        return ChatViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val chat = chats[position]
+    override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
+        val chat = chatList[position]
         holder.tvName.text        = chat.name
         holder.tvLastMessage.text = chat.lastMessage
         holder.tvTime.text        = chat.time
-        holder.itemView.setOnClickListener { onClick(chat) }
+
+        // ✅ Al tocar → abre ChatDetailActivity con datos reales
+        holder.itemView.setOnClickListener { onChatClick(chat) }
     }
 
-    override fun getItemCount() = chats.size
+    override fun getItemCount() = chatList.size
 }
