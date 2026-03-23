@@ -1,6 +1,7 @@
 package com.auvenix.sigti.ui.register
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,8 @@ import android.widget.ArrayAdapter
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -21,14 +24,36 @@ class PrestadorExtraActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPrestadorExtraBinding
 
-    // Lista maestra — máximo 4 y sin repetir
     private val OFICIOS = listOf("Albañil", "Electricista", "Plomero", "Carpintero")
 
-    // Rastrea qué oficios ya fueron seleccionados en cada fila
-    // clave: View de la fila → oficio seleccionado (o null si no ha elegido)
     private val oficiosPorFila = LinkedHashMap<View, String?>()
 
-    private var ineSubido = false
+    // ── FIX 5: Uri real de la imagen (null = no ha subido nada) ────────────
+    private var ineUri: Uri? = null
+
+    // ── FIX 5: Lanzador de galería con Photo Picker ────────────────────────
+    private val pickMedia = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            val mimeType = contentResolver.getType(uri)
+            if (mimeType != null && (mimeType == "image/jpeg" || mimeType == "image/png")) {
+                ineUri = uri
+                binding.tvIneStatus.text = "✓  Imagen cargada correctamente"
+                binding.tvIneStatus.setTextColor(android.graphics.Color.parseColor("#2E7D32"))
+                // Opcional: mostrar miniatura
+                // binding.ivInePreview.setImageURI(uri)
+            } else {
+                Toast.makeText(
+                    this,
+                    "Solo se aceptan imágenes JPG o PNG",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        } else {
+            Toast.makeText(this, "No se seleccionó ninguna imagen", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,11 +81,11 @@ class PrestadorExtraActivity : AppCompatActivity() {
             agregarFilaOficio()
         }
 
+        // ── FIX 5: abrir galería real ──────────────────────────────────────
         binding.btnUploadIne.setOnClickListener {
-            Toast.makeText(this, "Abriendo galería...", Toast.LENGTH_SHORT).show()
-            ineSubido = true
-            binding.tvIneStatus.text = "✓  INE_Frontal.jpg cargada con éxito"
-            binding.tvIneStatus.setTextColor(android.graphics.Color.parseColor("#2E7D32"))
+            pickMedia.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
         }
 
         binding.btnContinuarExtra.setOnClickListener {
@@ -78,11 +103,8 @@ class PrestadorExtraActivity : AppCompatActivity() {
     private fun actualizarDropdowns() {
         for ((fila, oficioActual) in oficiosPorFila) {
             val autoComplete = fila.findViewById<AutoCompleteTextView>(R.id.etOficioNombre) ?: continue
-
-            // Esta fila puede ver: los oficios no usados en otras filas + su propio oficio actual
             val usadosEnOtrasFila = oficiosYaUsados(excluyendoFila = fila)
             val disponibles = OFICIOS.filter { it !in usadosEnOtrasFila }
-
             val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, disponibles)
             autoComplete.setAdapter(adapter)
         }
@@ -92,7 +114,6 @@ class PrestadorExtraActivity : AppCompatActivity() {
         val vistaOficio: View = LayoutInflater.from(this)
             .inflate(R.layout.row_oficio, binding.llOficiosContainer, false)
 
-        // Registrar la fila sin oficio seleccionado todavía
         oficiosPorFila[vistaOficio] = null
 
         val autoComplete = vistaOficio.findViewById<AutoCompleteTextView>(R.id.etOficioNombre)
@@ -101,7 +122,7 @@ class PrestadorExtraActivity : AppCompatActivity() {
         autoComplete.threshold = 0
 
         autoComplete.setOnClickListener {
-            actualizarDropdowns()   // recalcula disponibles antes de abrir
+            actualizarDropdowns()
             autoComplete.showDropDown()
         }
 
@@ -109,11 +130,10 @@ class PrestadorExtraActivity : AppCompatActivity() {
             val seleccionado = autoComplete.text.toString().trim()
             oficiosPorFila[vistaOficio] = seleccionado
             tilOficio?.error = null
-            actualizarDropdowns()   // actualiza el resto de filas
+            actualizarDropdowns()
             actualizarBotonAgregar()
         }
 
-        // Botón eliminar
         vistaOficio.findViewById<com.google.android.material.button.MaterialButton>(R.id.btnRemoveOficio)
             .setOnClickListener {
                 if (oficiosPorFila.size > 1) {
@@ -130,28 +150,57 @@ class PrestadorExtraActivity : AppCompatActivity() {
         actualizarDropdowns()
         actualizarBotonAgregar()
     }
+
     private fun actualizarBotonAgregar() {
-        // Ocultar el botón si ya se usaron todos los oficios disponibles
         binding.btnAddOficio.isEnabled = oficiosPorFila.size < OFICIOS.size
         binding.btnAddOficio.alpha     = if (binding.btnAddOficio.isEnabled) 1f else 0.4f
     }
-    
+
+    // ── FIX 4: Validación de dirección (backend-style) ─────────────────────
+    private fun isValidAddress(address: String): Boolean {
+        if (address.length < 8) return false
+        val hasLetter = address.any { it.isLetter() }
+        val hasDigit  = address.any { it.isDigit() }
+        if (!hasLetter || !hasDigit) return false
+        val lettersOnly = address.filter { it.isLetter() }.lowercase()
+        if (lettersOnly.length >= 5 && lettersOnly.toSet().size <= 2) return false
+        return true
+    }
+
     private fun procesarDatosYContinuar() {
         var hayError = false
 
-        // ── Ciudad ─────────────────────────────────────────────
+        // ── Ciudad ─────────────────────────────────────────────────────────
         val ciudad = binding.etCiudad.text.toString().trim()
-        if (ciudad.isEmpty()) { binding.etCiudad.error = "Campo obligatorio"; hayError = true }
-        else binding.etCiudad.error = null
+        when {
+            ciudad.isEmpty() -> {
+                binding.etCiudad.error = "Campo obligatorio"
+                hayError = true
+            }
+            ciudad.length < 3 || !ciudad.any { it.isLetter() } -> {
+                binding.etCiudad.error = "Nombre de ciudad no válido"
+                hayError = true
+            }
+            else -> binding.etCiudad.error = null
+        }
 
-        // ── Dirección ──────────────────────────────────────────
+        // ── FIX 4: Dirección ───────────────────────────────────────────────
         val direccion = binding.etDireccion.text.toString().trim()
-        if (direccion.isEmpty()) { binding.etDireccion.error = "Campo obligatorio"; hayError = true }
-        else binding.etDireccion.error = null
+        when {
+            direccion.isEmpty() -> {
+                binding.etDireccion.error = "Campo obligatorio"
+                hayError = true
+            }
+            !isValidAddress(direccion) -> {
+                binding.etDireccion.error = "Ingresa una dirección válida (calle y número)"
+                hayError = true
+            }
+            else -> binding.etDireccion.error = null
+        }
 
         if (hayError) return
 
-        // ── Oficios ────────────────────────────────────────────
+        // ── Oficios ────────────────────────────────────────────────────────
         val listaOficios = ArrayList<String>()
 
         for ((index, entry) in oficiosPorFila.entries.withIndex()) {
@@ -190,13 +239,13 @@ class PrestadorExtraActivity : AppCompatActivity() {
             return
         }
 
-        // ── INE ────────────────────────────────────────────────
-        if (!ineSubido) {
+        // ── FIX 5: Verificar imagen real ───────────────────────────────────
+        if (ineUri == null) {
             Toast.makeText(this, "Por favor sube una foto de tu INE", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // ── Continuar ──────────────────────────────────────────
+        // ── Continuar ──────────────────────────────────────────────────────
         if (intent.getBooleanExtra("extra_is_google", false)) {
             Toast.makeText(this, "Usuario de Google: guardando perfil...", Toast.LENGTH_SHORT).show()
         } else {
@@ -204,6 +253,7 @@ class PrestadorExtraActivity : AppCompatActivity() {
                 putExtras(intent)
                 putExtra("extra_ciudad",    ciudad)
                 putExtra("extra_direccion", direccion)
+                putExtra("extra_ine_uri",   ineUri.toString())
                 putStringArrayListExtra("extra_oficios", listaOficios)
             })
         }
