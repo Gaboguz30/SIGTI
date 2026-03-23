@@ -3,8 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- Notifiaciones -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -16,71 +14,29 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SIGTI"
         android:usesCleartextTraffic="true">
-
-       <!-- Activitys Usuarios -->
-        <activity
-            android:name=".ui.home.HomeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.home.UserMapActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.home.UserChatsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.home.UserNotificationsActivity"
-            android:exported="false" />
-
-        <!-- Chat -->
-        <activity
-            android:name=".ui.chat.ChatDetailActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.chat.ChatListActivity"
-            android:exported="false" />
-
-        <!-- Perfil -->
         <activity
             android:name=".ui.profile.ProfileActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.auth.GoogleCompleteProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.support.ReportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.support.ReviewsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.chat.ChatActivity"
+            android:exported="false" /> <!-- ESTA FALTABA -->
+        <activity
+            android:name=".ui.chat.ChatListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.request.NewRequestActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.profile.WorkerProfileActivity"
-            android:exported="false" />
-
-        <!-- Proovedor  -->
-        <activity
-            android:name=".ui.provider.home.ProviderHomeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.provider.jobs.ProviderJobsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.provider.chat.ProviderChatActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.provider.catalog.ProviderCatalogActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.provider.profile.ProviderProfileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.provider.plans.ProviderPlansActivity"
-            android:exported="false" />
-
-        <!-- Registro -->
-        <activity
-            android:name=".ui.auth.AuthEntryActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".ui.auth.LoginActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.auth.VerifyEmailActivity"
             android:exported="false" />
         <activity
             android:name=".ui.auth.ForgotPasswordActivity"
@@ -89,33 +45,35 @@
             android:name=".ui.auth.PasswordActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.auth.GoogleCompleteProfileActivity"
+            android:name=".ui.profile.PrestadorExtraActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.role.RoleActivity"
+            android:name=".ui.auth.AuthEntryActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.home.HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.VerifyEmailActivity"
             android:exported="false" />
         <activity
             android:name=".ui.register.RegisterGeneralActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.register.PrestadorExtraActivity"
-            android:exported="false" />
-
-        <!-- Soporte -->
-        <activity
-            android:name=".ui.request.NewRequestActivity"
+            android:name=".ui.auth.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.support.ReportActivity"
+            android:name=".ui.role.RoleActivity"
             android:exported="false" />
-        <activity
-            android:name=".ui.support.ReviewsActivity"
-            android:exported="false" />
-
         <activity
             android:name=".MainActivity"
             android:exported="false" />
-
     </application>
 
 </manifest>
