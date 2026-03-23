@@ -27,8 +27,8 @@ class HomeActivity : AppCompatActivity() {
         )
 
         rvWorkers.layoutManager = LinearLayoutManager(this)
-        rvWorkers.adapter = WorkerAdapter(dummyWorkers) { selectedWorker ->
-            Toast.makeText(this, "Abriendo perfil de ${selectedWorker.name}", Toast.LENGTH_SHORT).show()
+        rvWorkers.adapter = WorkerAdapter(dummyWorkers) { worker ->
+            Toast.makeText(this, "Abriendo perfil de ${worker.name}", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this, com.auvenix.sigti.ui.profile.WorkerProfileActivity::class.java))
         }
 
@@ -43,7 +43,7 @@ class HomeActivity : AppCompatActivity() {
                     startActivity(Intent(this, UserMapActivity::class.java))
                     overridePendingTransition(0, 0); finish(); true
                 }
-
+                // Esto preserva el back stack: HomeActivity → ChatListActivity
                 R.id.nav_chat -> {
                     startActivity(Intent(this, ChatListActivity::class.java))
                     overridePendingTransition(0, 0); finish(); true

@@ -77,9 +77,6 @@ class ProviderHomeActivity : AppCompatActivity() {
         )
     }
 
-    // ══════════════════════════════════════════════════════════════
-    //  DATOS REALES — Solicitudes de Firestore en tiempo real
-    // ══════════════════════════════════════════════════════════════
     /**
      * Escucha la colección "requests" donde status == "pending".
      * Cada solicitud tiene: title, description, clientName, clientId,

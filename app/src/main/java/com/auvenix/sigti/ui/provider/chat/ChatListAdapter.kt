@@ -37,7 +37,6 @@ class ChatListAdapter(
         holder.tvLastMessage.text = chat.lastMessage
         holder.tvTime.text        = chat.time
 
-        // ✅ Al tocar → abre ChatDetailActivity con datos reales
         holder.itemView.setOnClickListener { onChatClick(chat) }
     }
 
