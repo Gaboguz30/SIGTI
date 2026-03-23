@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Archivo: res/color/switch_track_color.xml
+     Hace que el switch sea azul cuando está activo y gris cuando está inactivo -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="#1A73E8" android:state_checked="true" />
+    <item android:color="#BDBDBD" />
+</selector>

@@ -28,6 +28,7 @@
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/logo_sigti_2"/>
 
+            <!-- Header: foto + nombre + plan -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -61,6 +62,7 @@
                         android:textSize="24sp"
                         android:textStyle="bold"
                         android:textColor="@color/black"/>
+
                     <TextView
                         android:id="@+id/tvProfilePlan"
                         android:layout_width="wrap_content"
@@ -72,6 +74,7 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- Sección Preferencias -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -81,6 +84,7 @@
                 android:textColor="@color/black"
                 android:layout_marginBottom="16dp"/>
 
+            <!-- Switch: Disponible para trabajar -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
@@ -88,12 +92,14 @@
                 android:gravity="center_vertical"
                 android:paddingHorizontal="4dp"
                 android:layout_marginBottom="8dp">
+
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@android:drawable/ic_lock_idle_alarm"
                     app:tint="#555555"
                     android:layout_marginEnd="16dp"/>
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -102,15 +108,19 @@
                     android:textSize="16sp"
                     android:textColor="@color/black"/>
 
+                <!-- ✅ FIX: sin android:checked hardcodeado.
+                     El estado se carga desde Firestore en el Activity.
+                     trackTint usa un selector: azul=ON, gris=OFF -->
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/switchStatus"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
                     app:thumbTint="@color/white"
-                    app:trackTint="@color/sigti_blue"/>
+                    app:trackTint="@color/switch_track_color"/>
+
             </LinearLayout>
 
+            <!-- Switch: Notificaciones -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
@@ -118,12 +128,14 @@
                 android:gravity="center_vertical"
                 android:paddingHorizontal="4dp"
                 android:layout_marginBottom="32dp">
+
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@android:drawable/ic_popup_reminder"
                     app:tint="#555555"
                     android:layout_marginEnd="16dp"/>
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -131,15 +143,18 @@
                     android:text="Notificaciones de nuevos trabajos"
                     android:textSize="16sp"
                     android:textColor="@color/black"/>
+
+                <!-- ✅ FIX: mismo tratamiento que switchStatus -->
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/switchNotifications"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:checked="true"
                     app:thumbTint="@color/white"
-                    app:trackTint="@color/sigti_blue"/>
+                    app:trackTint="@color/switch_track_color"/>
+
             </LinearLayout>
 
+            <!-- Sección Cuenta -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -159,6 +174,7 @@
                 android:focusable="true"
                 android:background="?attr/selectableItemBackground"
                 android:paddingHorizontal="4dp">
+
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
@@ -183,6 +199,7 @@
                 android:focusable="true"
                 android:background="?attr/selectableItemBackground"
                 android:paddingHorizontal="4dp">
+
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
@@ -203,7 +220,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Cerrar Sesión"
-                android:textColor="@color/sigti_blue"
+                android:textColor="#D32F2F"
                 android:textAllCaps="false"
                 android:layout_gravity="center"
                 android:layout_marginTop="20dp"
@@ -226,4 +243,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:menu="@menu/provider_bottom_nav_menu" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

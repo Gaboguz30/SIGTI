@@ -2,23 +2,27 @@ package com.auvenix.sigti.ui.provider.chat
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.auvenix.sigti.R
 import com.auvenix.sigti.databinding.ActivityProviderChatBinding
-
-// IMPORTS
+import com.auvenix.sigti.ui.chat.ChatDetailActivity
+import com.auvenix.sigti.ui.provider.catalog.ProviderCatalogActivity
 import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
 import com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity
-import com.auvenix.sigti.ui.provider.catalog.ProviderCatalogActivity
 import com.auvenix.sigti.ui.provider.profile.ProviderProfileActivity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ProviderChatActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityProviderChatBinding
-    private val chatList = mutableListOf<ChatModel>()
-    private lateinit var adapter: ChatListAdapter
+    private lateinit var binding : ActivityProviderChatBinding
+    private val chatList         = mutableListOf<ChatModel>()
+    private lateinit var adapter : ChatListAdapter
+    private lateinit var dbRef   : DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,8 +30,64 @@ class ProviderChatActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupRecyclerView()
-        cargarChatsFalsos()
+        loadChatsFromFirebase()
         setupBottomNavigation()
+    }
+
+
+    private fun loadChatsFromFirebase() {
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
+
+        dbRef = FirebaseDatabase.getInstance()
+            .getReference("conversations")
+            .child(uid)
+
+        dbRef.addValueEventListener(object : ValueEventListener {
+
+            override fun onDataChange(snapshot: DataSnapshot) {
+                chatList.clear()
+
+                for (child in snapshot.children) {
+                    val serviceId   = child.key ?: continue
+                    val lastMessage = child.child("lastMessage").getValue(String::class.java) ?: ""
+                    val withName    = child.child("withName").getValue(String::class.java)    ?: "Usuario"
+                    val timestamp   = child.child("timestamp").getValue(Long::class.java)     ?: 0L
+
+                    val time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(timestamp))
+
+                    chatList.add(
+                        ChatModel(
+                            id          = serviceId,
+                            name        = withName,
+                            lastMessage = lastMessage,
+                            time        = time
+                        )
+                    )
+                }
+
+                // Ordenar por más reciente primero
+                chatList.sortByDescending { chat ->
+                    snapshot.child(chat.id).child("timestamp").getValue(Long::class.java) ?: 0L
+                }
+
+                adapter.notifyDataSetChanged()
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
+    private fun setupRecyclerView() {
+        adapter = ChatListAdapter(chatList) { chat ->
+            startActivity(
+                Intent(this, ChatDetailActivity::class.java).apply {
+                    putExtra("serviceId",   chat.id)
+                    putExtra("contactName", chat.name)   // nombre real del contacto
+                }
+            )
+        }
+        binding.rvChats.layoutManager = LinearLayoutManager(this)
+        binding.rvChats.adapter = adapter
     }
 
     private fun setupBottomNavigation() {
@@ -43,7 +103,7 @@ class ProviderChatActivity : AppCompatActivity() {
                     startActivity(Intent(this, ProviderJobsActivity::class.java))
                     overridePendingTransition(0, 0); finish(); true
                 }
-                R.id.nav_provider_chat -> true // Ya estamos aquí
+                R.id.nav_provider_chat    -> true
                 R.id.nav_provider_catalog -> {
                     startActivity(Intent(this, ProviderCatalogActivity::class.java))
                     overridePendingTransition(0, 0); finish(); true
@@ -55,21 +115,5 @@ class ProviderChatActivity : AppCompatActivity() {
                 else -> false
             }
         }
-    }
-
-    private fun setupRecyclerView() {
-        adapter = ChatListAdapter(chatList) { chat ->
-            Toast.makeText(this, "Abriendo chat con: ${chat.name}", Toast.LENGTH_SHORT).show()
-        }
-        binding.rvChats.layoutManager = LinearLayoutManager(this)
-        binding.rvChats.adapter = adapter
-    }
-
-    private fun cargarChatsFalsos() {
-        chatList.clear()
-        chatList.add(ChatModel("1", "Vianca Ramírez", "¡Muchas gracias por la reparación!", "14:52"))
-        chatList.add(ChatModel("2", "Roberto Sánchez", "¿A qué hora llegas mañana al domicilio?", "Ayer"))
-        chatList.add(ChatModel("3", "Edgar Ramírez", "Te mandé la foto del medidor, revísala.", "Lunes"))
-        adapter.notifyDataSetChanged()
     }
 }

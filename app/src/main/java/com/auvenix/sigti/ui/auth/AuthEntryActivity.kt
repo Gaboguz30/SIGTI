@@ -7,7 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.auvenix.sigti.R
 import com.auvenix.sigti.databinding.ActivityAuthEntryBinding
-import com.auvenix.sigti.notifications.FcmTokenManager   //
+import com.auvenix.sigti.notifications.FcmTokenManager
 import com.auvenix.sigti.ui.home.HomeActivity
 import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
 import com.auvenix.sigti.ui.role.RoleActivity
@@ -35,32 +35,49 @@ class AuthEntryActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
+        // Configurar Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
+        // ── Registro manual ────────────────────────────────────
         binding.btnAcceptContinue.setOnClickListener {
             startActivity(Intent(this, RoleActivity::class.java).apply {
                 putExtra(Constants.EXTRA_IS_GOOGLE, false)
             })
         }
 
+        // ── Google Sign-In ─────────────────────────────────────
         binding.btnGoogle.setOnClickListener {
             startActivityForResult(googleSignInClient.signInIntent, RC_SIGN_IN)
         }
 
+        // ── Facebook — próximamente ────────────────────────────
+        // El botón existe pero la integración aún no está lista.
+        // Se mantiene visible y muestra un aviso al tocarlo.
+        binding.btnFacebook.setOnClickListener {
+            Toast.makeText(
+                this,
+                "Inicio con Facebook próximamente disponible",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        // ── Link "¿Ya tienes cuenta? Iniciar sesión" ───────────
         binding.tvLoginLink.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
         }
     }
 
+    // ── Auto-login si ya hay sesión activa ─────────────────────
     override fun onStart() {
         super.onStart()
         auth.currentUser?.let { redireccionarSegunRol(it.uid) }
     }
 
+    // ── Resultado del flujo Google ─────────────────────────────
     @Deprecated("Use Activity Result API in future versions")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -76,6 +93,7 @@ class AuthEntryActivity : AppCompatActivity() {
         }
     }
 
+    // ── Autenticación Firebase + Google ───────────────────────
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential).addOnCompleteListener(this) { task ->
@@ -89,6 +107,7 @@ class AuthEntryActivity : AppCompatActivity() {
                             FcmTokenManager.saveCurrentToken()
                             redireccionarSegunRol(uid)
                         } else {
+                            // Usuario nuevo de Google → completar perfil
                             startActivity(Intent(this, RoleActivity::class.java).apply {
                                 putExtra(Constants.EXTRA_IS_GOOGLE,    true)
                                 putExtra(Constants.EXTRA_NOMBRE,       user.displayName)
@@ -107,18 +126,20 @@ class AuthEntryActivity : AppCompatActivity() {
         }
     }
 
+    // ── Redirección según rol en Firestore ────────────────────
     private fun redireccionarSegunRol(uid: String) {
         FirebaseFirestore.getInstance()
             .collection(Constants.COLLECTION_USERS).document(uid).get()
             .addOnSuccessListener { doc ->
                 if (!doc.exists()) return@addOnSuccessListener
-                val rol = doc.getString(Constants.FIELD_ROL) ?: doc.getString(Constants.FIELD_ROLE)
+                val rol    = doc.getString(Constants.FIELD_ROL) ?: doc.getString(Constants.FIELD_ROLE)
                 val intent = if (rol == Constants.ROLE_PROVIDER)
                     Intent(this, ProviderHomeActivity::class.java)
                 else
                     Intent(this, HomeActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent); finish()
+                startActivity(intent)
+                finish()
             }
     }
 }
