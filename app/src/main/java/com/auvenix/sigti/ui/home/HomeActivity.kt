@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.auvenix.sigti.R
+import com.auvenix.sigti.ui.chat.ChatListActivity
 import com.auvenix.sigti.ui.profile.ProfileActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -16,29 +17,21 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
 
-        // ================================
-        // LISTA DE TRABAJADORES
-        // ================================
         val rvWorkers = findViewById<RecyclerView>(R.id.rvWorkers)
 
         val dummyWorkers = listOf(
-            Worker("Vianca Ramírez", "Electricista", "4.8", "250", "2 km"),
-            Worker("Amairany Solís", "Plomero", "4.9", "200", "5 km"),
-            Worker("Edgar Ramírez", "Electricista", "3.9", "150", "<1 km"),
-            Worker("Leonardo Gonzalo", "Herrero", "4.2", "180", "3 km")
+            Worker("Vianca Ramírez",   "Electricista", "4.8", "250", "2 km"),
+            Worker("Amairany Solís",   "Plomero",      "4.9", "200", "5 km"),
+            Worker("Edgar Ramírez",    "Electricista", "3.9", "150", "<1 km"),
+            Worker("Leonardo Gonzalo", "Herrero",      "4.2", "180", "3 km")
         )
 
         rvWorkers.layoutManager = LinearLayoutManager(this)
-
-        rvWorkers.adapter = WorkerAdapter(dummyWorkers) { selectedWorker ->
-            Toast.makeText(this, "Abriendo perfil de ${selectedWorker.name}", Toast.LENGTH_SHORT).show()
-            val intent = Intent(this, com.auvenix.sigti.ui.profile.WorkerProfileActivity::class.java)
-            startActivity(intent)
+        rvWorkers.adapter = WorkerAdapter(dummyWorkers) { worker ->
+            Toast.makeText(this, "Abriendo perfil de ${worker.name}", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, com.auvenix.sigti.ui.profile.WorkerProfileActivity::class.java))
         }
 
-        // ================================
-        // BOTTOM NAVIGATION
-        // ================================
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
         bottomNavigation.selectedItemId = R.id.nav_home
 
@@ -50,9 +43,9 @@ class HomeActivity : AppCompatActivity() {
                     startActivity(Intent(this, UserMapActivity::class.java))
                     overridePendingTransition(0, 0); finish(); true
                 }
+                // Esto preserva el back stack: HomeActivity → ChatListActivity
                 R.id.nav_chat -> {
-                    // Actualizado para apuntar a la nueva pantalla de Chats
-                    startActivity(Intent(this, UserChatsActivity::class.java))
+                    startActivity(Intent(this, ChatListActivity::class.java))
                     overridePendingTransition(0, 0); finish(); true
                 }
                 R.id.nav_notifications -> {

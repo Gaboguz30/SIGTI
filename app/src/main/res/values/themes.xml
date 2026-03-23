@@ -1,8 +1,12 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
     <style name="Base.Theme.SIGTI" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/sigti_blue</item>
+        <item name="colorPrimaryVariant">@color/blue_primary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/sigti_blue</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorControlActivated">@color/sigti_blue</item>
+        <item name="colorControlHighlight">@color/blue_soft</item>
     </style>
 
     <style name="Theme.SIGTI" parent="Base.Theme.SIGTI" />

@@ -32,15 +32,11 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilNombre"
+            style="@style/SIGTI.TextInput"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            app:boxBackgroundMode="outline"
-            android:hint="Nombre(s)"
-            app:boxCornerRadiusBottomEnd="10dp"
-            app:boxCornerRadiusBottomStart="10dp"
-            app:boxCornerRadiusTopEnd="10dp"
-            app:boxCornerRadiusTopStart="10dp">
+            android:hint="Nombre(s)">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etNombre"
@@ -51,17 +47,13 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilApellidoPaterno"
+            style="@style/SIGTI.TextInput"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            app:boxBackgroundMode="outline"
-            android:hint="Apellido paterno"
-            app:boxCornerRadiusBottomEnd="10dp"
-            app:boxCornerRadiusBottomStart="10dp"
-            app:boxCornerRadiusTopEnd="10dp"
-            app:boxCornerRadiusTopStart="10dp">
+            android:hint="Apellido paterno">
 
-        <com.google.android.material.textfield.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etApellidoPaterno"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -70,15 +62,11 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilApellidoMaterno"
+            style="@style/SIGTI.TextInput"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            app:boxBackgroundMode="outline"
-            android:hint="Apellido materno"
-            app:boxCornerRadiusBottomEnd="10dp"
-            app:boxCornerRadiusBottomStart="10dp"
-            app:boxCornerRadiusTopEnd="10dp"
-            app:boxCornerRadiusTopStart="10dp">
+            android:hint="Apellido materno">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etApellidoMaterno"
@@ -87,20 +75,16 @@
                 android:inputType="textPersonName" />
         </com.google.android.material.textfield.TextInputLayout>
 
-
-        <!-- Fecha de nacimiento (no escribible, solo picker) -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilFechaNac"
+            style="@style/SIGTI.TextInput"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            app:boxBackgroundMode="outline"
             android:hint="Fecha de nacimiento"
             app:placeholderText="DD/MM/AAAA"
-            app:boxCornerRadiusBottomEnd="10dp"
-            app:boxCornerRadiusBottomStart="10dp"
-            app:boxCornerRadiusTopEnd="10dp"
-            app:boxCornerRadiusTopStart="10dp">
+            app:endIconMode="custom"
+            app:endIconDrawable="@drawable/ic_calendar">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etFechaNac"
@@ -113,15 +97,11 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilEmail"
+            style="@style/SIGTI.TextInput"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            app:boxBackgroundMode="outline"
-            android:hint="Correo"
-            app:boxCornerRadiusBottomEnd="10dp"
-            app:boxCornerRadiusBottomStart="10dp"
-            app:boxCornerRadiusTopEnd="10dp"
-            app:boxCornerRadiusTopStart="10dp">
+            android:hint="Correo electrónico">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEmail"
@@ -208,18 +188,33 @@
                         android:layout_marginTop="8dp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
-
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/tvGenderError"
+        <!-- Error de género -->
+        <LinearLayout
+            android:id="@+id/llGenderError"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Selecciona tu género"
-            android:textColor="@android:color/holo_red_dark"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:visibility="gone"
             android:layout_marginTop="6dp"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="8dp">
+
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_warning"
+                android:layout_marginEnd="4dp"/>
+
+            <TextView
+                android:id="@+id/tvGenderError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Selecciona tu género"
+                android:textColor="@color/error_red"
+                android:textSize="12sp"/>
+        </LinearLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnContinuar"

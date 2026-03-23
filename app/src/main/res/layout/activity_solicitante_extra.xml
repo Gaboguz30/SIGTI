@@ -2,7 +2,7 @@
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
@@ -14,9 +14,9 @@
         android:orientation="vertical"
         android:paddingBottom="32dp">
 
-        <!-- ══════════════════════════════════════════ -->
-        <!-- CABECERA                                   -->
-        <!-- ══════════════════════════════════════════ -->
+        <!-- ═══════════════════════════════════ -->
+        <!-- CABECERA                            -->
+        <!-- ═══════════════════════════════════ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,7 +28,6 @@
             android:layout_marginBottom="12dp">
 
             <ImageView
-                android:id="@+id/ivLogo"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="end"
@@ -39,7 +38,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Perfil Profesional"
+                android:text="Tu Perfil"
                 android:textSize="28sp"
                 android:textStyle="bold"
                 android:textColor="@color/black"
@@ -48,15 +47,15 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Completa tu perfil para que los clientes confíen en tu trabajo."
+                android:text="Completa tu ubicación e identificación para usar la app."
                 android:textColor="#757575"
                 android:textSize="14sp"
                 android:lineSpacingExtra="2dp"/>
         </LinearLayout>
 
-        <!-- ══════════════════════════════════════════ -->
-        <!-- SECCIÓN 1 — UBICACIÓN                     -->
-        <!-- ══════════════════════════════════════════ -->
+        <!-- ═══════════════════════════════════ -->
+        <!-- SECCIÓN 1 — UBICACIÓN              -->
+        <!-- ═══════════════════════════════════ -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -74,7 +73,6 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
-                <!-- Encabezado de sección -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -98,12 +96,12 @@
                         android:textColor="@color/black"/>
                 </LinearLayout>
 
-                <!-- Campo: Ciudad -->
+                <!-- Ciudad -->
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Ciudad de operación"
+                    android:hint="Ciudad"
                     android:layout_marginBottom="14dp"
                     app:boxCornerRadiusTopStart="12dp"
                     app:boxCornerRadiusTopEnd="12dp"
@@ -118,7 +116,7 @@
                         android:textSize="15sp"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Campo: Dirección -->
+                <!-- Dirección -->
                 <com.google.android.material.textfield.TextInputLayout
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
@@ -142,80 +140,9 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- ══════════════════════════════════════════ -->
-        <!-- SECCIÓN 2 — OFICIOS                        -->
-        <!-- ══════════════════════════════════════════ -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="12dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="1dp"
-            app:strokeColor="#E0E0E0"
-            app:cardBackgroundColor="@color/white">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="20dp">
-
-                <!-- Encabezado de sección -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="20dp">
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/icon_prestador_de_servicios"
-                        app:tint="@color/sigti_blue"
-                        android:layout_marginEnd="10dp"/>
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Tus Oficios"
-                        android:textStyle="bold"
-                        android:textSize="16sp"
-                        android:textColor="@color/black"/>
-
-                    <!-- Botón agregar en la misma línea del título -->
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnAddOficio"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="36dp"
-                        android:text="+ Agregar"
-                        android:textColor="@color/sigti_blue"
-                        android:textAllCaps="false"
-                        android:textSize="13sp"
-                        android:paddingHorizontal="12dp"
-                        android:insetTop="0dp"
-                        android:insetBottom="0dp"
-                        app:strokeColor="@color/sigti_blue"
-                        app:cornerRadius="8dp"/>
-                </LinearLayout>
-
-                <!-- Contenedor dinámico de filas de oficio -->
-                <LinearLayout
-                    android:id="@+id/llOficiosContainer"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"/>
-
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- ══════════════════════════════════════════ -->
-        <!-- SECCIÓN 3 — IDENTIFICACIÓN (INE)          -->
-        <!-- ══════════════════════════════════════════ -->
+        <!-- ═══════════════════════════════════ -->
+        <!-- SECCIÓN 2 — IDENTIFICACIÓN (INE)   -->
+        <!-- ═══════════════════════════════════ -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -233,7 +160,7 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
-                <!-- Encabezado de sección -->
+                <!-- Encabezado sección -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -265,7 +192,7 @@
                     android:textSize="13sp"
                     android:layout_marginBottom="16dp"/>
 
-                <!-- Zona de carga de foto -->
+                <!-- Zona de carga -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/btnUploadIne"
                     android:layout_width="match_parent"
@@ -343,11 +270,9 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- ══════════════════════════════════════════ -->
-        <!-- BOTÓN CONTINUAR                           -->
-        <!-- ══════════════════════════════════════════ -->
+        <!-- Botón Continuar -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnContinuarExtra"
+            android:id="@+id/btnContinuarSolicitante"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginHorizontal="16dp"

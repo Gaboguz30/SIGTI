@@ -9,23 +9,27 @@
     android:background="@color/white">
 
     <com.google.android.material.textfield.TextInputLayout
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:id="@+id/tilOficioNombre"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="2"
-        android:hint="Oficio (Ej. Plomero)"
+        android:hint="Oficio"
         android:layout_marginEnd="12dp"
         app:boxCornerRadiusTopStart="12dp"
         app:boxCornerRadiusTopEnd="12dp"
         app:boxCornerRadiusBottomStart="12dp"
         app:boxCornerRadiusBottomEnd="12dp">
 
-        <com.google.android.material.textfield.TextInputEditText
+        <AutoCompleteTextView
             android:id="@+id/etOficioNombre"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textCapSentences"
-            android:textSize="16sp"/>
+            android:inputType="none"
+            android:focusable="false"
+            android:cursorVisible="false"
+            android:textSize="16sp" />
+
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -45,9 +49,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="number"
-            android:textSize="16sp"/>
+            android:maxLength="2"
+            android:textSize="16sp" />
+
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!-- Botón eliminar fila -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnRemoveOficio"
         style="@style/Widget.MaterialComponents.Button.TextButton"
@@ -59,5 +66,6 @@
         app:iconGravity="textStart"
         android:insetTop="0dp"
         android:insetBottom="0dp"
-        android:padding="0dp"/>
+        android:padding="0dp" />
+
 </LinearLayout>
