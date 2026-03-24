@@ -1,60 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="24dp"
-    android:background="@color/white">
+    android:background="@color/white"
+    android:animateLayoutChanges="true">
 
+    <!-- LOGO -->
     <ImageView
         android:id="@+id/ivLogo"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_gravity="end"
+        android:layout_marginBottom="16dp"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/logo_sigti_2"/>
+        android:src="@drawable/logo_sig_principal"
+        android:scaleType="centerInside"/>
 
+    <!-- CONTENIDO -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_gravity="center">
+        android:orientation="vertical">
 
+        <!-- TÍTULO -->
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
             android:textColor="@color/black"
-            android:textSize="28sp"
-            android:textStyle="bold"
+            android:textSize="27sp"
+            android:fontFamily="@font/poppins_bold"
             android:text="¿Cómo deseas usar SIGTI?" />
 
+        <!-- SUBTÍTULO -->
         <TextView
             android:id="@+id/tvSubtitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="6dp"
+            android:textColor="#757575"
+            android:textSize="14sp"
+            android:fontFamily="@font/poppins_regular"
             android:text="(Puedes elegir una o ambas opciones)" />
 
+        <!-- TARJETA 1 -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btnPrestador"
-            style="@style/Widget.Material3.CardView.Elevated"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="48dp"
+            android:layout_marginTop="40dp"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground"
-            android:checkable="true"
-            app:cardBackgroundColor="@color/blue_primary"
-            app:cardCornerRadius="18dp"
-            app:cardElevation="10dp"
-            app:strokeColor="@color/white"
-            app:strokeWidth="0dp">
+            android:stateListAnimator="@animator/card_press"
+
+            app:cardBackgroundColor="#2457C5"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="2dp"
+            app:strokeColor="#E0E0E0"
+            app:strokeWidth="1dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -66,29 +75,21 @@
                     android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:background="@drawable/icon_prestador_de_servicios"
-                    tools:ignore="MissingConstraints" />
-
-                <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    app:layout_constraintBottom_toBottomOf="@id/viewIconBg1"
-                    app:layout_constraintEnd_toEndOf="@id/viewIconBg1"
-                    app:layout_constraintStart_toStartOf="@id/viewIconBg1"
-                    app:layout_constraintTop_toTopOf="@id/viewIconBg1"
-                    app:tint="@color/blue_primary" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
 
                 <TextView
                     android:id="@+id/tvRole1"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:text="Prestador Servicios"
+                    android:text="Prestador de servicios"
                     android:textColor="@color/white"
                     android:textSize="18sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:fontFamily="@font/poppins_bold"
                     app:layout_constraintStart_toEndOf="@id/viewIconBg1"
-                    app:layout_constraintTop_toTopOf="@id/viewIconBg1" />
+                    app:layout_constraintTop_toTopOf="@id/viewIconBg1"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -96,29 +97,30 @@
                     android:text="Ofrezco mis servicios y recibo solicitudes"
                     android:textColor="#E0E0E0"
                     android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
+                    android:fontFamily="@font/poppins_regular"
                     app:layout_constraintStart_toStartOf="@id/tvRole1"
-                    app:layout_constraintTop_toBottomOf="@id/tvRole1" />
+                    app:layout_constraintTop_toBottomOf="@id/tvRole1"
+                    app:layout_constraintEnd_toEndOf="parent"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- TARJETA 2 -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/btnSolicitante"
-            style="@style/Widget.Material3.CardView.Elevated"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground"
-            android:checkable="true"
-            app:cardBackgroundColor="@color/blue_primary"
-            app:cardCornerRadius="18dp"
-            app:cardElevation="10dp"
-            app:strokeColor="@color/white"
-            app:strokeWidth="0dp">
+            android:stateListAnimator="@animator/card_press"
+
+            app:cardBackgroundColor="#2457C5"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="2dp"
+            app:strokeColor="#E0E0E0"
+            app:strokeWidth="1dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -130,29 +132,21 @@
                     android:layout_width="56dp"
                     android:layout_height="56dp"
                     android:background="@drawable/icon_solicitante_servicio"
-                    tools:ignore="MissingConstraints" />
-
-                <ImageView
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    app:layout_constraintBottom_toBottomOf="@id/viewIconBg2"
-                    app:layout_constraintEnd_toEndOf="@id/viewIconBg2"
-                    app:layout_constraintStart_toStartOf="@id/viewIconBg2"
-                    app:layout_constraintTop_toTopOf="@id/viewIconBg2"
-                    app:tint="@color/blue_primary" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"/>
 
                 <TextView
                     android:id="@+id/tvRole2"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:text="Solicitante de Servicios"
+                    android:text="Solicitante de servicios"
                     android:textColor="@color/white"
                     android:textSize="18sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:fontFamily="@font/poppins_bold"
                     app:layout_constraintStart_toEndOf="@id/viewIconBg2"
-                    app:layout_constraintTop_toTopOf="@id/viewIconBg2" />
+                    app:layout_constraintTop_toTopOf="@id/viewIconBg2"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -160,9 +154,10 @@
                     android:text="Busco contratar un oficio"
                     android:textColor="#E0E0E0"
                     android:textSize="14sp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    android:fontFamily="@font/poppins_regular"
                     app:layout_constraintStart_toStartOf="@id/tvRole2"
-                    app:layout_constraintTop_toBottomOf="@id/tvRole2" />
+                    app:layout_constraintTop_toBottomOf="@id/tvRole2"
+                    app:layout_constraintEnd_toEndOf="parent"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </com.google.android.material.card.MaterialCardView>

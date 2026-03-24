@@ -12,79 +12,83 @@
         android:orientation="vertical"
         android:padding="24dp">
 
-        <ImageView
-            android:id="@+id/ivLogo"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_gravity="end"
-            android:contentDescription="@string/app_name"
-            android:src="@drawable/logo_sigti_2"/>
-
+        <!-- TÍTULO -->
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="Comencemos con tu Perfil"
+            android:text="Comencemos con tu perfil"
             android:textAlignment="center"
             android:textSize="26sp"
-            android:textStyle="bold" />
+            android:textColor="@color/black"
+            android:fontFamily="@font/poppins_bold"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"/>
 
+        <!-- NOMBRE -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilNombre"
-            style="@style/SIGTI.TextInput"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:hint="Nombre(s)">
+            android:hint="Nombre(s)"
+            app:boxStrokeColor="@color/sigti_blue">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etNombre"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:fontFamily="@font/poppins_regular"/>
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- APELLIDO PATERNO -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilApellidoPaterno"
-            style="@style/SIGTI.TextInput"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:hint="Apellido paterno">
+            android:hint="Apellido paterno"
+            app:boxStrokeColor="@color/sigti_blue">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etApellidoPaterno"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:fontFamily="@font/poppins_regular"/>
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- APELLIDO MATERNO -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilApellidoMaterno"
-            style="@style/SIGTI.TextInput"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:hint="Apellido materno">
+            android:hint="Apellido materno"
+            app:boxStrokeColor="@color/sigti_blue">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etApellidoMaterno"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName" />
+                android:inputType="textPersonName"
+                android:fontFamily="@font/poppins_regular"/>
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- FECHA -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilFechaNac"
-            style="@style/SIGTI.TextInput"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:hint="Fecha de nacimiento"
-            app:placeholderText="DD/MM/AAAA"
             app:endIconMode="custom"
-            app:endIconDrawable="@drawable/ic_calendar">
+            app:endIconDrawable="@drawable/ic_calendar"
+            app:boxStrokeColor="@color/sigti_blue">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etFechaNac"
@@ -92,34 +96,38 @@
                 android:layout_height="wrap_content"
                 android:focusable="false"
                 android:clickable="true"
-                android:inputType="none" />
+                android:fontFamily="@font/poppins_regular"/>
         </com.google.android.material.textfield.TextInputLayout>
 
+        <!-- EMAIL -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilEmail"
-            style="@style/SIGTI.TextInput"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:hint="Correo electrónico">
+            android:hint="Correo electrónico"
+            app:boxStrokeColor="@color/sigti_blue">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textEmailAddress" />
+                android:inputType="textEmailAddress"
+                android:fontFamily="@font/poppins_regular"/>
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Género -->
+        <!-- GÉNERO -->
         <TextView
             android:id="@+id/tvGenderLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
             android:text="Selecciona tu género"
-            android:textStyle="bold"
             android:textSize="16sp"
-            android:layout_marginBottom="10dp" />
+            android:textColor="@color/black"
+            android:fontFamily="@font/poppins_medium"
+            android:layout_marginTop="18dp"
+            android:layout_marginBottom="10dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -127,70 +135,74 @@
             android:orientation="horizontal"
             android:weightSum="2">
 
+            <!-- HOMBRE -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardMale"
                 android:layout_width="0dp"
                 android:layout_height="100dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
+                android:stateListAnimator="@animator/button_press"
                 app:cardCornerRadius="18dp"
-                app:strokeWidth="2dp"
-                app:strokeColor="@android:color/darker_gray">
+                app:strokeWidth="1dp"
+                app:strokeColor="#E0E0E0"
+                app:cardElevation="2dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:background="@android:color/white"
                     android:gravity="center">
 
                     <ImageView
-                        android:id="@+id/ivMale"
                         android:layout_width="42dp"
                         android:layout_height="42dp"
-                        android:src="@drawable/icon_man" />
+                        android:src="@drawable/icon_man"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Hombre"
-                        android:layout_marginTop="8dp" />
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/poppins_regular"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- MUJER -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardFemale"
                 android:layout_width="0dp"
                 android:layout_height="100dp"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
+                android:stateListAnimator="@animator/button_press"
                 app:cardCornerRadius="18dp"
-                app:strokeWidth="2dp"
-                app:strokeColor="@android:color/darker_gray">
+                app:strokeWidth="1dp"
+                app:strokeColor="#E0E0E0"
+                app:cardElevation="2dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:background="@color/white"
                     android:gravity="center">
 
                     <ImageView
-                        android:id="@+id/ivFemale"
                         android:layout_width="42dp"
                         android:layout_height="42dp"
-                        android:src="@drawable/icon_women" />
+                        android:src="@drawable/icon_women"/>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Mujer"
-                        android:layout_marginTop="8dp" />
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/poppins_regular"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
-        <!-- Error de género -->
+
         <LinearLayout
             android:id="@+id/llGenderError"
             android:layout_width="match_parent"
@@ -216,17 +228,20 @@
                 android:textSize="12sp"/>
         </LinearLayout>
 
+        <!-- BOTÓN -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnContinuar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
+            android:layout_marginTop="24dp"
             android:text="Continuar"
             android:textColor="@color/white"
-            app:cornerRadius="12dp"
-            android:backgroundTint="@color/blue_primary"
-            android:clickable="true"
-            android:focusable="false"
-            android:layout_marginTop="22dp" />
+            android:textSize="16sp"
+            android:textAllCaps="false"
+            android:fontFamily="@font/poppins_medium"
+            android:stateListAnimator="@animator/button_press"
+            app:backgroundTint="@color/sigti_blue"
+            app:cornerRadius="22dp"/>
 
     </LinearLayout>
 </ScrollView>
