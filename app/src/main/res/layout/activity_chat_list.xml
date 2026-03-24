@@ -26,4 +26,14 @@
         app:layout_constraintTop_toBottomOf="@id/tvTitle"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
+    <!-- NAV -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:elevation="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/bottom_nav_menu" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
