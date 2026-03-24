@@ -33,12 +33,10 @@
         app:tabSelectedTextColor="#000000"
         app:tabTextColor="#9E9E9E"
         app:tabRippleColor="@android:color/transparent"
-        app:tabTextAppearance="@style/TextAppearance.MaterialComponents.Caption"
         app:layout_constraintTop_toBottomOf="@id/tvJobsTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <com.google.android.material.tabs.TabItem android:text="Nuevas" />
         <com.google.android.material.tabs.TabItem android:text="En Progreso" />
         <com.google.android.material.tabs.TabItem android:text="Historial" />
     </com.google.android.material.tabs.TabLayout>

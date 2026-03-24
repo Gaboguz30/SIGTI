@@ -2,85 +2,26 @@ package com.auvenix.sigti.ui.home
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.auvenix.sigti.R
 import com.auvenix.sigti.databinding.ActivityUserNotificationsBinding
 import com.auvenix.sigti.ui.chat.ChatListActivity
 import com.auvenix.sigti.ui.profile.ProfileActivity
-import com.auvenix.sigti.utils.Constants
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import java.text.SimpleDateFormat
-import java.util.*
-
-data class AppNotification(
-    val id        : String  = "",
-    val type      : String  = "",
-    val title     : String  = "",
-    val body      : String  = "",
-    val timestamp : Long    = 0L,
-    val read      : Boolean = false
-)
-
-class NotificationsAdapter(
-    private val items: MutableList<AppNotification>,
-    private val onItemClick: (AppNotification) -> Unit
-) : RecyclerView.Adapter<NotificationsAdapter.VH>() {
-
-    inner class VH(view: View) : RecyclerView.ViewHolder(view) {
-        val tvTitle : TextView = view.findViewById(R.id.tvNotifTitle)
-        val tvBody  : TextView = view.findViewById(R.id.tvNotifBody)
-        val tvTime  : TextView = view.findViewById(R.id.tvNotifTime)
-        val tvType  : TextView = view.findViewById(R.id.tvNotifType)
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        val v = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_notification, parent, false)
-        return VH(v)
-    }
-
-    override fun onBindViewHolder(holder: VH, position: Int) {
-        val notif = items[position]
-
-        holder.tvTitle.text = notif.title
-        holder.tvBody.text  = notif.body
-
-        holder.tvType.text = when (notif.type) {
-            Constants.NOTIF_TYPE_CHAT     -> "💬 Mensaje"
-            Constants.NOTIF_TYPE_REQUEST  -> "📋 Solicitud"
-            Constants.NOTIF_TYPE_ALERT    -> "🔔 Alerta"
-            Constants.NOTIF_TYPE_REMINDER -> "📅 Recordatorio"
-            else                          -> "Notificación"
-        }
-
-        holder.tvTime.text = SimpleDateFormat("dd/MM HH:mm", Locale.getDefault())
-            .format(Date(notif.timestamp))
-
-        // Leídas aparecen más opacas
-        holder.itemView.alpha = if (notif.read) 0.55f else 1.0f
-
-        holder.itemView.setOnClickListener { onItemClick(notif) }
-    }
-
-    override fun getItemCount() = items.size
-}
 
 class UserNotificationsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityUserNotificationsBinding
-    private val db   = FirebaseFirestore.getInstance()
+    private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
-    private val notifList = mutableListOf<AppNotification>()
-    private lateinit var adapter: NotificationsAdapter
+    private lateinit var adapter: NotificationAdapter
+    private val notifList = mutableListOf<NotifRequestModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,61 +29,75 @@ class UserNotificationsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupRecyclerView()
-        loadNotifications()
+        escucharNotificaciones()
         setupBottomNav()
     }
 
     private fun setupRecyclerView() {
-        adapter = NotificationsAdapter(notifList) { notif ->
-            markAsRead(notif)
-        }
+        adapter = NotificationAdapter(
+            notifList = notifList,
+            onConfirm = { requestId -> confirmarTrabajo(requestId) },
+            onReject = { requestId, currentStatus -> rechazarODescartar(requestId, currentStatus) }
+        )
+        // 🔥 Asegúrate de que el ID en tu XML sea rvNotifications
         binding.rvNotifications.layoutManager = LinearLayoutManager(this)
         binding.rvNotifications.adapter = adapter
     }
 
-    //  CARGAR NOTIFICACIONES DESDE FIRESTORE
-    //  Ruta: users/{uid}/notifications — ordenadas por fecha desc
-    private fun loadNotifications() {
+    private fun escucharNotificaciones() {
         val uid = auth.currentUser?.uid ?: return
 
-        db.collection(Constants.COLLECTION_USERS)
-            .document(uid)
-            .collection(Constants.COLLECTION_NOTIFICATIONS)   // ← CORREGIDO (URL eliminada)
-            .orderBy("timestamp", Query.Direction.DESCENDING)
-            .limit(50)
+        // Escuchamos las solicitudes donde el cliente soy yo, y están en espera de mi respuesta o fueron rechazadas
+        db.collection("requests")
+            .whereEqualTo("clientId", uid)
+            .whereIn("status", listOf("pending_client_confirmation", "rejected"))
             .addSnapshotListener { snapshot, error ->
-                if (error != null || snapshot == null) return@addSnapshotListener
+                if (error != null) return@addSnapshotListener
 
                 notifList.clear()
-
-                for (doc in snapshot.documents) {
-                    notifList.add(
-                        AppNotification(
-                            id        = doc.id,
-                            type      = doc.getString("type")      ?: "",
-                            title     = doc.getString("title")     ?: "",
-                            body      = doc.getString("body")      ?: "",
-                            timestamp = doc.getLong("timestamp")   ?: 0L,
-                            read      = doc.getBoolean("read")     ?: false
+                if (snapshot != null && !snapshot.isEmpty) {
+                    binding.rvNotifications.visibility = View.VISIBLE
+                    for (doc in snapshot.documents) {
+                        notifList.add(
+                            NotifRequestModel(
+                                id = doc.id,
+                                providerName = doc.getString("providerName") ?: "Prestador",
+                                title = doc.getString("title") ?: "Servicio",
+                                finalPrice = doc.getDouble("finalPrice") ?: 0.0,
+                                status = doc.getString("status") ?: ""
+                            )
                         )
-                    )
+                    }
+                } else {
+                    binding.rvNotifications.visibility = View.GONE
                 }
                 adapter.notifyDataSetChanged()
             }
     }
 
-    //  MARCAR COMO LEÍDA
-    private fun markAsRead(notif: AppNotification) {
-        val uid = auth.currentUser?.uid ?: return
-        db.collection(Constants.COLLECTION_USERS)
-            .document(uid)
-            .collection(Constants.COLLECTION_NOTIFICATIONS)   // ← CORREGIDO (URL eliminada)
-            .document(notif.id)
-            .update("read", true)
+    private fun confirmarTrabajo(requestId: String) {
+        // 🔥 ¡PUM! El trabajo pasa a estar EN PROGRESO
+        db.collection("requests").document(requestId).update("status", "in_progress")
+            .addOnSuccessListener {
+                Toast.makeText(this, "¡Trabajo Confirmado! El prestador ya fue avisado.", Toast.LENGTH_LONG).show()
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Error al confirmar", Toast.LENGTH_SHORT).show()
+            }
     }
 
-    //  BOTTOM NAVIGATION
+    private fun rechazarODescartar(requestId: String, currentStatus: String) {
+        // Si el prestador la había rechazado, simplemente borramos el documento para que ya no estorbe.
+        // Si el cliente no quiso el precio final, también lo borramos o cancelamos.
+        db.collection("requests").document(requestId).delete()
+            .addOnSuccessListener {
+                val msj = if (currentStatus == "rejected") "Aviso descartado" else "Trato rechazado y cancelado"
+                Toast.makeText(this, msj, Toast.LENGTH_SHORT).show()
+            }
+    }
+
     private fun setupBottomNav() {
+        // 🔥 Asegúrate de que tu BottomNavigationView se llame bottomNavigation o ajusta aquí el nombre
         binding.bottomNavigation.selectedItemId = R.id.nav_notifications
 
         binding.bottomNavigation.setOnItemSelectedListener { item ->
@@ -156,7 +111,8 @@ class UserNotificationsActivity : AppCompatActivity() {
                     overridePendingTransition(0, 0); finish(); true
                 }
                 R.id.nav_chat -> {
-                    startActivity(Intent(this, UserChatsActivity::class.java))
+                    // 🔥 Corrección: Te mandamos a ChatListActivity (la que tiene Firebase Realtime)
+                    startActivity(Intent(this, ChatListActivity::class.java))
                     overridePendingTransition(0, 0); finish(); true
                 }
                 R.id.nav_notifications -> true

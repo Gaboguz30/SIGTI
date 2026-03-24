@@ -7,13 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.auvenix.sigti.R
-
-// El modelo de datos
-data class ServiceCatalog(
-    var id: String = "", // ID del documento en Firebase
-    val nombre: String = "",
-    val precio: Double = 0.0
-)
+import java.util.Locale
 
 class CatalogAdapter(
     private val serviceList: List<ServiceCatalog>,
@@ -21,26 +15,42 @@ class CatalogAdapter(
     private val onDelete: (ServiceCatalog) -> Unit
 ) : RecyclerView.Adapter<CatalogAdapter.CatalogViewHolder>() {
 
-    class CatalogViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val tvName: TextView = view.findViewById(R.id.tvItemServiceName)
-        val tvPrice: TextView = view.findViewById(R.id.tvItemServicePrice)
-        val btnEdit: ImageView = view.findViewById(R.id.btnEditService)
-        val btnDelete: ImageView = view.findViewById(R.id.btnDeleteService)
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CatalogViewHolder {
+        // 🔥 CORRECCIÓN: Nombre exacto de tu archivo XML
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_provider_service, parent, false)
         return CatalogViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: CatalogViewHolder, position: Int) {
-        val service = serviceList[position]
-        holder.tvName.text = service.nombre
-        holder.tvPrice.text = "$${service.precio}"
-
-        holder.btnEdit.setOnClickListener { onEdit(service) }
-        holder.btnDelete.setOnClickListener { onDelete(service) }
+        holder.bind(serviceList[position])
     }
 
-    override fun getItemCount() = serviceList.size
+    override fun getItemCount(): Int = serviceList.size
+
+    inner class CatalogViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        // 🔥 CORRECCIÓN: IDs exactos de tu archivo XML
+        private val tvName: TextView = itemView.findViewById(R.id.tvItemServiceName)
+        private val tvDesc: TextView = itemView.findViewById(R.id.tvItemServiceDesc)
+        private val tvPrice: TextView = itemView.findViewById(R.id.tvItemServicePrice)
+        private val btnEdit: ImageView = itemView.findViewById(R.id.btnEditService)
+        private val btnDelete: ImageView = itemView.findViewById(R.id.btnDeleteService)
+
+        fun bind(service: ServiceCatalog) {
+            tvName.text = service.name
+
+            // Si no hay descripción, ocultamos el TextView
+            if (service.description.isEmpty()) {
+                tvDesc.visibility = View.GONE
+            } else {
+                tvDesc.visibility = View.VISIBLE
+                tvDesc.text = service.description
+            }
+
+            // Formato de precio local (ej. $250.00)
+            tvPrice.text = String.format(Locale.getDefault(), "$%.2f", service.price)
+
+            btnEdit.setOnClickListener { onEdit(service) }
+            btnDelete.setOnClickListener { onDelete(service) }
+        }
+    }
 }

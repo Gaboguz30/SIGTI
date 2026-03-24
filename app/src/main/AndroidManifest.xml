@@ -15,63 +15,108 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SIGTI"
         android:usesCleartextTraffic="true">
-
-        <!-- ── LAUNCHER ──────────────────────────────────────── -->
+        <activity
+            android:name=".ui.provider.home.RequestDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.provider.catalog.AddServiceActivity"
+            android:exported="false" /> <!-- ── LAUNCHER ──────────────────────────────────────── -->
         <activity
             android:name=".ui.auth.AuthEntryActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- ── AUTENTICACIÓN ──────────────────────────────────── -->
-        <activity android:name=".ui.auth.LoginActivity"                android:exported="false" />
-        <activity android:name=".ui.auth.ForgotPasswordActivity"       android:exported="false" />
-        <activity android:name=".ui.auth.PasswordActivity"             android:exported="false" />
-        <activity android:name=".ui.auth.VerifyEmailActivity"          android:exported="false" />
-        <activity android:name=".ui.auth.GoogleCompleteProfileActivity" android:exported="false" />
-
-        <!-- ── ROLES / REGISTRO ───────────────────────────────── -->
-        <activity android:name=".ui.role.RoleActivity"                 android:exported="false" />
-        <activity android:name=".ui.register.RegisterGeneralActivity"  android:exported="false" />
-        <activity android:name=".ui.register.PrestadorExtraActivity"   android:exported="false" />
-        <!-- ✅ NUEVO: pantalla extra del flujo de registro del solicitante -->
-        <activity android:name=".ui.register.SolicitanteExtraActivity" android:exported="false" />
-
-        <!-- ── HOME USUARIO ───────────────────────────────────── -->
-        <activity android:name=".ui.home.HomeActivity"                 android:exported="false" />
-        <activity android:name=".ui.home.UserMapActivity"              android:exported="false" />
-        <activity android:name=".ui.home.UserChatsActivity"            android:exported="false" />
-        <activity android:name=".ui.home.UserNotificationsActivity"    android:exported="false" />
-        <activity android:name=".ui.home.UserChatDetailActivity"       android:exported="false" />
-
-        <!-- ── CHAT ───────────────────────────────────────────── -->
-        <activity android:name=".ui.chat.ChatDetailActivity"           android:exported="false" />
-        <activity android:name=".ui.chat.ChatListActivity"             android:exported="false" />
-
-        <!-- ── PERFIL USUARIO ─────────────────────────────────── -->
-        <activity android:name=".ui.profile.ProfileActivity"           android:exported="false" />
-        <activity android:name=".ui.profile.WorkerProfileActivity"     android:exported="false" />
-
-        <!-- ── PROVEEDOR ──────────────────────────────────────── -->
-        <activity android:name=".ui.provider.home.ProviderHomeActivity"        android:exported="false" />
-        <activity android:name=".ui.provider.jobs.ProviderJobsActivity"        android:exported="false" />
-        <activity android:name=".ui.provider.chat.ProviderChatActivity"        android:exported="false" />
-        <activity android:name=".ui.provider.chat.ProviderChatDetailActivity"  android:exported="false" />
-        <activity android:name=".ui.provider.catalog.ProviderCatalogActivity"  android:exported="false" />
-        <activity android:name=".ui.provider.profile.ProviderProfileActivity"  android:exported="false" />
-        <activity android:name=".ui.provider.plans.ProviderPlansActivity"      android:exported="false" />
-
-        <!-- ── SOLICITUDES / SOPORTE ──────────────────────────── -->
-        <activity android:name=".ui.request.NewRequestActivity"        android:exported="false" />
-        <activity android:name=".ui.support.ReportActivity"            android:exported="false" />
-        <activity android:name=".ui.support.ReviewsActivity"           android:exported="false" />
-
-        <!-- ── MAIN (solo arranque) ───────────────────────────── -->
-        <activity android:name=".MainActivity"                         android:exported="false" />
-
+        </activity> <!-- ── AUTENTICACIÓN ──────────────────────────────────── -->
+        <activity
+            android:name=".ui.auth.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.ForgotPasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.PasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.VerifyEmailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.GoogleCompleteProfileActivity"
+            android:exported="false" /> <!-- ── ROLES / REGISTRO ───────────────────────────────── -->
+        <activity
+            android:name=".ui.role.RoleActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.register.RegisterGeneralActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.register.PrestadorExtraActivity"
+            android:exported="false" /> <!-- ✅ NUEVO: pantalla extra del flujo de registro del solicitante -->
+        <activity
+            android:name=".ui.register.SolicitanteExtraActivity"
+            android:exported="false" /> <!-- ── HOME USUARIO ───────────────────────────────────── -->
+        <activity
+            android:name=".ui.home.HomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.home.UserMapActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.home.UserChatsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.home.UserNotificationsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.home.UserChatDetailActivity"
+            android:exported="false" /> <!-- ── CHAT ───────────────────────────────────────────── -->
+        <activity
+            android:name=".ui.chat.ChatDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.chat.ChatListActivity"
+            android:exported="false" /> <!-- ── PERFIL USUARIO ─────────────────────────────────── -->
+        <activity
+            android:name=".ui.profile.ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.profile.WorkerProfileActivity"
+            android:exported="false" /> <!-- ── PROVEEDOR ──────────────────────────────────────── -->
+        <activity
+            android:name=".ui.provider.home.ProviderHomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.provider.jobs.ProviderJobsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.provider.chat.ProviderChatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.provider.chat.ProviderChatDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.provider.catalog.ProviderCatalogActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.provider.profile.ProviderProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.provider.plans.ProviderPlansActivity"
+            android:exported="false" /> <!-- ── SOLICITUDES / SOPORTE ──────────────────────────── -->
+        <activity
+            android:name=".ui.request.NewRequestActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.support.ReportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.support.ReviewsActivity"
+            android:exported="false" /> <!-- ── MAIN (solo arranque) ───────────────────────────── -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

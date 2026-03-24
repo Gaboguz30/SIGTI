@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="#E0E0E0">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvJobClient"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="👤 Cliente: Juan Pérez"
+            android:textColor="#424242"
+            android:textSize="14sp"
+            android:fontFamily="@font/poppins_medium"
+            app:layout_constraintEnd_toStartOf="@id/btnJobChat"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/btnJobChat"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="6dp"
+            android:src="@android:drawable/ic_dialog_email"
+            app:tint="@color/sigti_blue"
+            app:layout_constraintBottom_toBottomOf="@id/tvJobClient"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvJobClient" />
+
+        <View
+            android:id="@+id/vDividerJob1"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="12dp"
+            android:background="#EEEEEE"
+            app:layout_constraintTop_toBottomOf="@id/tvJobClient" />
+
+        <TextView
+            android:id="@+id/tvJobTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="Revisión de corto circuito"
+            android:textColor="#212121"
+            android:textSize="18sp"
+            android:fontFamily="@font/poppins_bold"
+            app:layout_constraintTop_toBottomOf="@id/vDividerJob1" />
+
+        <TextView
+            android:id="@+id/tvJobDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="📅 Fecha: 25/03/2026"
+            android:textColor="#757575"
+            android:textSize="13sp"
+            android:fontFamily="@font/poppins_regular"
+            app:layout_constraintTop_toBottomOf="@id/tvJobTitle" />
+
+        <TextView
+            android:id="@+id/tvJobAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="📍 11 sur 1519, Tehuacán"
+            android:textColor="#757575"
+            android:textSize="13sp"
+            android:fontFamily="@font/poppins_regular"
+            app:layout_constraintTop_toBottomOf="@id/tvJobDate" />
+
+        <View
+            android:id="@+id/vDividerJob2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="12dp"
+            android:background="#EEEEEE"
+            app:layout_constraintTop_toBottomOf="@id/tvJobAddress" />
+
+        <TextView
+            android:id="@+id/tvJobPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="$450.00"
+            android:textColor="@color/sigti_blue"
+            android:textSize="18sp"
+            android:fontFamily="@font/poppins_bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vDividerJob2" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCompleteJob"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/sigti_blue"
+            android:fontFamily="@font/poppins_bold"
+            android:text="Finalizar"
+            android:textColor="@color/white"
+            app:cornerRadius="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vDividerJob2" />
+
+        <TextView
+            android:id="@+id/tvJobWaiting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⏳ En espera de confirmación..."
+            android:textColor="#F57C00"
+            android:textSize="13sp"
+            android:fontFamily="@font/poppins_medium"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/vDividerJob2" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

@@ -9,14 +9,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.auvenix.sigti.R
+import com.google.android.material.bottomnavigation.BottomNavigationView // 🔥 IMPORT NUEVO
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
+import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
+import java.util.*
+
+// 🔥 IMPORTS DE NAVEGACIÓN (Para ambos roles)
 import com.auvenix.sigti.ui.home.HomeActivity
 import com.auvenix.sigti.ui.home.UserMapActivity
 import com.auvenix.sigti.ui.home.UserNotificationsActivity
 import com.auvenix.sigti.ui.profile.ProfileActivity
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
-import java.text.SimpleDateFormat
-import java.util.*
+
+import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
+import com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity
+import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
+import com.auvenix.sigti.ui.provider.catalog.ProviderCatalogActivity
+import com.auvenix.sigti.ui.provider.profile.ProviderProfileActivity
 
 class ChatDetailActivity : AppCompatActivity() {
 
@@ -25,15 +35,17 @@ class ChatDetailActivity : AppCompatActivity() {
     private lateinit var chatRef : DatabaseReference
     private lateinit var conversationsRef: DatabaseReference
     private lateinit var auth    : FirebaseAuth
+    private val db = FirebaseFirestore.getInstance()
 
-    private var serviceId   = ""
+    private var targetUid   = ""
     private var contactName = "Chat"
+    private var myName = "Cargando..."
+    private var myRole = "" // Variable para guardar si soy PRESTADOR o SOLICITANTE
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_detail)
 
-        // Vistas
         val rvChatMessages = findViewById<RecyclerView>(R.id.rvChatMessages)
         val etMessageInput = findViewById<EditText>(R.id.etMessageInput)
         val btnSendMessage = findViewById<ImageView>(R.id.btnSendMessage)
@@ -41,45 +53,60 @@ class ChatDetailActivity : AppCompatActivity() {
         val tvChatSubtitle = findViewById<TextView>(R.id.tvChatSubtitle)
         val btnBack        = findViewById<ImageView>(R.id.btnBackChat)
 
-        // Datos del intent
-        serviceId   = intent.getStringExtra("serviceId")   ?: "default_chat"
+        targetUid   = intent.getStringExtra("serviceId")   ?: "default_chat"
         contactName = intent.getStringExtra("contactName") ?: "Chat"
 
-        // Nombre real
         tvChatTitle.text    = contactName
-        tvChatSubtitle.text = "En línea"     // puedes conectar esto a Firestore si quieres
+        tvChatSubtitle.text = "En línea"
 
-        // Btn regresar
         btnBack.setOnClickListener { finish() }
 
-        // ── RecyclerView ─────────────────────────────────────────
         rvChatMessages.layoutManager = LinearLayoutManager(this).apply {
-            stackFromEnd = true   // los mensajes arrancan desde abajo
+            stackFromEnd = true
         }
         adapter = ChatAdapter(chatMessages)
         rvChatMessages.adapter = adapter
 
-        // ── Firebase ─────────────────────────────────────────────
         auth = FirebaseAuth.getInstance()
-        val uid = auth.currentUser?.uid ?: return
+        val myUid = auth.currentUser?.uid ?: return
+
+        // 🔥 Vamos a Firestore por tu nombre real y tu ROL
+        db.collection("users").document(myUid).get()
+            .addOnSuccessListener { doc ->
+                if (doc.exists()) {
+                    val nombre = doc.getString("nombre") ?: ""
+                    val apellido = doc.getString("apellidoPaterno") ?: ""
+                    myName = "$nombre $apellido".trim()
+
+                    // Guardamos el rol para la barra de navegación
+                    myRole = doc.getString("role") ?: "SOLICITANTE"
+
+                    if (myName.isEmpty()) myName = "Usuario"
+
+                    // Como ya sabemos el rol, configuramos la barra
+                    setupBottomNavigation()
+                } else {
+                    myName = "Usuario"
+                }
+            }
+
+        val roomId = if (myUid < targetUid) "${myUid}_$targetUid" else "${targetUid}_$myUid"
 
         chatRef = FirebaseDatabase.getInstance()
             .getReference("chats")
-            .child(serviceId)
+            .child(roomId)
             .child("messages")
 
         conversationsRef = FirebaseDatabase.getInstance()
             .getReference("conversations")
 
-        // ── Escuchar mensajes en tiempo real ─────────────────────
         chatRef.addChildEventListener(object : ChildEventListener {
-
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                 val message   = snapshot.child("message").getValue(String::class.java)    ?: return
                 val sender    = snapshot.child("sender_uid").getValue(String::class.java) ?: ""
                 val timestamp = snapshot.child("timestamp").getValue(Long::class.java)
 
-                val isMine = sender == uid
+                val isMine = sender == myUid
                 val time   = timestamp?.let {
                     SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(it))
                 } ?: ""
@@ -88,70 +115,83 @@ class ChatDetailActivity : AppCompatActivity() {
                 adapter.notifyItemInserted(chatMessages.size - 1)
                 rvChatMessages.scrollToPosition(chatMessages.size - 1)
             }
-
             override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
             override fun onChildRemoved(snapshot: DataSnapshot) {}
             override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
             override fun onCancelled(error: DatabaseError) {}
         })
 
-        // Enviar mensaje
         btnSendMessage.setOnClickListener {
             val texto = etMessageInput.text.toString().trim()
             if (texto.isEmpty()) return@setOnClickListener
 
             val timestamp = System.currentTimeMillis()
 
-            // Guardar mensaje en Realtime Database
             chatRef.push().setValue(
                 hashMapOf(
                     "message"    to texto,
-                    "sender_uid" to uid,
+                    "sender_uid" to myUid,
                     "timestamp"  to timestamp
                 )
             )
 
-            // Actualizar vista previa en la lista de chats (para ambos usuarios)
-            val preview = hashMapOf<String, Any>(
+            val previewForMe = hashMapOf<String, Any>(
                 "lastMessage" to texto,
                 "timestamp"   to timestamp,
-                "serviceId"   to serviceId,
+                "serviceId"   to targetUid,
                 "withName"    to contactName
             )
-            conversationsRef.child(uid).child(serviceId).setValue(preview)
+            conversationsRef.child(myUid).child(targetUid).setValue(previewForMe)
+
+            val previewForThem = hashMapOf<String, Any>(
+                "lastMessage" to texto,
+                "timestamp"   to timestamp,
+                "serviceId"   to myUid,
+                "withName"    to myName
+            )
+            conversationsRef.child(targetUid).child(myUid).setValue(previewForThem)
 
             etMessageInput.setText("")
         }
+    }
 
-        // ==========================================
-        // CONFIGURACIÓN DE LA BARRA DE NAVEGACIÓN
-        // ==========================================
-        val bottomNavigation = findViewById<com.google.android.material.bottomnavigation.BottomNavigationView>(R.id.bottomNavigationChat)
+    // ==========================================
+    // MAGIA NUEVA: Barra de Navegación Inteligente
+    // ==========================================
+    private fun setupBottomNavigation() {
+        val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigationChat)
 
-        // Marcar el ícono de Chat como seleccionado
-        bottomNavigation?.selectedItemId = R.id.nav_chat
+        // Dependiendo de mi rol, inflo el menú correcto en la barra de abajo
+        if (myRole == "PRESTADOR") {
+            bottomNavigation.menu.clear()
+            bottomNavigation.inflateMenu(R.menu.provider_bottom_nav_menu)
+            bottomNavigation.selectedItemId = R.id.nav_provider_chat
 
-        // Conectar los botones a sus pantallas
-        bottomNavigation?.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_home -> {
-                    startActivity(Intent(this, HomeActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
+            bottomNavigation.setOnItemSelectedListener { item ->
+                when (item.itemId) {
+                    R.id.nav_provider_home -> { startActivity(Intent(this, ProviderHomeActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    R.id.nav_provider_jobs -> { startActivity(Intent(this, ProviderJobsActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    R.id.nav_provider_chat -> true // Ya estamos aquí
+                    R.id.nav_provider_catalog -> { startActivity(Intent(this, ProviderCatalogActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    R.id.nav_provider_profile -> { startActivity(Intent(this, ProviderProfileActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    else -> false
                 }
-                R.id.nav_map -> {
-                    startActivity(Intent(this, UserMapActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
+            }
+        } else {
+            // Si soy Solicitante (o no encontró el rol)
+            bottomNavigation.menu.clear()
+            bottomNavigation.inflateMenu(R.menu.bottom_nav_menu)
+            bottomNavigation.selectedItemId = R.id.nav_chat
+
+            bottomNavigation.setOnItemSelectedListener { item ->
+                when (item.itemId) {
+                    R.id.nav_home -> { startActivity(Intent(this, HomeActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    R.id.nav_map -> { startActivity(Intent(this, UserMapActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    R.id.nav_chat -> true // Ya estamos aquí
+                    R.id.nav_notifications -> { startActivity(Intent(this, UserNotificationsActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    R.id.nav_profile -> { startActivity(Intent(this, ProfileActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    else -> false
                 }
-                R.id.nav_chat -> true // Ya estamos aquí
-                R.id.nav_notifications -> {
-                    startActivity(Intent(this, UserNotificationsActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
-                }
-                R.id.nav_profile -> {
-                    startActivity(Intent(this, ProfileActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
-                }
-                else -> false
             }
         }
     }

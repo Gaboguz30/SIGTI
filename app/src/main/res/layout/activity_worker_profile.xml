@@ -181,7 +181,16 @@
                 app:layout_constraintStart_toEndOf="@+id/btnRequest"
                 app:layout_constraintTop_toTopOf="@+id/btnRequest" />
 
-
+            <TextView
+                android:id="@+id/tvEmptyServicesPerfil"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Este prestador aún no ha publicado servicios."
+                android:textAlignment="center"
+                android:textColor="#9E9E9E"
+                android:textSize="14sp"
+                android:layout_marginTop="24dp"
+                android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvServices"
