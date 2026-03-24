@@ -4,66 +4,81 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA"
+    android:background="@color/white"
     android:padding="24dp">
 
+    <!-- ICONO -->
     <ImageView
         android:id="@+id/ivEmailIcon"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
         android:layout_marginTop="60dp"
         android:src="@android:drawable/ic_dialog_email"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:tint="@color/sigti_blue"
+        android:contentDescription="Correo"
+        android:animation="@anim/scale_pulse"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="#1976D2" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- TÍTULO -->
     <TextView
         android:id="@+id/tvVerifyTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="20dp"
         android:text="Revisa tu correo"
         android:textColor="@color/black"
         android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:fontFamily="@font/poppins_bold"
+        app:layout_constraintTop_toBottomOf="@id/ivEmailIcon"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivEmailIcon" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- MENSAJE -->
     <TextView
         android:id="@+id/tvVerifyMessage"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Te hemos enviado un enlace de confirmación. Por favor, dale clic para activar tu cuenta (revisa tu carpeta de Spam por si acaso)."
+        android:layout_marginTop="14dp"
+        android:text="Te hemos enviado un enlace de confirmación. Por favor, da clic para activar tu cuenta (revisa tu carpeta de spam si es necesario)."
         android:textAlignment="center"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="#757575"
+        android:textSize="15sp"
+        android:fontFamily="@font/poppins_regular"
+        app:layout_constraintTop_toBottomOf="@id/tvVerifyTitle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvVerifyTitle" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- BOTÓN -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnCheckVerification"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="56dp"
-        android:backgroundTint="@color/sigti_blue"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="36dp"
         android:text="Ya verifiqué mi cuenta"
         android:textSize="16sp"
-        app:cornerRadius="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/tvVerifyMessage" />
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:fontFamily="@font/poppins_medium"
+        app:backgroundTint="@color/sigti_blue"
+        app:cornerRadius="22dp"
+        app:layout_constraintTop_toBottomOf="@id/tvVerifyMessage"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- REENVIAR -->
     <TextView
         android:id="@+id/btnResendEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="18dp"
+        android:layout_marginTop="16dp"
         android:text="¿No te llegó? Reenviar correo"
-        android:textColor="#1976D2"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:textColor="@color/sigti_blue"
+        android:textSize="14sp"
+        android:fontFamily="@font/poppins_medium"
+        app:layout_constraintTop_toBottomOf="@id/btnCheckVerification"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnCheckVerification" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

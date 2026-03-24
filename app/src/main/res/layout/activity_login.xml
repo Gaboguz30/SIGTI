@@ -16,7 +16,8 @@
             android:id="@+id/ivLogo"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:layout_gravity="end"
+            android:layout_gravity="end
+"
             android:contentDescription="Logo SIGTI"
             android:src="@drawable/logo_sigti_2"
             android:layout_marginBottom="24dp"/>
@@ -41,13 +42,17 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilEmail"
-            style="@style/SIGTI.TextInput"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Correo Electrónico"
             android:layout_marginBottom="16dp"
             app:startIconDrawable="@android:drawable/ic_dialog_email"
-            app:startIconTint="@color/sigti_blue">
+            app:startIconTint="@color/sigti_blue"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etEmail"
@@ -60,13 +65,17 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilPassword"
-            style="@style/SIGTI.TextInput"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Contraseña"
             app:startIconDrawable="@android:drawable/ic_lock_lock"
             app:startIconTint="@color/sigti_blue"
-            app:endIconMode="password_toggle">
+            app:endIconMode="password_toggle"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp">
 
             <CheckBox
                 android:id="@+id/cbRememberMe"

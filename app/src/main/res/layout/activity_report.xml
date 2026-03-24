@@ -17,10 +17,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="24dp">
 
             <!-- HEADER -->
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -32,26 +31,28 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:src="@android:drawable/ic_menu_revert"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="4dp"
                     app:tint="@color/black" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Reporte"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
+                    android:textSize="22sp"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/poppins_bold"
                     android:layout_marginStart="12dp"/>
             </LinearLayout>
 
-
             <!-- ALERTA 911 -->
-
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="24dp"
-                app:cardCornerRadius="12dp"
-                app:strokeColor="#D32F2F"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:strokeColor="#FFCDD2"
                 app:strokeWidth="1dp"
                 app:cardBackgroundColor="#FFEBEE">
 
@@ -65,98 +66,126 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Si estás en peligro inmediato"
-                        android:textColor="#D32F2F"
-                        android:textStyle="bold"/>
+                        android:textColor="#C62828"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/poppins_medium"/>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnCall911"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="48dp"
                         android:text="Llamar al 911"
-                        android:layout_marginTop="10dp"
-                        android:backgroundTint="#D32F2F"
-                        android:textColor="@android:color/white"/>
+                        android:layout_marginTop="12dp"
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
+                        app:cornerRadius="12dp"
+                        android:backgroundTint="#D32F2F"/>
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
-
-            <!-- INCIDENTE -->
-
+            <!-- TIPO INCIDENTE -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tipo de incidente"
-                android:textStyle="bold"
+                android:textSize="15sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppins_medium"
                 android:layout_marginTop="24dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/inputIncidentType"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Ej. Fraude, mal servicio"/>
+                    android:hint="Ej. Fraude, mal servicio"
+                    android:fontFamily="@font/poppins_regular"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-
-            <!-- SERVICIO -->
-
+            <!-- ID SERVICIO -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="ID del servicio"
-                android:textStyle="bold"
+                android:textSize="15sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppins_medium"
                 android:layout_marginTop="16dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/inputRequestId"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Ej. SERV-001"/>
+                    android:hint="Ej. SERV-001"
+                    android:fontFamily="@font/poppins_regular"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-
             <!-- FECHA -->
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Fecha"
-                android:textStyle="bold"
+                android:textSize="15sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppins_medium"
                 android:layout_marginTop="16dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:endIconMode="custom"
+                app:endIconDrawable="@android:drawable/ic_menu_my_calendar"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/inputDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Seleccionar fecha"
-                    android:focusable="false"/>
+                    android:focusable="false"
+                    android:fontFamily="@font/poppins_regular"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-
-            <!-- DESCRIPCION -->
-
+            <!-- DESCRIPCIÓN -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Descripción"
-                android:textStyle="bold"
+                android:textSize="15sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppins_medium"
                 android:layout_marginTop="16dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/inputDescription"
@@ -164,46 +193,49 @@
                     android:layout_height="wrap_content"
                     android:minLines="4"
                     android:gravity="top"
-                    android:hint="Describe lo sucedido"/>
+                    android:hint="Describe lo sucedido"
+                    android:fontFamily="@font/poppins_regular"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-
             <!-- EVIDENCIA -->
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Adjuntar evidencia"
-                android:textStyle="bold"
+                android:textSize="15sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppins_medium"
                 android:layout_marginTop="16dp"/>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAddEvidence"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:text="Seleccionar archivo"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_marginTop="8dp"/>
+                android:textAllCaps="false"
+                android:layout_marginTop="8dp"
+                app:cornerRadius="12dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
 
-
-            <!-- ENVIAR -->
-
+            <!-- BOTÓN FINAL -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSubmitReport"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:text="Enviar reporte"
                 android:layout_marginTop="32dp"
-                android:backgroundTint="@color/sigti_blue"
-                android:textColor="@android:color/white"/>
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:fontFamily="@font/poppins_medium"
+                android:textColor="@android:color/white"
+                app:cornerRadius="20dp"
+                android:backgroundTint="@color/sigti_blue"/>
 
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
 
-
     <!-- BOTTOM NAV -->
-
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationReport"
         android:layout_width="match_parent"
