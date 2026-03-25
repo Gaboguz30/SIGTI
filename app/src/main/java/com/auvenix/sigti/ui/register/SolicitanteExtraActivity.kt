@@ -1,9 +1,10 @@
 package com.auvenix.sigti.ui.register
 
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.text.InputFilter
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,32 +14,22 @@ import androidx.core.view.WindowInsetsCompat
 import com.auvenix.sigti.databinding.ActivitySolicitanteExtraBinding
 import com.auvenix.sigti.ui.auth.PasswordActivity
 import com.auvenix.sigti.utils.Validators
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.face.FaceDetection
+import com.google.mlkit.vision.face.FaceDetectorOptions
 
 class SolicitanteExtraActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySolicitanteExtraBinding
 
-    /** URI de la imagen INE seleccionada (null = no seleccionada aún) */
-    private var ineUri: Uri? = null
+    private var rostroUri: Uri? = null
+    private var rostroValidado = false
 
     private val galleryLauncher = registerForActivityResult(
         ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
-        if (uri == null) {
-            // El usuario canceló el selector
-            return@registerForActivityResult
-        }
-        val validationError = validateIneImage(uri)
-        if (validationError != null) {
-            binding.tvIneStatus.text = "✗  $validationError"
-            binding.tvIneStatus.setTextColor(android.graphics.Color.parseColor("#C62828"))
-            ineUri = null
-        } else {
-            ineUri = uri
-            val fileName = uri.lastPathSegment?.substringAfterLast('/') ?: "INE_Frontal"
-            binding.tvIneStatus.text = "✓  $fileName cargada con éxito"
-            binding.tvIneStatus.setTextColor(android.graphics.Color.parseColor("#2E7D32"))
-        }
+        if (uri == null) return@registerForActivityResult
+        validarFotoDeRostro(uri)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,98 +44,153 @@ class SolicitanteExtraActivity : AppCompatActivity() {
             insets
         }
 
-        // ── Zona de carga del INE ─────────────────────────────────────────────
-        binding.btnUploadIne.setOnClickListener {
+        setupFixedCity()
+        setupLocalidadDropdown()
+        setupCodigoPostalDropdown()
+
+        binding.btnUploadRostro.setOnClickListener {
             galleryLauncher.launch("image/*")
         }
 
-        // ── Botón Continuar ───────────────────────────────────────────────────
         binding.btnContinuarSolicitante.setOnClickListener {
             procesarYContinuar()
         }
     }
 
-    // ── Validación de imagen INE ──────────────────────────────────────────────
-    private fun validateIneImage(uri: Uri): String? {
-        return try {
-            // 1. Tamaño del archivo (mínimo 20 KB)
-            val fileSizeBytes = contentResolver.openFileDescriptor(uri, "r")?.use {
-                it.statSize
-            } ?: 0L
-            if (fileSizeBytes < 20_000L) {
-                return "La imagen es demasiado pequeña o puede estar vacía"
-            }
+    private fun setupFixedCity() {
+        binding.etCiudad.setText("Tehuacán")
+        binding.etCiudad.isEnabled = false
+        binding.etCiudad.isFocusable = false
+        binding.etCiudad.isClickable = false
+    }
 
-            // 2. Decodificar solo dimensiones (sin cargar el bitmap completo)
-            val opts = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-            contentResolver.openInputStream(uri)?.use { stream ->
-                BitmapFactory.decodeStream(stream, null, opts)
-            }
-
-            val w = opts.outWidth
-            val h = opts.outHeight
-
-            // 3. Verifica que el archivo sea una imagen reconocida
-            if (w <= 0 || h <= 0) {
-                return "No se pudo leer la imagen. Intenta con otro archivo."
-            }
-
-            // 4. Resolución mínima
-            if (w < 300 || h < 190) {
-                return "La imagen es demasiado pequeña. Sube una foto nítida del INE."
-            }
-
-            // 5. Relación de aspecto (horizontal o vertical)
-            val ratio = w.toFloat() / h.toFloat()
-            val isHorizontal = ratio in 1.3f..1.9f   // tarjeta apaisada
-            val isVertical   = ratio in 0.52f..0.77f // tarjeta de pie
-            if (!isHorizontal && !isVertical) {
-                return "La foto no parece ser una identificación. " +
-                        "Asegúrate de fotografiar el INE completo."
-            }
-
-            null  // ✅ Todo correcto
-        } catch (e: Exception) {
-            "No se pudo validar la imagen: ${e.localizedMessage}"
+    private fun setupLocalidadDropdown() {
+        val localidadAdapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_list_item_1,
+            Validators.localidadesTehuacan
+        )
+        binding.actvLocalidad.setAdapter(localidadAdapter)
+        binding.actvLocalidad.setOnClickListener { binding.actvLocalidad.showDropDown() }
+        binding.actvLocalidad.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) binding.actvLocalidad.showDropDown()
+        }
+        binding.actvLocalidad.setOnItemClickListener { _, _, _, _ ->
+            binding.tilLocalidad.error = null
         }
     }
 
-    // ── Procesado y navegación ────────────────────────────────────────────────
+    private fun setupCodigoPostalDropdown() {
+        val postalAdapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_list_item_1,
+            Validators.postalCodeDropdownOptions
+        )
+
+        binding.actvCodigoPostal.setAdapter(postalAdapter)
+        binding.actvCodigoPostal.filters = arrayOf(InputFilter.LengthFilter(5))
+        binding.actvCodigoPostal.setOnClickListener { binding.actvCodigoPostal.showDropDown() }
+        binding.actvCodigoPostal.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) binding.actvCodigoPostal.showDropDown()
+        }
+        binding.actvCodigoPostal.setOnItemClickListener { _, _, position, _ ->
+            val option = Validators.postalCodeDropdownOptions[position]
+            val cp = Validators.extractPostalCodeFromOption(option)
+            if (cp.isBlank()) {
+                binding.actvCodigoPostal.setText("")
+            } else {
+                binding.actvCodigoPostal.setText(cp, false)
+                binding.actvCodigoPostal.setSelection(cp.length)
+                binding.tilCodigoPostal.error = null
+            }
+        }
+    }
+
+    private fun validarFotoDeRostro(uri: Uri) {
+        binding.tvRostroStatus.text = "Validando foto..."
+        binding.tvRostroStatus.setTextColor(android.graphics.Color.parseColor("#757575"))
+        rostroValidado = false
+        rostroUri = null
+
+        val image = try {
+            InputImage.fromFilePath(this, uri)
+        } catch (e: Exception) {
+            binding.tvRostroStatus.text = "✗ No se pudo leer la imagen seleccionada"
+            binding.tvRostroStatus.setTextColor(android.graphics.Color.parseColor("#C62828"))
+            return
+        }
+
+        val options = FaceDetectorOptions.Builder()
+            .setPerformanceMode(FaceDetectorOptions.PERFORMANCE_MODE_ACCURATE)
+            .build()
+
+        val detector = FaceDetection.getClient(options)
+
+        detector.process(image)
+            .addOnSuccessListener { faces ->
+                if (faces.isNotEmpty()) {
+                    rostroUri = uri
+                    rostroValidado = true
+                    val fileName = uri.lastPathSegment?.substringAfterLast('/') ?: "foto_rostro"
+                    binding.tvRostroStatus.text = "✓ $fileName validada correctamente"
+                    binding.tvRostroStatus.setTextColor(android.graphics.Color.parseColor("#2E7D32"))
+                } else {
+                    rostroUri = null
+                    rostroValidado = false
+                    binding.tvRostroStatus.text = "✗ No se detectó un rostro humano en la imagen"
+                    binding.tvRostroStatus.setTextColor(android.graphics.Color.parseColor("#C62828"))
+                }
+                detector.close()
+            }
+            .addOnFailureListener { e ->
+                rostroUri = null
+                rostroValidado = false
+                binding.tvRostroStatus.text = "✗ Error al validar la foto: ${e.localizedMessage}"
+                binding.tvRostroStatus.setTextColor(android.graphics.Color.parseColor("#C62828"))
+                detector.close()
+            }
+    }
+
     private fun procesarYContinuar() {
         var hayError = false
 
-        // Validar ciudad
-        val ciudad = binding.etCiudad.text.toString().trim()
-        if (ciudad.isEmpty()) {
-            binding.etCiudad.error = "Campo obligatorio"
+        val ciudad = "Tehuacán"
+        val localidad = binding.actvLocalidad.text?.toString()?.trim().orEmpty()
+        val codigoPostal = binding.actvCodigoPostal.text?.toString()?.trim().orEmpty()
+
+        val localidadResult = Validators.validateLocality(localidad)
+        if (localidadResult != Validators.LocalityResult.Ok) {
+            binding.tilLocalidad.error = localidadResult.message()
             hayError = true
         } else {
-            binding.etCiudad.error = null
+            binding.tilLocalidad.error = null
         }
 
-        val direccion = binding.etDireccion.text.toString().trim()
-        val addressResult = Validators.validateAddress(direccion)
-        if (addressResult != Validators.AddressResult.Ok) {
-            binding.etDireccion.error = addressResult.message()
+        val cpResult = Validators.validatePostalCode(codigoPostal)
+        if (cpResult != Validators.PostalCodeResult.Ok) {
+            binding.tilCodigoPostal.error = cpResult.message()
             hayError = true
         } else {
-            binding.etDireccion.error = null
+            binding.tilCodigoPostal.error = null
         }
 
         if (hayError) return
 
-        // Validar INE cargado
-        if (ineUri == null) {
-            Toast.makeText(this, "Por favor sube una foto de tu INE", Toast.LENGTH_SHORT).show()
+        if (rostroUri == null || !rostroValidado) {
+            Toast.makeText(
+                this,
+                "Debes subir una foto de rostro válida para continuar",
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
-        // Todo correcto → continuar a contraseña
         startActivity(Intent(this, PasswordActivity::class.java).apply {
-            putExtras(intent)                              // datos de RegisterGeneralActivity
-            putExtra("extra_ciudad",    ciudad)
-            putExtra("extra_direccion", direccion)
-            putExtra("extra_ine_uri",   ineUri.toString()) // URI de la imagen INE
+            putExtras(intent)
+            putExtra("extra_ciudad", ciudad)
+            putExtra("extra_localidad", localidad)
+            putExtra("extra_codigo_postal", codigoPostal)
+            putExtra("extra_foto_rostro_uri", rostroUri.toString())
         })
     }
 }
