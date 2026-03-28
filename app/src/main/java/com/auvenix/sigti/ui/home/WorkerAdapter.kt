@@ -25,9 +25,7 @@ class WorkerAdapter(
 
     class WorkerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvName: TextView = itemView.findViewById(R.id.tvWorkerName)
-        val tvProfession: TextView = itemView.findViewById(R.id.tvWorkerProfession)
         val tvRating: TextView = itemView.findViewById(R.id.tvWorkerRating)
-        val tvPrice: TextView = itemView.findViewById(R.id.tvWorkerPrice)
         val tvDistance: TextView = itemView.findViewById(R.id.tvWorkerDistance)
         val btnViewProfile: MaterialButton = itemView.findViewById(R.id.btnViewProfile)
     }
@@ -43,9 +41,7 @@ class WorkerAdapter(
         val worker = workerList[position]
 
         holder.tvName.text = worker.name
-        holder.tvProfession.text = worker.profession
         holder.tvRating.text = "★ ${worker.rating}"
-        holder.tvPrice.text = "$${worker.price}/hora"
         holder.tvDistance.text = worker.distance
 
         holder.btnViewProfile.setOnClickListener {

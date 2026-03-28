@@ -46,14 +46,6 @@
                 android:textStyle="bold"
                 android:textColor="@color/black"/>
 
-            <TextView
-                android:id="@+id/tvWorkerProfession"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Especialidad"
-                android:textSize="14sp"
-                android:textColor="#757575"
-                android:layout_marginTop="2dp"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -97,14 +89,6 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"/>
 
-                <TextView
-                    android:id="@+id/tvWorkerPrice"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="$250/hr"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/sigti_blue"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
