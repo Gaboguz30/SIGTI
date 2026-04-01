@@ -6,14 +6,16 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import com.auvenix.sigti.databinding.ActivityPasswordBinding
+import com.auvenix.sigti.ui.register.RegisterGeneralActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 
 class PasswordActivity : AppCompatActivity() {
 
-    private lateinit var binding : ActivityPasswordBinding
-    private lateinit var auth    : FirebaseAuth
-    private lateinit var db      : FirebaseFirestore
+    private lateinit var binding: ActivityPasswordBinding
+    private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,66 +23,104 @@ class PasswordActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         auth = FirebaseAuth.getInstance()
-        db   = FirebaseFirestore.getInstance()
+        db = FirebaseFirestore.getInstance()
 
-        val role  = intent.getStringExtra(EXTRA_ROLE).orEmpty()
+        val isGoogleUser = intent.getBooleanExtra(RegisterGeneralActivity.EXTRA_IS_GOOGLE, false)
+        if (isGoogleUser) {
+            startActivity(Intent(this, GoogleCompleteProfileActivity::class.java).apply {
+                putExtras(intent)
+            })
+            finish()
+            return
+        }
+
+        val role = intent.getStringExtra(EXTRA_ROLE).orEmpty()
         val email = intent.getStringExtra(EXTRA_EMAIL).orEmpty()
+
+        if (role.isBlank() || email.isBlank()) {
+            Toast.makeText(this, "Faltan datos del registro", Toast.LENGTH_LONG).show()
+            finish()
+            return
+        }
 
         setupRealtimeValidation()
 
         binding.btnContinuar.setOnClickListener {
             if (!validatePasswords(showErrors = true)) return@setOnClickListener
+
             val pass = binding.etPassword.text.toString()
             binding.btnContinuar.isEnabled = false
+
             auth.createUserWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        val uid = auth.currentUser?.uid
-                        if (uid != null) guardarExpedienteEnBD(uid, role, email)
-                        else {
-                            binding.btnContinuar.isEnabled = true
-                            Toast.makeText(this, "Error: No se pudo obtener el UID", Toast.LENGTH_LONG).show()
-                        }
-                    } else {
+                    if (!task.isSuccessful) {
                         binding.btnContinuar.isEnabled = true
-                        Toast.makeText(this, "Error: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                        Toast.makeText(
+                            this,
+                            "Error: ${task.exception?.message ?: "No se pudo crear la cuenta"}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                        return@addOnCompleteListener
                     }
+
+                    val uid = auth.currentUser?.uid
+                    if (uid.isNullOrBlank()) {
+                        binding.btnContinuar.isEnabled = true
+                        Toast.makeText(this, "Error: No se pudo obtener el UID", Toast.LENGTH_LONG).show()
+                        return@addOnCompleteListener
+                    }
+
+                    guardarExpedienteEnBD(uid, role, email)
                 }
         }
     }
 
     private fun guardarExpedienteEnBD(uid: String, role: String, email: String) {
         val listaOficiosCruda = intent.getStringArrayListExtra("extra_oficios") ?: arrayListOf()
-        val oficiosProcesados = listaOficiosCruda.map { s ->
-            val p = s.split("|")
-            mapOf("nombre" to (p.getOrNull(0) ?: ""), "anios_experiencia" to (p.getOrNull(1)?.toIntOrNull() ?: 0))
+        val oficiosProcesados = listaOficiosCruda.map { item ->
+            val parts = item.split("|")
+            mapOf(
+                "nombre" to (parts.getOrNull(0) ?: ""),
+                "anios_experiencia" to (parts.getOrNull(1)?.toIntOrNull() ?: 0)
+            )
         }
 
         val expediente = hashMapOf(
-            "uid"                     to uid,
-            "role"                    to role,
-            "email"                   to email,
-            "nombre"                  to intent.getStringExtra(EXTRA_NOMBRE).orEmpty(),
-            "apPaterno"               to intent.getStringExtra(EXTRA_AP_PATERNO).orEmpty(),
-            "apMaterno"               to intent.getStringExtra(EXTRA_AP_MATERNO).orEmpty(),
-            "fechaNac"                to intent.getStringExtra(EXTRA_FECHA_NAC).orEmpty(),
-            "genero"                  to intent.getStringExtra(EXTRA_GENERO).orEmpty(),
-            // ✅ FIX 1: ciudad y dirección guardadas para AMBOS roles
-            "ciudad"                  to intent.getStringExtra("extra_ciudad").orEmpty(),
-            "direccion"               to intent.getStringExtra("extra_direccion").orEmpty(),
-            "oficios"                 to oficiosProcesados,
-            "plan_actual"             to "FREE",
+            "uid" to uid,
+            "role" to role,
+            "rol" to role,
+            "email" to email,
+            "nombre" to intent.getStringExtra(EXTRA_NOMBRE).orEmpty(),
+            "apPaterno" to intent.getStringExtra(EXTRA_AP_PATERNO).orEmpty(),
+            "apMaterno" to intent.getStringExtra(EXTRA_AP_MATERNO).orEmpty(),
+            "fechaNac" to intent.getStringExtra(EXTRA_FECHA_NAC).orEmpty(),
+            "genero" to intent.getStringExtra(EXTRA_GENERO).orEmpty(),
+            "ciudad" to intent.getStringExtra("extra_ciudad").orEmpty(),
+            "localidad" to intent.getStringExtra("extra_localidad").orEmpty(),
+            "codigoPostal" to intent.getStringExtra("extra_codigo_postal").orEmpty(),
+            "fotoFrontalUri" to intent.getStringExtra("extra_foto_frontal_uri").orEmpty(),
+            "oficios" to oficiosProcesados,
+            "plan_actual" to "FREE",
             "trabajos_realizados_mes" to 0,
-            "online"                  to false,
-            "notificaciones"          to true,
-            "fechaRegistro"           to com.google.firebase.firestore.FieldValue.serverTimestamp()
+            "online" to false,
+            "notificaciones" to true,
+            "metodoRegistro" to "EMAIL",
+            "fechaRegistro" to FieldValue.serverTimestamp()
         )
 
-        db.collection("users").document(uid).set(expediente)
-            .addOnSuccessListener { enviarCorreoDeVerificacion(role, email) }
+        db.collection("users")
+            .document(uid)
+            .set(expediente)
+            .addOnSuccessListener {
+                enviarCorreoDeVerificacion(role, email)
+            }
             .addOnFailureListener { e ->
                 binding.btnContinuar.isEnabled = true
-                Toast.makeText(this, "Error al guardar perfil: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    "Error al guardar perfil: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
             }
     }
 
@@ -88,14 +128,18 @@ class PasswordActivity : AppCompatActivity() {
         auth.currentUser?.sendEmailVerification()?.addOnCompleteListener { emailTask ->
             if (emailTask.isSuccessful) {
                 startActivity(Intent(this, VerifyEmailActivity::class.java).apply {
-                    putExtra(EXTRA_ROLE,    role)
-                    putExtra(EXTRA_EMAIL,   email)
+                    putExtra(EXTRA_ROLE, role)
+                    putExtra(EXTRA_EMAIL, email)
                     putExtra(EXTRA_RECORDAR, binding.cbRecuerdame.isChecked)
                 })
                 finish()
             } else {
                 binding.btnContinuar.isEnabled = true
-                Toast.makeText(this, "Cuenta creada, pero falló el envío del correo", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Cuenta creada, pero falló el envío del correo",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -105,6 +149,7 @@ class PasswordActivity : AppCompatActivity() {
             binding.tilPassword.error = null
             binding.tvPasswordHint.visibility = android.view.View.GONE
         }
+
         binding.etConfirmPassword.doAfterTextChanged {
             binding.tilConfirmPassword.error = null
             binding.tvPasswordHint.visibility = android.view.View.GONE
@@ -113,10 +158,19 @@ class PasswordActivity : AppCompatActivity() {
 
     private fun validatePasswords(showErrors: Boolean): Boolean {
         var ok = true
-        val pass  = binding.etPassword.text?.toString().orEmpty()
+        val pass = binding.etPassword.text?.toString().orEmpty()
         val pass2 = binding.etConfirmPassword.text?.toString().orEmpty()
-        if (pass.isBlank())  { ok = false; if (showErrors) binding.tilPassword.error = "Obligatorio" }
-        if (pass2.isBlank()) { ok = false; if (showErrors) binding.tilConfirmPassword.error = "Obligatorio" }
+
+        if (pass.isBlank()) {
+            ok = false
+            if (showErrors) binding.tilPassword.error = "Obligatorio"
+        }
+
+        if (pass2.isBlank()) {
+            ok = false
+            if (showErrors) binding.tilConfirmPassword.error = "Obligatorio"
+        }
+
         if (pass.isNotBlank()) {
             val errors = passwordRuleErrors(pass)
             if (errors.isNotEmpty()) {
@@ -128,9 +182,12 @@ class PasswordActivity : AppCompatActivity() {
                 }
             }
         }
+
         if (pass.isNotBlank() && pass2.isNotBlank() && pass != pass2) {
-            ok = false; if (showErrors) binding.tilConfirmPassword.error = "Las contraseñas no coinciden"
+            ok = false
+            if (showErrors) binding.tilConfirmPassword.error = "Las contraseñas no coinciden"
         }
+
         return ok
     }
 
@@ -139,18 +196,20 @@ class PasswordActivity : AppCompatActivity() {
         if (pass.length < 8) errs.add("Mínimo 8 caracteres")
         if (pass.firstOrNull()?.isUpperCase() != true) errs.add("La primera letra debe ser mayúscula")
         if (!pass.any { it.isDigit() }) errs.add("Debe contener al menos 1 número")
-        if (!pass.any { it in "!@#\$%^&*()_+-=[]{};':\"\\|,.<>/?`~" }) errs.add("Debe contener al menos 1 carácter especial")
+        if (!pass.any { it in "!@#\$%^&*()_+-=[]{};':\"\\|,.<>/?`~" }) {
+            errs.add("Debe contener al menos 1 carácter especial")
+        }
         return errs
     }
 
     companion object {
-        const val EXTRA_ROLE       = "extra_role"
-        const val EXTRA_EMAIL      = "extra_email"
-        const val EXTRA_NOMBRE     = "extra_nombre"
+        const val EXTRA_ROLE = "extra_role"
+        const val EXTRA_EMAIL = "extra_email"
+        const val EXTRA_NOMBRE = "extra_nombre"
         const val EXTRA_AP_PATERNO = "extra_ap_paterno"
         const val EXTRA_AP_MATERNO = "extra_ap_materno"
-        const val EXTRA_FECHA_NAC  = "extra_fecha_nac"
-        const val EXTRA_GENERO     = "extra_genero"
-        const val EXTRA_RECORDAR   = "extra_recordar"
+        const val EXTRA_FECHA_NAC = "extra_fecha_nac"
+        const val EXTRA_GENERO = "extra_genero"
+        const val EXTRA_RECORDAR = "extra_recordar"
     }
 }

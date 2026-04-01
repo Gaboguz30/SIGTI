@@ -21,32 +21,44 @@ class VerifyEmailActivity : AppCompatActivity() {
         binding = ActivityVerifyEmailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        auth    = FirebaseAuth.getInstance()
+        auth = FirebaseAuth.getInstance()
         session = SessionManager(this)
 
         binding.btnCheckVerification.setOnClickListener {
             val user = auth.currentUser
-            user?.reload()?.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    if (user.isEmailVerified) {
-                        finalizarRegistroYRedireccionar()
-                    } else {
-                        Toast.makeText(this, "Aún no verificas tu correo.", Toast.LENGTH_LONG).show()
-                    }
+            if (user == null) {
+                Toast.makeText(this, "No hay usuario autenticado", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            user.reload().addOnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Toast.makeText(this, "No se pudo validar el estado del correo", Toast.LENGTH_SHORT).show()
+                    return@addOnCompleteListener
+                }
+
+                if (user.isEmailVerified) {
+                    finalizarRegistroYRedireccionar()
+                } else {
+                    Toast.makeText(this, "Aún no verificas tu correo.", Toast.LENGTH_LONG).show()
                 }
             }
         }
 
         binding.btnResendEmail.setOnClickListener {
-            auth.currentUser?.sendEmailVerification()?.addOnSuccessListener {
-                Toast.makeText(this, "Correo reenviado.", Toast.LENGTH_SHORT).show()
-            }
+            auth.currentUser?.sendEmailVerification()
+                ?.addOnSuccessListener {
+                    Toast.makeText(this, "Correo reenviado.", Toast.LENGTH_SHORT).show()
+                }
+                ?.addOnFailureListener {
+                    Toast.makeText(this, "No se pudo reenviar el correo.", Toast.LENGTH_SHORT).show()
+                }
         }
     }
 
     private fun finalizarRegistroYRedireccionar() {
-        val role    = intent.getStringExtra(PasswordActivity.EXTRA_ROLE).orEmpty()
-        val email   = intent.getStringExtra(PasswordActivity.EXTRA_EMAIL).orEmpty()
+        val role = intent.getStringExtra(PasswordActivity.EXTRA_ROLE).orEmpty()
+        val email = intent.getStringExtra(PasswordActivity.EXTRA_EMAIL).orEmpty()
         val recordar = intent.getBooleanExtra(PasswordActivity.EXTRA_RECORDAR, false)
 
         if (recordar && email.isNotEmpty()) {

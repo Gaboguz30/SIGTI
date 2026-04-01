@@ -1,113 +1,100 @@
 package com.auvenix.sigti.ui.auth
 
-import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.auvenix.sigti.databinding.ActivityGoogleCompleteProfileBinding
+import com.auvenix.sigti.notifications.FcmTokenManager
 import com.auvenix.sigti.ui.home.HomeActivity
+import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
+import com.auvenix.sigti.ui.register.RegisterGeneralActivity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import java.util.*
 
 class GoogleCompleteProfileActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityGoogleCompleteProfileBinding
-    private val db = FirebaseFirestore.getInstance()
+    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
+    private val db: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityGoogleCompleteProfileBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        // 1. Recibir datos (Google + Rol elegido en la pantalla anterior)
-        val nombreGoogle = intent.getStringExtra("EXTRA_NOMBRE_COMPLETO") ?: ""
-        val rolElegido = intent.getStringExtra("EXTRA_ROL") ?: "Solicitante"
-
-        // 2. Separar nombre en los 3 campos
-        separarNombrePro(nombreGoogle)
-
-        // 3. Calendario
-        binding.etFechaNac.setOnClickListener { mostrarCalendario() }
-
-        // 4. Guardado final
-        binding.btnFinalizar.setOnClickListener {
-            guardarEnFirestore(rolElegido)
-        }
+        completarRegistroGoogle()
     }
 
-    private fun separarNombrePro(cadena: String) {
-        val palabras = cadena.trim().split(" ").filter { it.isNotEmpty() }
-        when {
-            palabras.size == 1 -> binding.etNombre.setText(palabras[0])
-            palabras.size == 2 -> {
-                binding.etNombre.setText(palabras[0])
-                binding.etApPaterno.setText(palabras[1])
-            }
-            palabras.size == 3 -> {
-                binding.etNombre.setText(palabras[0])
-                binding.etApPaterno.setText(palabras[1])
-                binding.etApMaterno.setText(palabras[2])
-            }
-            palabras.size >= 4 -> {
-                binding.etNombre.setText("${palabras[0]} ${palabras[1]}")
-                binding.etApPaterno.setText(palabras[2])
-                binding.etApMaterno.setText(palabras.subList(3, palabras.size).joinToString(" "))
-            }
-        }
-    }
+    private fun completarRegistroGoogle() {
+        val currentUser = auth.currentUser
+        val uid = intent.getStringExtra(RegisterGeneralActivity.EXTRA_GOOGLE_UID)
+            ?: currentUser?.uid
+            ?: ""
 
-    private fun mostrarCalendario() {
-        val c = Calendar.getInstance()
-        DatePickerDialog(this, { _, y, m, d ->
-            binding.etFechaNac.setText("$d/${m + 1}/$y")
-        }, c.get(Calendar.YEAR) - 20, c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show()
-    }
+        val role = intent.getStringExtra(RegisterGeneralActivity.EXTRA_ROLE).orEmpty()
+        val email = intent.getStringExtra(RegisterGeneralActivity.EXTRA_EMAIL)
+            ?: intent.getStringExtra(RegisterGeneralActivity.EXTRA_GOOGLE_EMAIL)
+            ?: currentUser?.email
+            ?: ""
 
-    private fun guardarEnFirestore(rol: String) {
-        val uid = intent.getStringExtra("EXTRA_UID") ?: return
-        val email = intent.getStringExtra("EXTRA_EMAIL") ?: ""
-
-        val nombre = binding.etNombre.text.toString().trim()
-        val paterno = binding.etApPaterno.text.toString().trim()
-        val materno = binding.etApMaterno.text.toString().trim()
-        val fechaNac = binding.etFechaNac.text.toString()
-
-        if (nombre.isEmpty() || paterno.isEmpty() || fechaNac.isEmpty()) {
-            Toast.makeText(this, "Completa los campos obligatorios", Toast.LENGTH_SHORT).show()
+        if (uid.isBlank() || role.isBlank() || email.isBlank()) {
+            Toast.makeText(this, "Faltan datos para completar el registro con Google", Toast.LENGTH_LONG).show()
+            finish()
             return
         }
 
-        // Mostrar carga y bloquear botón
-        binding.btnFinalizar.text = ""
-        binding.pbLoading.visibility = View.VISIBLE
-        binding.btnFinalizar.isEnabled = false
+        val listaOficiosCruda = intent.getStringArrayListExtra("extra_oficios") ?: arrayListOf()
+        val oficiosProcesados = listaOficiosCruda.map { item ->
+            val parts = item.split("|")
+            mapOf(
+                "nombre" to (parts.getOrNull(0) ?: ""),
+                "anios_experiencia" to (parts.getOrNull(1)?.toIntOrNull() ?: 0)
+            )
+        }
 
-        val userMap = hashMapOf(
+        val expediente = hashMapOf(
             "uid" to uid,
+            "role" to role,
+            "rol" to role,
             "email" to email,
-            "nombre" to nombre,
-            "apPaterno" to paterno,
-            "apMaterno" to materno,
-            "fechaNac" to fechaNac,
-            "role" to rol, // El rol que venía de la pantalla anterior
-            "metodoRegistro" to "Google",
-            "fechaRegistro" to com.google.firebase.firestore.FieldValue.serverTimestamp()
+            "nombre" to intent.getStringExtra(RegisterGeneralActivity.EXTRA_NOMBRE).orEmpty(),
+            "apPaterno" to intent.getStringExtra(RegisterGeneralActivity.EXTRA_AP_PATERNO).orEmpty(),
+            "apMaterno" to intent.getStringExtra(RegisterGeneralActivity.EXTRA_AP_MATERNO).orEmpty(),
+            "fechaNac" to intent.getStringExtra(RegisterGeneralActivity.EXTRA_FECHA_NAC).orEmpty(),
+            "genero" to intent.getStringExtra(RegisterGeneralActivity.EXTRA_GENERO).orEmpty(),
+            "ciudad" to intent.getStringExtra("extra_ciudad").orEmpty(),
+            "localidad" to intent.getStringExtra("extra_localidad").orEmpty(),
+            "codigoPostal" to intent.getStringExtra("extra_codigo_postal").orEmpty(),
+            "fotoFrontalUri" to intent.getStringExtra("extra_foto_frontal_uri").orEmpty(),
+            "oficios" to oficiosProcesados,
+            "plan_actual" to "FREE",
+            "trabajos_realizados_mes" to 0,
+            "online" to false,
+            "notificaciones" to true,
+            "metodoRegistro" to "GOOGLE",
+            "fechaRegistro" to FieldValue.serverTimestamp()
         )
 
-        db.collection("users").document(uid).set(userMap)
+        db.collection("users")
+            .document(uid)
+            .set(expediente)
             .addOnSuccessListener {
-                val i = Intent(this, HomeActivity::class.java)
-                i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(i)
+                FcmTokenManager.saveCurrentToken()
+
+                val nextIntent = if (role == RegisterGeneralActivity.ROLE_PRESTADOR) {
+                    Intent(this, ProviderHomeActivity::class.java)
+                } else {
+                    Intent(this, HomeActivity::class.java)
+                }
+
+                nextIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(nextIntent)
                 finish()
             }
-            .addOnFailureListener {
-                binding.btnFinalizar.text = "Finalizar Registro"
-                binding.pbLoading.visibility = View.GONE
-                binding.btnFinalizar.isEnabled = true
-                Toast.makeText(this, "Error: ${it.message}", Toast.LENGTH_SHORT).show()
+            .addOnFailureListener { e ->
+                Toast.makeText(
+                    this,
+                    "Error al completar perfil con Google: ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+                finish()
             }
     }
 }

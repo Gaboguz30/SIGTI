@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -15,21 +16,25 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SIGTI"
         android:usesCleartextTraffic="true">
-        <activity
-            android:name=".ui.provider.home.RequestDetailActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.provider.catalog.AddServiceActivity"
-            android:exported="false" /> <!-- ── LAUNCHER ──────────────────────────────────────── -->
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+        
         <activity
             android:name=".ui.auth.AuthEntryActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- ── AUTENTICACIÓN ──────────────────────────────────── -->
+        </activity>
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="false" />
@@ -44,7 +49,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.auth.GoogleCompleteProfileActivity"
-            android:exported="false" /> <!-- ── ROLES / REGISTRO ───────────────────────────────── -->
+            android:exported="false" />
         <activity
             android:name=".ui.role.RoleActivity"
             android:exported="false" />
@@ -53,10 +58,10 @@
             android:exported="false" />
         <activity
             android:name=".ui.register.PrestadorExtraActivity"
-            android:exported="false" /> <!-- ✅ NUEVO: pantalla extra del flujo de registro del solicitante -->
+            android:exported="false" />
         <activity
             android:name=".ui.register.SolicitanteExtraActivity"
-            android:exported="false" /> <!-- ── HOME USUARIO ───────────────────────────────────── -->
+            android:exported="false" />
         <activity
             android:name=".ui.home.HomeActivity"
             android:exported="false" />
@@ -70,20 +75,17 @@
             android:name=".ui.home.UserNotificationsActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.home.UserChatDetailActivity"
-            android:exported="false" /> <!-- ── CHAT ───────────────────────────────────────────── -->
-        <activity
             android:name=".ui.chat.ChatDetailActivity"
             android:exported="false" />
         <activity
             android:name=".ui.chat.ChatListActivity"
-            android:exported="false" /> <!-- ── PERFIL USUARIO ─────────────────────────────────── -->
+            android:exported="false" />
         <activity
             android:name=".ui.profile.ProfileActivity"
             android:exported="false" />
         <activity
             android:name=".ui.profile.WorkerProfileActivity"
-            android:exported="false" /> <!-- ── PROVEEDOR ──────────────────────────────────────── -->
+            android:exported="false" />
         <activity
             android:name=".ui.provider.home.ProviderHomeActivity"
             android:exported="false" />
@@ -94,9 +96,6 @@
             android:name=".ui.provider.chat.ProviderChatActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.provider.chat.ProviderChatDetailActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.provider.catalog.ProviderCatalogActivity"
             android:exported="false" />
         <activity
@@ -104,7 +103,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.provider.plans.ProviderPlansActivity"
-            android:exported="false" /> <!-- ── SOLICITUDES / SOPORTE ──────────────────────────── -->
+            android:exported="false" />
         <activity
             android:name=".ui.request.NewRequestActivity"
             android:exported="false" />
@@ -113,7 +112,7 @@
             android:exported="false" />
         <activity
             android:name=".ui.support.ReviewsActivity"
-            android:exported="false" /> <!-- ── MAIN (solo arranque) ───────────────────────────── -->
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="false" />

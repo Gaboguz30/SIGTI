@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/root"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="#F5F7FA">
+    android:background="#F5F7FA"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,58 +13,53 @@
         android:orientation="vertical"
         android:paddingBottom="32dp">
 
-        <!-- ═══════════════════════════════════ -->
-        <!-- CABECERA                            -->
-        <!-- ═══════════════════════════════════ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:layout_marginBottom="12dp"
             android:background="@color/white"
+            android:orientation="vertical"
             android:paddingHorizontal="24dp"
             android:paddingTop="40dp"
-            android:paddingBottom="24dp"
-            android:layout_marginBottom="12dp">
+            android:paddingBottom="24dp">
 
             <ImageView
+                android:id="@+id/ivLogo"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="end"
+                android:layout_marginBottom="16dp"
                 android:contentDescription="@string/app_name"
-                android:src="@drawable/logo_sigti_2"
-                android:layout_marginBottom="16dp"/>
+                android:src="@drawable/logo_sigti_2" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tu Perfil"
-                android:textSize="28sp"
-                android:textStyle="bold"
+                android:layout_marginBottom="6dp"
+                android:text="Perfil Profesional"
                 android:textColor="@color/black"
-                android:layout_marginBottom="6dp"/>
+                android:textSize="28sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Completa tu ubicación e identificación para usar la app."
+                android:lineSpacingExtra="2dp"
+                android:text="Completa tu perfil para que los clientes confíen en tu trabajo."
                 android:textColor="#757575"
-                android:textSize="14sp"
-                android:lineSpacingExtra="2dp"/>
+                android:textSize="14sp" />
         </LinearLayout>
 
-        <!-- ═══════════════════════════════════ -->
-        <!-- SECCIÓN 1 — UBICACIÓN              -->
-        <!-- ═══════════════════════════════════ -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
-            app:strokeWidth="1dp"
             app:strokeColor="#E0E0E0"
-            app:cardBackgroundColor="@color/white">
+            app:strokeWidth="1dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -76,83 +70,108 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:layout_marginBottom="20dp"
                     android:gravity="center_vertical"
-                    android:layout_marginBottom="20dp">
+                    android:orientation="horizontal">
 
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
+                        android:layout_marginEnd="10dp"
                         android:src="@android:drawable/ic_dialog_map"
-                        app:tint="@color/sigti_blue"
-                        android:layout_marginEnd="10dp"/>
+                        app:tint="@color/sigti_blue" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Ubicación"
-                        android:textStyle="bold"
+                        android:textColor="@color/black"
                         android:textSize="16sp"
-                        android:textColor="@color/black"/>
+                        android:textStyle="bold" />
                 </LinearLayout>
 
-                <!-- Ciudad -->
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilCiudadOperacion"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Ciudad"
                     android:layout_marginBottom="14dp"
-                    app:boxCornerRadiusTopStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
+                    android:hint="Ciudad de operación"
+                    app:boxCornerRadiusBottomEnd="12dp"
                     app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusBottomEnd="12dp">
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etCiudad"
+                        android:id="@+id/etCiudadOperacion"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textCapWords"
-                        android:textSize="15sp"/>
+                        android:focusable="false"
+                        android:inputType="none"
+                        android:text="Tehuacán"
+                        android:textSize="15sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Dirección -->
                 <com.google.android.material.textfield.TextInputLayout
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:id="@+id/tilLocalidad"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Dirección completa (calle, número, colonia)"
-                    app:boxCornerRadiusTopStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
+                    android:layout_marginBottom="14dp"
+                    android:hint="Localidad"
+                    app:boxCornerRadiusBottomEnd="12dp"
                     app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusBottomEnd="12dp">
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etDireccion"
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/actvLocalidad"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textPostalAddress|textCapSentences"
-                        android:textSize="15sp"
-                        android:minLines="2"
-                        android:gravity="top"/>
+                        android:completionThreshold="1"
+                        android:imeOptions="actionNext"
+                        android:inputType="textCapWords"
+                        android:maxLines="1"
+                        android:textSize="15sp" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilCodigoPostal"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Código Postal"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusTopStart="12dp">
+
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/actvCodigoPostal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:completionThreshold="1"
+                        android:digits="0123456789"
+                        android:imeOptions="actionDone"
+                        android:inputType="number"
+                        android:maxLength="5"
+                        android:maxLines="1"
+                        android:textSize="15sp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- ═══════════════════════════════════ -->
-        <!-- SECCIÓN 2 — IDENTIFICACIÓN (INE)   -->
-        <!-- ═══════════════════════════════════ -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="@color/white"
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
-            app:strokeWidth="1dp"
             app:strokeColor="#E0E0E0"
-            app:cardBackgroundColor="@color/white">
+            app:strokeWidth="1dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -160,65 +179,120 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
-                <!-- Encabezado sección -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
+                    android:layout_marginBottom="20dp"
                     android:gravity="center_vertical"
-                    android:layout_marginBottom="6dp">
+                    android:orientation="horizontal">
 
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:src="@android:drawable/ic_menu_gallery"
-                        app:tint="@color/sigti_blue"
-                        android:layout_marginEnd="10dp"/>
+                        android:layout_marginEnd="10dp"
+                        android:src="@drawable/icon_prestador_de_servicios"
+                        app:tint="@color/sigti_blue" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Tus Oficios"
+                        android:textColor="@color/black"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnAddOficio"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:paddingHorizontal="12dp"
+                        android:text="+ Agregar"
+                        android:textAllCaps="false"
+                        android:textColor="@color/sigti_blue"
+                        android:textSize="13sp"
+                        app:cornerRadius="8dp"
+                        app:strokeColor="@color/sigti_blue" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/llOficiosContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="24dp"
+            app:cardBackgroundColor="@color/white"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeColor="#E0E0E0"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="6dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginEnd="10dp"
+                        android:src="@android:drawable/ic_menu_camera"
+                        app:tint="@color/sigti_blue" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Identificación Oficial (INE)"
-                        android:textStyle="bold"
+                        android:text="Foto frontal del usuario"
+                        android:textColor="@color/black"
                         android:textSize="16sp"
-                        android:textColor="@color/black"/>
+                        android:textStyle="bold" />
                 </LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Sube una foto de tu INE para verificar tu identidad."
-                    android:textColor="#9E9E9E"
-                    android:textSize="13sp"
-                    android:layout_marginBottom="16dp"/>
-
-                <!-- Zona de carga -->
                 <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/btnUploadIne"
+                    android:id="@+id/btnCapturarFotoFrontal"
                     android:layout_width="match_parent"
                     android:layout_height="90dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="0dp"
-                    app:strokeWidth="1.5dp"
-                    app:strokeColor="@color/sigti_blue"
-                    app:cardBackgroundColor="#F0F5FF"
                     android:layout_marginBottom="10dp"
                     android:clickable="true"
-                    android:focusable="true">
+                    android:focusable="true"
+                    app:cardBackgroundColor="#F0F5FF"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/sigti_blue"
+                    app:strokeWidth="1.5dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:orientation="horizontal"
                         android:gravity="center"
+                        android:orientation="horizontal"
                         android:paddingHorizontal="20dp">
 
                         <ImageView
                             android:layout_width="28dp"
                             android:layout_height="28dp"
+                            android:layout_marginEnd="12dp"
                             android:src="@android:drawable/ic_menu_camera"
-                            app:tint="@color/sigti_blue"
-                            android:layout_marginEnd="12dp"/>
+                            app:tint="@color/sigti_blue" />
 
                         <LinearLayout
                             android:layout_width="wrap_content"
@@ -228,61 +302,78 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Subir foto de INE"
+                                android:text="Tomar foto frontal"
                                 android:textColor="@color/sigti_blue"
-                                android:textStyle="bold"
-                                android:textSize="15sp"/>
+                                android:textSize="15sp"
+                                android:textStyle="bold" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="JPG, PNG — máx. 5 MB"
+                                android:layout_marginTop="2dp"
+                                android:text="Se abrirá la cámara del dispositivo"
                                 android:textColor="#9E9E9E"
-                                android:textSize="12sp"
-                                android:layout_marginTop="2dp"/>
+                                android:textSize="12sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                android:text="Toma una fotografía de tu rostro con la cámara frontal para continuar con el registro."
+                                android:textColor="#9E9E9E"
+                                android:textSize="13sp" />
                         </LinearLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Estado del archivo -->
+                <ImageView
+                    android:id="@+id/ivFotoFrontalPreview"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginBottom="12dp"
+                    android:adjustViewBounds="true"
+                    android:background="@android:color/white"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone" />
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <ImageView
                         android:layout_width="16dp"
                         android:layout_height="16dp"
+                        android:layout_marginEnd="6dp"
                         android:src="@android:drawable/ic_dialog_info"
-                        app:tint="#9E9E9E"
-                        android:layout_marginEnd="6dp"/>
+                        app:tint="#9E9E9E" />
 
                     <TextView
-                        android:id="@+id/tvIneStatus"
+                        android:id="@+id/tvFotoFrontalStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Ningún archivo seleccionado"
+                        android:text="Aún no se ha capturado ninguna foto"
                         android:textColor="#9E9E9E"
-                        android:textSize="12sp"/>
+                        android:textSize="12sp" />
                 </LinearLayout>
 
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Botón Continuar -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnContinuarSolicitante"
+            android:id="@+id/btnContinuarExtra"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginHorizontal="16dp"
             android:text="Continuar"
-            android:textSize="16sp"
             android:textAllCaps="false"
+            android:textSize="16sp"
             android:textStyle="bold"
             app:backgroundTint="@color/sigti_blue"
             app:cornerRadius="14dp"
-            app:elevation="2dp"/>
+            app:elevation="2dp" />
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
