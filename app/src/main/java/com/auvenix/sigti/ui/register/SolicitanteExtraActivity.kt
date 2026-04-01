@@ -1,7 +1,6 @@
 package com.auvenix.sigti.ui.register
 
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
@@ -12,139 +11,110 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.auvenix.sigti.databinding.ActivitySolicitanteExtraBinding
 import com.auvenix.sigti.ui.auth.PasswordActivity
-import com.auvenix.sigti.utils.Validators
 
 class SolicitanteExtraActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySolicitanteExtraBinding
-
-    /** URI de la imagen INE seleccionada (null = no seleccionada aún) */
     private var ineUri: Uri? = null
 
-    private val galleryLauncher = registerForActivityResult(
-        ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        if (uri == null) {
-            // El usuario canceló el selector
-            return@registerForActivityResult
+    private val pickIneLauncher =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+            if (uri != null) {
+                ineUri = uri
+                binding.tvIneStatus.text = "INE seleccionada correctamente"
+            } else {
+                binding.tvIneStatus.text = "Ningún archivo seleccionado"
+            }
         }
-        val validationError = validateIneImage(uri)
-        if (validationError != null) {
-            binding.tvIneStatus.text = "✗  $validationError"
-            binding.tvIneStatus.setTextColor(android.graphics.Color.parseColor("#C62828"))
-            ineUri = null
-        } else {
-            ineUri = uri
-            val fileName = uri.lastPathSegment?.substringAfterLast('/') ?: "INE_Frontal"
-            binding.tvIneStatus.text = "✓  $fileName cargada con éxito"
-            binding.tvIneStatus.setTextColor(android.graphics.Color.parseColor("#2E7D32"))
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         binding = ActivitySolicitanteExtraBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+        val role = intent.getStringExtra(RegisterGeneralActivity.EXTRA_ROLE)
+        if (role != RegisterGeneralActivity.ROLE_SOLICITANTE) {
+            Toast.makeText(this, "Flujo inválido para solicitante", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.setPadding(
+                systemBars.left,
+                systemBars.top,
+                systemBars.right,
+                systemBars.bottom
+            )
             insets
         }
 
-        // ── Zona de carga del INE ─────────────────────────────────────────────
+        setupInitialData()
+        setupActions()
+    }
+
+    private fun setupInitialData() {
+        binding.etCiudad.setText("Tehuacán")
+        binding.etCiudad.isEnabled = false
+        binding.etCiudad.isFocusable = false
+        binding.etCiudad.isClickable = false
+
+        binding.tvIneStatus.text = "Ningún archivo seleccionado"
+    }
+
+    private fun setupActions() {
         binding.btnUploadIne.setOnClickListener {
-            galleryLauncher.launch("image/*")
+            pickIneLauncher.launch("image/*")
         }
 
-        // ── Botón Continuar ───────────────────────────────────────────────────
         binding.btnContinuarSolicitante.setOnClickListener {
-            procesarYContinuar()
+            procesarDatosYContinuar()
         }
     }
 
-    // ── Validación de imagen INE ──────────────────────────────────────────────
-    private fun validateIneImage(uri: Uri): String? {
-        return try {
-            // 1. Tamaño del archivo (mínimo 20 KB)
-            val fileSizeBytes = contentResolver.openFileDescriptor(uri, "r")?.use {
-                it.statSize
-            } ?: 0L
-            if (fileSizeBytes < 20_000L) {
-                return "La imagen es demasiado pequeña o puede estar vacía"
-            }
+    private fun procesarDatosYContinuar() {
+        val ciudad = binding.etCiudad.text?.toString()?.trim().orEmpty()
+        val direccion = binding.etDireccion.text?.toString()?.trim().orEmpty()
 
-            // 2. Decodificar solo dimensiones (sin cargar el bitmap completo)
-            val opts = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-            contentResolver.openInputStream(uri)?.use { stream ->
-                BitmapFactory.decodeStream(stream, null, opts)
-            }
-
-            val w = opts.outWidth
-            val h = opts.outHeight
-
-            // 3. Verifica que el archivo sea una imagen reconocida
-            if (w <= 0 || h <= 0) {
-                return "No se pudo leer la imagen. Intenta con otro archivo."
-            }
-
-            // 4. Resolución mínima
-            if (w < 300 || h < 190) {
-                return "La imagen es demasiado pequeña. Sube una foto nítida del INE."
-            }
-
-            // 5. Relación de aspecto (horizontal o vertical)
-            val ratio = w.toFloat() / h.toFloat()
-            val isHorizontal = ratio in 1.3f..1.9f   // tarjeta apaisada
-            val isVertical   = ratio in 0.52f..0.77f // tarjeta de pie
-            if (!isHorizontal && !isVertical) {
-                return "La foto no parece ser una identificación. " +
-                        "Asegúrate de fotografiar el INE completo."
-            }
-
-            null  // ✅ Todo correcto
-        } catch (e: Exception) {
-            "No se pudo validar la imagen: ${e.localizedMessage}"
-        }
-    }
-
-    // ── Procesado y navegación ────────────────────────────────────────────────
-    private fun procesarYContinuar() {
         var hayError = false
 
-        // Validar ciudad
-        val ciudad = binding.etCiudad.text.toString().trim()
-        if (ciudad.isEmpty()) {
-            binding.etCiudad.error = "Campo obligatorio"
+        if (ciudad.isBlank()) {
+            Toast.makeText(this, "La ciudad es obligatoria", Toast.LENGTH_SHORT).show()
             hayError = true
-        } else {
-            binding.etCiudad.error = null
         }
 
-        val direccion = binding.etDireccion.text.toString().trim()
-        val addressResult = Validators.validateAddress(direccion)
-        if (addressResult != Validators.AddressResult.Ok) {
-            binding.etDireccion.error = addressResult.message()
+        if (ciudad != "Tehuacán") {
+            Toast.makeText(this, "La ciudad debe ser Tehuacán", Toast.LENGTH_SHORT).show()
+            hayError = true
+        }
+
+        if (direccion.isBlank()) {
+            binding.etDireccion.error = "La dirección es obligatoria"
+            hayError = true
+        } else if (direccion.length < 10) {
+            binding.etDireccion.error = "Ingresa una dirección más completa"
             hayError = true
         } else {
             binding.etDireccion.error = null
         }
 
-        if (hayError) return
-
-        // Validar INE cargado
         if (ineUri == null) {
-            Toast.makeText(this, "Por favor sube una foto de tu INE", Toast.LENGTH_SHORT).show()
-            return
+            Toast.makeText(this, "Debes subir una foto de tu INE", Toast.LENGTH_SHORT).show()
+            hayError = true
         }
 
-        // Todo correcto → continuar a contraseña
-        startActivity(Intent(this, PasswordActivity::class.java).apply {
-            putExtras(intent)                              // datos de RegisterGeneralActivity
-            putExtra("extra_ciudad",    ciudad)
+        if (hayError) return
+
+        val nextIntent = Intent(this, PasswordActivity::class.java).apply {
+            putExtras(intent)
+            putExtra("extra_ciudad", ciudad)
             putExtra("extra_direccion", direccion)
-            putExtra("extra_ine_uri",   ineUri.toString()) // URI de la imagen INE
-        })
+            putExtra("extra_foto_ine_uri", ineUri.toString())
+        }
+
+        startActivity(nextIntent)
     }
 }

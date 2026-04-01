@@ -4,9 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.auvenix.sigti.databinding.ActivityRoleBinding
-import com.auvenix.sigti.ui.auth.GoogleCompleteProfileActivity
 import com.auvenix.sigti.ui.register.RegisterGeneralActivity
-import com.auvenix.sigti.utils.Constants
 
 class RoleActivity : AppCompatActivity() {
 
@@ -17,25 +15,42 @@ class RoleActivity : AppCompatActivity() {
         binding = ActivityRoleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.btnPrestador.setOnClickListener  { goToRegister("PRESTADOR")  }
-        binding.btnSolicitante.setOnClickListener { goToRegister("SOLICITANTE") }
+        binding.btnPrestador.setOnClickListener {
+            goToRegister(RegisterGeneralActivity.ROLE_PRESTADOR)
+        }
+
+        binding.btnSolicitante.setOnClickListener {
+            goToRegister(RegisterGeneralActivity.ROLE_SOLICITANTE)
+        }
     }
 
     private fun goToRegister(role: String) {
-        val isGoogle = intent.getBooleanExtra(Constants.EXTRA_IS_GOOGLE, false)
+        val next = Intent(this, RegisterGeneralActivity::class.java).apply {
+            putExtra(RegisterGeneralActivity.EXTRA_ROLE, role)
 
-        if (isGoogle) {
-            startActivity(Intent(this, GoogleCompleteProfileActivity::class.java).apply {
-                putExtra("EXTRA_ROLE",             role)
-                putExtra("EXTRA_NOMBRE_COMPLETO",  intent.getStringExtra(Constants.EXTRA_NOMBRE))
-                putExtra("EXTRA_EMAIL",            intent.getStringExtra(Constants.EXTRA_EMAIL_GOOGLE))
-                putExtra("EXTRA_UID",              intent.getStringExtra(Constants.EXTRA_UID))
-            })
-        } else {
-            startActivity(Intent(this, RegisterGeneralActivity::class.java).apply {
-                putExtra(RegisterGeneralActivity.EXTRA_ROLE, role)
-            })
+            putExtra(
+                RegisterGeneralActivity.EXTRA_IS_GOOGLE,
+                intent.getBooleanExtra(RegisterGeneralActivity.EXTRA_IS_GOOGLE, false)
+            )
+            putExtra(
+                RegisterGeneralActivity.EXTRA_GOOGLE_UID,
+                intent.getStringExtra(RegisterGeneralActivity.EXTRA_GOOGLE_UID)
+            )
+            putExtra(
+                RegisterGeneralActivity.EXTRA_GOOGLE_NAME,
+                intent.getStringExtra(RegisterGeneralActivity.EXTRA_GOOGLE_NAME)
+            )
+            putExtra(
+                RegisterGeneralActivity.EXTRA_GOOGLE_EMAIL,
+                intent.getStringExtra(RegisterGeneralActivity.EXTRA_GOOGLE_EMAIL)
+            )
+            putExtra(
+                RegisterGeneralActivity.EXTRA_GOOGLE_PHOTO_URL,
+                intent.getStringExtra(RegisterGeneralActivity.EXTRA_GOOGLE_PHOTO_URL)
+            )
         }
+
+        startActivity(next)
         finish()
     }
 }
