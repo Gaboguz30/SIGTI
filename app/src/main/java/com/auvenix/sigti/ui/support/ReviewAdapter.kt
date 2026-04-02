@@ -7,23 +7,27 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.auvenix.sigti.R
 
-data class Review(val name: String, val date: String, val text: String)
+class ReviewAdapter(private val list: List<Review>) :
+    RecyclerView.Adapter<ReviewAdapter.ViewHolder>() {
 
-class ReviewAdapter(private val reviews: List<Review>) : RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder>() {
-
-    class ReviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvDate: TextView = itemView.findViewById(R.id.tvReviewDate)
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val name = view.findViewById<TextView>(R.id.tvReviewUser)
+        val date = view.findViewById<TextView>(R.id.tvReviewDate)
+        val comment = view.findViewById<TextView>(R.id.tvReviewComment)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReviewViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_review, parent, false)
-        return ReviewViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val v = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_review, parent, false)
+        return ViewHolder(v)
     }
 
-    override fun onBindViewHolder(holder: ReviewViewHolder, position: Int) {
-        val review = reviews[position]
-        holder.tvDate.text = review.date
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = list[position]
+        holder.name.text = item.user
+        holder.date.text = item.date
+        holder.comment.text = item.comment
     }
 
-    override fun getItemCount() = reviews.size
+    override fun getItemCount() = list.size
 }

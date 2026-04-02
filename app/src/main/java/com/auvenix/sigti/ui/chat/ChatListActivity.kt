@@ -47,10 +47,19 @@ class ChatListActivity : AppCompatActivity() {
                         val serviceId   = child.key ?: continue
                         val lastMessage = child.child("lastMessage").getValue(String::class.java) ?: ""
                         val timestamp   = child.child("timestamp").getValue(Long::class.java)    ?: 0L
-                        val withName    = child.child("withName").getValue(String::class.java)   ?: "Usuario"
+                        val withName = child.child("withName").value?.toString() ?: "Usuario"
                         val time        = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(timestamp))
+                        val unreadCount = child.child("unreadCount").getValue(Int::class.java) ?: 0
 
-                        chats.add(ChatPreview(serviceId, withName, lastMessage, time))
+                        chats.add(
+                            ChatPreview(
+                                serviceId,
+                                withName,
+                                lastMessage,
+                                time,
+                                unreadCount
+                            )
+                        )
                     }
 
                     // Ordenar por más reciente

@@ -1,8 +1,12 @@
 package com.auvenix.sigti.ui.home
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -11,15 +15,20 @@ import com.auvenix.sigti.R
 import com.auvenix.sigti.ui.chat.ChatListActivity
 import com.auvenix.sigti.ui.profile.ProfileActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.firestore.FirebaseFirestore // 🔥 IMPORTANTE: Importamos Firestore
+import com.google.firebase.firestore.FirebaseFirestore
 
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var rvWorkers: RecyclerView
     private lateinit var workerAdapter: WorkerAdapter
-    private val workerList = mutableListOf<Worker>()
 
-    // 🔥 Instancia de Firestore
+    private val workerList = mutableListOf<Worker>()
+    private val filteredList = mutableListOf<Worker>()
+
+    private lateinit var etSearch: EditText
+
+    private var oficioSeleccionado: String = ""
+
     private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,65 +38,170 @@ class HomeActivity : AppCompatActivity() {
         rvWorkers = findViewById(R.id.rvWorkers)
         rvWorkers.layoutManager = LinearLayoutManager(this)
 
-        // 1. Inicializamos el adaptador primero (empezará vacío)
-        workerAdapter = WorkerAdapter(workerList) { worker ->
-            // Cuando le pican a un perfil, pasamos el UID a la siguiente pantalla
+        etSearch = findViewById(R.id.etSearch)
+
+        // 🔍 BUSCADOR EN TIEMPO REAL
+        etSearch.addTextChangedListener(object : android.text.TextWatcher {
+            override fun afterTextChanged(s: android.text.Editable?) {}
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                aplicarFiltro(s.toString())
+            }
+        })
+
+        // 🔥 ADAPTER
+        workerAdapter = WorkerAdapter(filteredList) { worker ->
             val intent = Intent(this, com.auvenix.sigti.ui.profile.WorkerProfileActivity::class.java)
             intent.putExtra("EXTRA_WORKER_UID", worker.uid)
             startActivity(intent)
         }
+
         rvWorkers.adapter = workerAdapter
 
-        // 2. Disparamos la búsqueda en la base de datos
+        // 🔥 CHIPS
+        configurarChips()
+
+        // 🔥 FIREBASE
         descargarPrestadoresDeFirestore()
 
-        // 3. Configuramos el menú de abajo
         setupBottomNavigation()
     }
 
+    // 🔥 FIRESTORE
     private fun descargarPrestadoresDeFirestore() {
-        // Buscamos en la colección "users" donde "role" sea "PRESTADOR"
         db.collection("users")
             .whereEqualTo("role", "PRESTADOR")
             .get()
             .addOnSuccessListener { documents ->
-                workerList.clear() // Limpiamos la lista por si acaso
+
+                workerList.clear()
 
                 for (document in documents) {
+
                     val uid = document.id
 
-                    // Extraemos los datos. Usamos "?:" (elvis operator) para evitar crasheos
-                    // por si alguna cuenta vieja no tiene el campo "nombre" o "profesion".
-                    val nombre = document.getString("nombre") ?: "Prestador"
-                    val apellidoPaterno = document.getString("apellidoPaterno") ?: ""
-                    val fullName = "$nombre $apellidoPaterno".trim()
+                    val nombre = document.getString("nombre") ?: ""
+                    val apPaterno = document.getString("apPaterno") ?: ""
+                    val apMaterno = document.getString("apMaterno") ?: ""
 
-                    val profesion = document.getString("profesion") ?: "Oficio por definir"
+                    val nombreCompleto = listOf(nombre, apPaterno, apMaterno)
+                        .filter { it.isNotBlank() }
+                        .joinToString(" ")
 
-                    // Estos campos los pongo por defecto por ahora, ya que tal vez
-                    // aún no los guardas al registrar al usuario, pero tu diseño los pide.
-                    val rating = document.getString("rating") ?: "5.0"
-                    val price = document.getString("price") ?: "250"
-                    val distance = document.getString("distance") ?: "Cerca de ti"
+                    val oficiosRaw = document.get("oficios")
+
+                    var profesion = ""
+
+                    if (oficiosRaw is List<*>) {
+                        if (oficiosRaw.isNotEmpty()) {
+
+                            val primerOficio = oficiosRaw[0]
+
+                            if (primerOficio is Map<*, *>) {
+                                profesion = primerOficio["nombre"]?.toString() ?: ""
+                            }
+                        }
+                    }
+
+                    Log.d("FIREBASE", "Oficios: $oficiosRaw")
+                    Log.d("FIREBASE", "Profesion: $profesion")
+
+                    val rating = document.getString("rating")
+                    val price = document.getString("price")
+                    val distance = document.getString("distance")
+                    val online = document.getBoolean("online") ?: false
+                    val availability = if (online) "Disponible" else "No disponible"
 
                     val worker = Worker(
                         uid = uid,
-                        name = fullName,
+                        name = nombreCompleto,
                         profession = profesion,
                         rating = rating,
                         price = price,
-                        distance = distance
+                        distance = distance,
+                        availability = availability
                     )
+
                     workerList.add(worker)
                 }
 
-                // Le avisamos al adaptador que ya llegaron los datos para que dibuje las tarjetas
-                workerAdapter.notifyDataSetChanged()
+                aplicarFiltro("")
             }
-            .addOnFailureListener { exception ->
-                Log.e("HomeActivity", "Error al descargar prestadores", exception)
-                Toast.makeText(this, "Error de conexión al cargar perfiles", Toast.LENGTH_SHORT).show()
+            .addOnFailureListener {
+                Toast.makeText(this, "Error al cargar datos", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    // 🔥 FILTRO
+    private fun aplicarFiltro(query: String) {
+        filteredList.clear()
+
+        for (worker in workerList) {
+
+            val coincideBusqueda =
+                worker.name.contains(query, true) ||
+                        worker.profession.contains(query, true)
+
+            val coincideOficio =
+                oficioSeleccionado.isEmpty() ||
+                        worker.profession.equals(oficioSeleccionado, true)
+
+            if (coincideBusqueda && coincideOficio) {
+                filteredList.add(worker)
+            }
+        }
+
+        workerAdapter.notifyDataSetChanged()
+    }
+
+    // 🔥 CHIPS CONFIG
+    private fun configurarChips() {
+
+        val chipAlbanil = findViewById<View>(R.id.chipAlbanil)
+        val chipElectricista = findViewById<View>(R.id.chipElectricista)
+        val chipPlomero = findViewById<View>(R.id.chipPlomero)
+        val chipCarpintero = findViewById<View>(R.id.chipCarpintero)
+        val chipPintor = findViewById<View>(R.id.chipPintor)
+
+        val chips = listOf(
+            chipAlbanil, chipElectricista, chipPlomero,
+            chipCarpintero, chipPintor,
+        )
+
+        fun resetChips() {
+            chips.forEach {
+                it.setBackgroundColor(Color.parseColor("#E5E7EB"))
+                if (it is TextView) {
+                    it.setTextColor(Color.parseColor("#111827"))
+                }
+            }
+        }
+
+        fun activarChip(view: View, oficio: String) {
+            if (oficioSeleccionado == oficio) {
+                oficioSeleccionado = ""
+                resetChips()
+            } else {
+                oficioSeleccionado = oficio
+                resetChips()
+
+                view.setBackgroundColor(Color.parseColor("#2563EB"))
+
+                if (view is TextView) {
+                    view.setTextColor(Color.WHITE)
+                }
+            }
+
+            aplicarFiltro(etSearch.text.toString())
+        }
+
+        chipAlbanil.setOnClickListener { activarChip(it, "Albañil") }
+        chipElectricista.setOnClickListener { activarChip(it, "Electricista") }
+        chipPlomero.setOnClickListener { activarChip(it, "Plomero") }
+        chipCarpintero.setOnClickListener { activarChip(it, "Carpintero") }
+        chipPintor.setOnClickListener { activarChip(it, "Pintor") }
     }
 
     private fun setupBottomNavigation() {
@@ -97,22 +211,21 @@ class HomeActivity : AppCompatActivity() {
         bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> true
-
                 R.id.nav_map -> {
                     startActivity(Intent(this, UserMapActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
+                    finish(); true
                 }
                 R.id.nav_chat -> {
                     startActivity(Intent(this, ChatListActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
+                    finish(); true
                 }
                 R.id.nav_notifications -> {
                     startActivity(Intent(this, UserNotificationsActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
+                    finish(); true
                 }
                 R.id.nav_profile -> {
                     startActivity(Intent(this, ProfileActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
+                    finish(); true
                 }
                 else -> false
             }

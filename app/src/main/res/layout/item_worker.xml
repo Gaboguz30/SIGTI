@@ -4,106 +4,133 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="8dp"
+    android:layout_marginHorizontal="12dp"
     android:layout_marginVertical="8dp"
-    app:cardCornerRadius="16dp"
-    app:cardElevation="0dp"
-    app:strokeWidth="1dp"
-    app:strokeColor="#EAEAEA"
-    app:cardBackgroundColor="@color/white"> <LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
+    app:cardCornerRadius="18dp"
+    app:cardElevation="3dp"
+    app:cardBackgroundColor="@android:color/white">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/ivWorkerProfile"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:background="#F5F5F5"
-            android:src="@android:drawable/ic_menu_gallery"
-            android:padding="12dp"
-            app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent"/>
-
+        <!-- FILA SUPERIOR -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginStart="16dp">
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/tvWorkerName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Nombre Apellido"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"/>
+            <!-- FOTO -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/ivWorkerProfile"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="#F1F5F9"
+                android:src="@android:drawable/ic_menu_gallery"
+                android:padding="14dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent"/>
 
-
+            <!-- INFO -->
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginTop="8dp">
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="14dp">
 
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:src="@android:drawable/star_on"
-                    app:tint="#FFC107"/> <TextView
-                android:id="@+id/tvWorkerRating"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="4.8"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_marginStart="4dp"
-                android:layout_marginEnd="12dp"/>
-
-                <ImageView
-                    android:layout_width="16dp"
-                    android:layout_height="16dp"
-                    android:src="@android:drawable/ic_dialog_map"
-                    app:tint="#9E9E9E"/>
-
+                <!-- NOMBRE -->
                 <TextView
-                    android:id="@+id/tvWorkerDistance"
+                    android:id="@+id/tvWorkerName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="2 km"
-                    android:textSize="14sp"
-                    android:textColor="#757575"
-                    android:layout_marginStart="4dp"/>
+                    android:text=""
+                    android:textSize="17sp"
+                    android:textColor="#111827"
+                    android:fontFamily="@font/poppins_bold"/>
 
-                <Space
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/tvWorkerProfession"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
+                    android:text=""
+                    android:textSize="13sp"
+                    android:textColor="#6B7280"
+                    android:layout_marginTop="2dp"/>
+
+                <!-- DISPONIBILIDAD -->
+                <TextView
+                    android:id="@+id/tvWorkerAvailability"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="13sp"
+                    android:textColor="#16A34A"
+                    android:fontFamily="@font/poppins_medium"
+                    android:layout_marginTop="2dp"/>
+
+                <!-- RATING + DISTANCIA -->
+                <LinearLayout
+                    android:id="@+id/layoutStats"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="6dp"
+                    android:gravity="center_vertical">
+
+                    <!-- ⭐ ICONO -->
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:src="@android:drawable/star_on"
+                        app:tint="#FACC15"/>
+
+                    <!-- RATING -->
+                    <TextView
+                        android:id="@+id/tvWorkerRating"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="13sp"
+                        android:textColor="#374151"
+                        android:fontFamily="@font/poppins_regular"
+                        android:layout_marginStart="4dp"/>
+
+                    <!-- ESPACIO -->
+                    <Space
+                        android:layout_width="8dp"
+                        android:layout_height="wrap_content"/>
+
+                    <!-- DISTANCIA -->
+                    <TextView
+                        android:id="@+id/tvWorkerDistance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+                        android:textSize="13sp"
+                        android:textColor="#6B7280"
+                        android:fontFamily="@font/poppins_regular"/>
+                </LinearLayout>
 
             </LinearLayout>
+
         </LinearLayout>
+
+        <!-- BOTÓN -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnViewProfile"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:text="Ver perfil"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            android:fontFamily="@font/poppins_medium"
+            android:layout_marginTop="14dp"
+            app:cornerRadius="12dp"
+            app:backgroundTint="#2563EB"/>
+
     </LinearLayout>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnViewProfile"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Ver Perfil"
-        android:textColor="@color/sigti_blue"
-        app:strokeColor="@color/sigti_blue"
-        app:strokeWidth="1dp"
-        app:cornerRadius="10dp"
-        android:layout_marginTop="16dp"/>
-
-</LinearLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:paddingBottom="24dp">
 
+            <!-- BACK -->
             <ImageView
                 android:id="@+id/btnBack"
                 android:layout_width="24dp"
@@ -27,10 +28,11 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="40dp"
                 android:src="@android:drawable/ic_menu_revert"
+                app:tint="@color/black"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/black" />
+                app:layout_constraintTop_toTopOf="parent" />
 
+            <!-- TITULO -->
             <TextView
                 android:id="@+id/tvHeaderTitle"
                 android:layout_width="wrap_content"
@@ -44,18 +46,7 @@
                 app:layout_constraintStart_toEndOf="@+id/btnBack"
                 app:layout_constraintTop_toTopOf="@+id/btnBack" />
 
-            <TextView
-                android:id="@+id/btnShare"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
-                android:text="Compartir"
-                android:textColor="#1976D2"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/tvHeaderTitle"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/tvHeaderTitle" />
-
+            <!-- ACCIONES -->
             <TextView
                 android:id="@+id/btnReport"
                 android:layout_width="wrap_content"
@@ -64,41 +55,38 @@
                 android:text="Reportar"
                 android:textColor="#D32F2F"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/btnShare"
-                app:layout_constraintEnd_toStartOf="@+id/btnShare"
-                app:layout_constraintTop_toTopOf="@+id/btnShare" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvHeaderTitle"/>
 
-            <TextView
-                android:id="@+id/tvSubtitleHeader"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Prestador de Servicio"
-                android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="@+id/tvHeaderTitle"
-                app:layout_constraintTop_toBottomOf="@+id/tvHeaderTitle" />
-
+            <!-- FOTO -->
             <ImageView
                 android:id="@+id/ivProfilePic"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="24dp"
-                android:background="@drawable/ic_launcher_background"
+                android:scaleType="centerCrop"
+                android:background="@drawable/bg_circle"
+                android:clipToOutline="true"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvSubtitleHeader" />
+                app:layout_constraintTop_toBottomOf="@+id/tvHeaderTitle" />
 
+
+            <!-- NOMBRE -->
             <TextView
                 android:id="@+id/tvProfileName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:text="Vianca Ramírez"
+                android:text=""
                 android:textColor="@color/black"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/ivProfilePic"
-                app:layout_constraintTop_toTopOf="@+id/ivProfilePic" />
+                app:layout_constraintTop_toTopOf="@+id/ivProfilePic"
+                tools:text="Nombres Apellidos" />
 
+            <!-- BADGE -->
             <LinearLayout
                 android:id="@+id/llBadges"
                 android:layout_width="wrap_content"
@@ -118,48 +106,70 @@
                     android:textColor="#1976D2"
                     android:textSize="10sp"
                     android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:background="#FFF8E1"
-                    android:paddingHorizontal="6dp"
-                    android:paddingVertical="2dp"
-                    android:text="EXPERTO"
-                    android:textColor="#FFA000"
-                    android:textSize="10sp"
-                    android:textStyle="bold" />
             </LinearLayout>
 
+            <!-- PROFESION REAL -->
             <TextView
                 android:id="@+id/tvProfileProfession"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="Electricista"
+                android:text=""
                 android:textSize="13sp"
+                android:textColor="#6B7280"
                 app:layout_constraintStart_toStartOf="@+id/tvProfileName"
-                app:layout_constraintTop_toBottomOf="@+id/llBadges" />
+                app:layout_constraintTop_toBottomOf="@+id/llBadges"
+                tools:text="Electricista" />
 
             <TextView
-                android:id="@+id/tvProfileRating"
+                android:id="@+id/tvProfileExperience"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="★ 4.8 (124)"
-                android:textColor="#FFB300"
+                android:text=""
                 android:textSize="13sp"
-                android:textStyle="bold"
+                android:textColor="#6B7280"
+                android:layout_marginTop="2dp"
                 app:layout_constraintStart_toStartOf="@+id/tvProfileName"
-                app:layout_constraintTop_toBottomOf="@+id/tvProfileProfession" />
+                app:layout_constraintTop_toBottomOf="@+id/ratingBar"
+                tools:text="Experiencia: 2 años"/>
 
+            <TextView
+                android:id="@+id/tvRatingNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="13sp"
+                android:textColor="#111827"
+                android:layout_marginStart="6dp"
+
+                app:layout_constraintStart_toEndOf="@+id/ratingBar"
+                app:layout_constraintTop_toTopOf="@+id/ratingBar"/>
+
+            <!-- RATING REAL -->
+            <RatingBar
+                android:id="@+id/ratingBar"
+                android:layout_marginStart="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="5"
+                android:stepSize="0.5"
+                android:rating="0"
+                android:isIndicator="true"
+                android:progressTint="#FACC15"
+                android:progressBackgroundTint="#E5E7EB"
+                style="?android:attr/ratingBarStyleSmall"
+                app:layout_constraintStart_toStartOf="@+id/tvProfileName"
+                app:layout_constraintTop_toBottomOf="@+id/tvProfileProfession"/>
+
+
+            <!-- BOTONES -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRequest"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/sigti_blue"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginEnd="8dp"
                 android:text="Solicitar"
                 app:cornerRadius="8dp"
@@ -181,16 +191,32 @@
                 app:layout_constraintStart_toEndOf="@+id/btnRequest"
                 app:layout_constraintTop_toTopOf="@+id/btnRequest" />
 
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:tabIndicatorColor="#111827"
+                app:tabSelectedTextColor="#111827"
+                app:tabTextColor="#9CA3AF"
+                app:tabMode="fixed"
+                app:layout_constraintTop_toBottomOf="@id/btnRequest"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <!-- SERVICIOS -->
             <TextView
                 android:id="@+id/tvEmptyServicesPerfil"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Este prestador aún no ha publicado servicios."
+                android:text="Sin servicios publicados"
                 android:textAlignment="center"
                 android:textColor="#9E9E9E"
                 android:textSize="14sp"
-                android:layout_marginTop="24dp"
-                android:visibility="gone" />
+                android:layout_marginTop="16dp"
+                android:visibility="gone"
+
+                app:layout_constraintTop_toBottomOf="@id/tabLayout"/>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvServices"
@@ -198,9 +224,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:nestedScrollingEnabled="false"
-                app:layout_constraintTop_toBottomOf="@+id/btnRequest"
+                app:layout_constraintTop_toBottomOf="@+id/tabLayout"
                 tools:itemCount="3"
                 tools:listitem="@layout/item_service" />
+
+            <!-- RESEÑAS -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvReviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/tabLayout"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -15,6 +15,8 @@ import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
+import android.widget.Toast
+import android.view.View
 
 // 🔥 IMPORTS DE NAVEGACIÓN (Para ambos roles)
 import com.auvenix.sigti.ui.home.HomeActivity
@@ -36,6 +38,7 @@ class ChatDetailActivity : AppCompatActivity() {
     private lateinit var conversationsRef: DatabaseReference
     private lateinit var auth    : FirebaseAuth
     private val db = FirebaseFirestore.getInstance()
+    lateinit var tvUnreadBanner: TextView
 
     private var targetUid   = ""
     private var contactName = "Chat"
@@ -52,12 +55,14 @@ class ChatDetailActivity : AppCompatActivity() {
         val tvChatTitle    = findViewById<TextView>(R.id.tvChatTitle)
         val tvChatSubtitle = findViewById<TextView>(R.id.tvChatSubtitle)
         val btnBack        = findViewById<ImageView>(R.id.btnBackChat)
+        val targetUid = intent.getStringExtra("serviceId")!!
 
-        targetUid   = intent.getStringExtra("serviceId")   ?: "default_chat"
-        contactName = intent.getStringExtra("contactName") ?: "Chat"
 
-        tvChatTitle.text    = contactName
+
+
+
         tvChatSubtitle.text = "En línea"
+        tvUnreadBanner = findViewById(R.id.tvUnreadBanner)
 
         btnBack.setOnClickListener { finish() }
 
@@ -70,6 +75,27 @@ class ChatDetailActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         val myUid = auth.currentUser?.uid ?: return
 
+        FirebaseDatabase.getInstance()
+            .getReference("users")
+            .child(targetUid)
+            .child("nombre")
+            .get()
+            .addOnSuccessListener {
+
+                val nombre = it.getValue(String::class.java) ?: "Usuario"
+                tvChatTitle.text = nombre
+                contactName = nombre   // 🔥🔥 ESTA LÍNEA ARREGLA TODO
+            }
+
+// ✅ PRIMERO inicializar
+        conversationsRef = FirebaseDatabase.getInstance()
+            .getReference("conversations")
+
+// ✅ LUEGO usar
+        conversationsRef.child(myUid)
+            .child(targetUid)
+            .child("unreadCount")
+            .setValue(0)
         // 🔥 Vamos a Firestore por tu nombre real y tu ROL
         db.collection("users").document(myUid).get()
             .addOnSuccessListener { doc ->
@@ -90,28 +116,65 @@ class ChatDetailActivity : AppCompatActivity() {
                 }
             }
 
+        conversationsRef.child(myUid)
+            .child(targetUid)
+            .child("unreadCount")
+            .get()
+            .addOnSuccessListener {
+
+                val unread = it.getValue(Int::class.java) ?: 0
+
+                if (unread > 0) {
+                    tvUnreadBanner.text = "$unread mensajes no leídos"
+                    tvUnreadBanner.visibility = View.VISIBLE
+
+                    // se oculta solo
+                    tvUnreadBanner.postDelayed({
+                        tvUnreadBanner.visibility = View.GONE
+                    }, 3000)
+                }
+
+                // limpiar contador
+                conversationsRef.child(myUid)
+                    .child(targetUid)
+                    .child("unreadCount")
+                    .setValue(0)
+            }
+
         val roomId = if (myUid < targetUid) "${myUid}_$targetUid" else "${targetUid}_$myUid"
 
         chatRef = FirebaseDatabase.getInstance()
             .getReference("chats")
             .child(roomId)
-            .child("messages")
+
+        chatRef.get().addOnSuccessListener { snapshot ->
+            for (msg in snapshot.children) {
+                val sender = msg.child("sender_uid").value.toString()
+
+                if (sender != myUid) {
+                    msg.ref.child("seen").setValue(true)
+                }
+            }
+        }
 
         conversationsRef = FirebaseDatabase.getInstance()
             .getReference("conversations")
 
         chatRef.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val message   = snapshot.child("message").getValue(String::class.java)    ?: return
+
+                val message = snapshot.child("message").value?.toString() ?: return
                 val sender    = snapshot.child("sender_uid").getValue(String::class.java) ?: ""
                 val timestamp = snapshot.child("timestamp").getValue(Long::class.java)
+                val seen      = snapshot.child("seen").getValue(Boolean::class.java) ?: false
 
                 val isMine = sender == myUid
-                val time   = timestamp?.let {
+
+                val time = timestamp?.let {
                     SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(it))
                 } ?: ""
 
-                chatMessages.add(ChatMessage(message, isMine, time))
+                chatMessages.add(ChatMessage(message, isMine, time, seen))
                 adapter.notifyItemInserted(chatMessages.size - 1)
                 rvChatMessages.scrollToPosition(chatMessages.size - 1)
             }
@@ -131,28 +194,74 @@ class ChatDetailActivity : AppCompatActivity() {
                 hashMapOf(
                     "message"    to texto,
                     "sender_uid" to myUid,
-                    "timestamp"  to timestamp
+                    "timestamp"  to timestamp,
+                    "seen"       to false
                 )
             )
 
+            // 🔥 GUARDAR PREVIEW PARA MÍ
+            conversationsRef.child(myUid)
+                .child(targetUid)
+                .setValue(
+                    hashMapOf(
+                        "lastMessage" to texto,
+                        "timestamp"   to timestamp,
+                        "withName"    to contactName,
+                        "unreadCount" to 0
+                    )
+                )
+
+// 🔥 GUARDAR PREVIEW PARA EL OTRO
+            conversationsRef.child(targetUid)
+                .child(myUid)
+                .setValue(
+                    hashMapOf(
+                        "lastMessage" to texto,
+                        "timestamp"   to timestamp,
+                        "withName"    to myName,
+                        "unreadCount" to 1
+                    )
+                )
+
+
+            // 🔥 PARA MÍ (yo ya lo vi → 0)
             val previewForMe = hashMapOf<String, Any>(
                 "lastMessage" to texto,
                 "timestamp"   to timestamp,
                 "serviceId"   to targetUid,
-                "withName"    to contactName
+                "withName"    to contactName,
+                "unreadCount" to 0
             )
-            conversationsRef.child(myUid).child(targetUid).setValue(previewForMe)
 
-            val previewForThem = hashMapOf<String, Any>(
-                "lastMessage" to texto,
-                "timestamp"   to timestamp,
-                "serviceId"   to myUid,
-                "withName"    to myName
-            )
-            conversationsRef.child(targetUid).child(myUid).setValue(previewForThem)
+// 🔥 PARA EL OTRO (incrementa)
+            val myUid = FirebaseAuth.getInstance().currentUser!!.uid
+            val targetUid = intent.getStringExtra("serviceId")!!
+
+            val conversationsRef = FirebaseDatabase.getInstance().getReference("conversations")
+
+// 🔥 TU LADO (lo leíste)
+            conversationsRef.child(myUid)
+                .child(targetUid)
+                .child("unreadCount")
+                .setValue(0)
+
+// 🔥 LADO DEL OTRO (sumar)
+            conversationsRef.child(targetUid)
+                .child(myUid)
+                .child("unreadCount")
+                .get().addOnSuccessListener {
+
+                    val current = it.getValue(Int::class.java) ?: 0
+
+                    conversationsRef.child(targetUid)
+                        .child(myUid)
+                        .child("unreadCount")
+                        .setValue(current + 1)
+                }
 
             etMessageInput.setText("")
         }
+
     }
 
     // ==========================================
