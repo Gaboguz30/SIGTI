@@ -16,6 +16,15 @@
         android:theme="@style/Theme.SIGTI"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".ui.profile.ChangePasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.profile.MyDataActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.ProviderRedirectActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.provider.home.RequestDetailActivity"
             android:exported="false" />
         <activity
@@ -23,13 +32,7 @@
             android:exported="false" /> <!-- ── LAUNCHER ──────────────────────────────────────── -->
         <activity
             android:name=".ui.auth.AuthEntryActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity> <!-- ── AUTENTICACIÓN ──────────────────────────────────── -->
+            android:exported="true" /> <!-- ── AUTENTICACIÓN ──────────────────────────────────── -->
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="false" />
@@ -47,7 +50,13 @@
             android:exported="false" /> <!-- ── ROLES / REGISTRO ───────────────────────────────── -->
         <activity
             android:name=".ui.role.RoleActivity"
-            android:exported="false" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".ui.register.RegisterGeneralActivity"
             android:exported="false" />
@@ -68,9 +77,6 @@
             android:exported="false" />
         <activity
             android:name=".ui.home.UserNotificationsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.home.UserChatDetailActivity"
             android:exported="false" /> <!-- ── CHAT ───────────────────────────────────────────── -->
         <activity
             android:name=".ui.chat.ChatDetailActivity"
@@ -92,9 +98,6 @@
             android:exported="false" />
         <activity
             android:name=".ui.provider.chat.ProviderChatActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.provider.chat.ProviderChatDetailActivity"
             android:exported="false" />
         <activity
             android:name=".ui.provider.catalog.ProviderCatalogActivity"

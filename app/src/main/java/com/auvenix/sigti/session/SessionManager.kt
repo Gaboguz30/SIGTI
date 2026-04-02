@@ -26,6 +26,13 @@ class SessionManager(context: Context) {
         prefs.edit().remove(KEY_REMEMBER_EMAIL).apply()
     }
 
+    // 🔥 NUEVAS FUNCIONES PARA EL ROL 🔥
+    fun saveRole(role: String) {
+        prefs.edit().putString(KEY_ROLE, role).apply()
+    }
+
+    fun getRole(): String? = prefs.getString(KEY_ROLE, null)
+
     fun clearAll() {
         prefs.edit().clear().apply()
     }
@@ -34,5 +41,6 @@ class SessionManager(context: Context) {
         private const val PREFS_NAME       = "sigti_session"
         private const val KEY_TOKEN        = "token"
         private const val KEY_REMEMBER_EMAIL = "remember_email"
+        private const val KEY_ROLE         = "user_role" // 🔥 Nueva llave para el rol
     }
 }

@@ -48,15 +48,6 @@
                 android:textColor="#212121"
                 android:textSize="22sp" />
 
-            <TextView
-                android:id="@+id/tvDetailOffer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/poppins_bold"
-                android:text="Oferta del cliente: $0.00"
-                android:textColor="@color/sigti_blue"
-                android:textSize="18sp" />
 
             <TextView
                 android:id="@+id/tvDetailClientInfo"

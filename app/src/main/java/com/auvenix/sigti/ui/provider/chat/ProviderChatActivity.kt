@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.auvenix.sigti.R
 import com.auvenix.sigti.databinding.ActivityProviderChatBinding
 import com.auvenix.sigti.ui.chat.ChatDetailActivity
+import com.auvenix.sigti.ui.profile.ProfileActivity
 import com.auvenix.sigti.ui.provider.catalog.ProviderCatalogActivity
 import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
 import com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity
@@ -99,7 +100,7 @@ class ProviderChatActivity : AppCompatActivity() {
                 R.id.nav_provider_jobs -> { startActivity(Intent(this, ProviderJobsActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                 R.id.nav_provider_chat    -> true
                 R.id.nav_provider_catalog -> { startActivity(Intent(this, ProviderCatalogActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
-                R.id.nav_provider_profile -> { startActivity(Intent(this, ProviderProfileActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                R.id.nav_provider_profile -> { startActivity(Intent(this, ProfileActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                 else -> false
             }
         }

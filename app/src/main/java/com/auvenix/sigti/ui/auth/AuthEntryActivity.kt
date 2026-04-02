@@ -10,6 +10,7 @@ import com.auvenix.sigti.databinding.ActivityAuthEntryBinding
 import com.auvenix.sigti.notifications.FcmTokenManager
 import com.auvenix.sigti.ui.home.HomeActivity
 import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
+import com.auvenix.sigti.ui.register.RegisterGeneralActivity
 import com.auvenix.sigti.ui.role.RoleActivity
 import com.auvenix.sigti.utils.Constants
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -44,9 +45,16 @@ class AuthEntryActivity : AppCompatActivity() {
 
         // ── Registro manual ────────────────────────────────────
         binding.btnAcceptContinue.setOnClickListener {
-            startActivity(Intent(this, RoleActivity::class.java).apply {
-                putExtra(Constants.EXTRA_IS_GOOGLE, false)
-            })
+            // 1. Rescatamos el rol que nos mandó la pantalla anterior
+            val rolRecibido = intent.getStringExtra("EXTRA_ROLE") ?: "SOLICITANTE"
+
+            // 2. Preparamos el viaje a la siguiente pantalla
+            val intent = Intent(this, RegisterGeneralActivity::class.java) // Asegúrate de que sea tu actividad correcta
+
+            // 3. Le pasamos la mochila con el rol para que no lo olvide
+            intent.putExtra("EXTRA_ROLE", rolRecibido)
+
+            startActivity(intent)
         }
 
         // ── Google Sign-In ─────────────────────────────────────

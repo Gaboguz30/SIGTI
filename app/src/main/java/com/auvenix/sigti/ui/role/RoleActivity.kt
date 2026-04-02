@@ -4,9 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.auvenix.sigti.databinding.ActivityRoleBinding
-import com.auvenix.sigti.ui.auth.GoogleCompleteProfileActivity
-import com.auvenix.sigti.ui.register.RegisterGeneralActivity
-import com.auvenix.sigti.utils.Constants
+import com.auvenix.sigti.ui.auth.AuthEntryActivity
+import com.auvenix.sigti.ui.auth.ProviderRedirectActivity
 
 class RoleActivity : AppCompatActivity() {
 
@@ -17,25 +16,20 @@ class RoleActivity : AppCompatActivity() {
         binding = ActivityRoleBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.btnPrestador.setOnClickListener  { goToRegister("PRESTADOR")  }
-        binding.btnSolicitante.setOnClickListener { goToRegister("SOLICITANTE") }
-    }
-
-    private fun goToRegister(role: String) {
-        val isGoogle = intent.getBooleanExtra(Constants.EXTRA_IS_GOOGLE, false)
-
-        if (isGoogle) {
-            startActivity(Intent(this, GoogleCompleteProfileActivity::class.java).apply {
-                putExtra("EXTRA_ROLE",             role)
-                putExtra("EXTRA_NOMBRE_COMPLETO",  intent.getStringExtra(Constants.EXTRA_NOMBRE))
-                putExtra("EXTRA_EMAIL",            intent.getStringExtra(Constants.EXTRA_EMAIL_GOOGLE))
-                putExtra("EXTRA_UID",              intent.getStringExtra(Constants.EXTRA_UID))
-            })
-        } else {
-            startActivity(Intent(this, RegisterGeneralActivity::class.java).apply {
-                putExtra(RegisterGeneralActivity.EXTRA_ROLE, role)
-            })
+        // 1. Clic en Prestador -> Lo mandamos directo a la pantalla que lo redirige a la web
+        binding.btnPrestador.setOnClickListener {
+            val intent = Intent(this, ProviderRedirectActivity::class.java)
+            startActivity(intent)
+            finish() // Cerramos esta pantalla para que no pueda regresar con el botón atrás
         }
-        finish()
+
+        // 2. Clic en Solicitante -> Lo mandamos a la entrada de Auth (AuthEntryActivity)
+        binding.btnSolicitante.setOnClickListener {
+            val intent = Intent(this, AuthEntryActivity::class.java)
+            // Le pasamos el rol en la "mochila" (Intent) por si la siguiente pantalla lo necesita
+            intent.putExtra("EXTRA_ROLE", "SOLICITANTE")
+            startActivity(intent)
+            finish()
+        }
     }
 }

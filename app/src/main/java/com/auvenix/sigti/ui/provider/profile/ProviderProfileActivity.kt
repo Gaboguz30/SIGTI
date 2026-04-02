@@ -126,7 +126,7 @@ class ProviderProfileActivity : AppCompatActivity() {
                     startActivity(Intent(this, ProviderCatalogActivity::class.java))
                     overridePendingTransition(0, 0); finish(); true
                 }
-                R.id.nav_provider_profile -> true
+                R.id.nav_profile -> true
                 else -> false
             }
         }

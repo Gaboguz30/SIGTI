@@ -45,7 +45,6 @@ class RequestDetailActivity : AppCompatActivity() {
                     findViewById<TextView>(R.id.tvDetailTitle).text = doc.getString("title") ?: "Servicio"
 
                     val offer = doc.getDouble("priceOffer") ?: 0.0
-                    findViewById<TextView>(R.id.tvDetailOffer).text = "Oferta del cliente: $$offer"
 
                     val fecha = doc.getString("fecha") ?: ""
                     findViewById<TextView>(R.id.tvDetailClientInfo).text = "Cliente: $clientName\nFecha solicitada: $fecha"

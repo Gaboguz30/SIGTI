@@ -65,4 +65,37 @@ object Validators {
         if (trimmed.length < 10) return AddressResult.TooShort
         return AddressResult.Ok
     }
+
+
+    // ==========================================
+    // VALIDADOR DE CONTRASEÑA (Reglas Estrictas)
+    // ==========================================
+    enum class PasswordResult(private val msg: String) {
+        Ok(""),
+        Empty("La contraseña no puede estar vacía"),
+        TooShort("Mínimo 8 caracteres"),
+        NoUppercaseFirst("La primera letra debe ser mayúscula"),
+        NoDigit("Debe contener al menos 1 número"),
+        NoSpecialChar("Debe contener al menos 1 carácter especial");
+        fun message(): String = msg
+    }
+
+    fun validatePassword(password: String): PasswordResult {
+        if (password.trim().isEmpty()) return PasswordResult.Empty
+
+        // 1. Mínimo 8 caracteres
+        if (password.length < 8) return PasswordResult.TooShort
+
+        // 2. Primera letra mayúscula
+        if (password.firstOrNull()?.isUpperCase() != true) return PasswordResult.NoUppercaseFirst
+
+        // 3. Al menos un número
+        if (!password.any { it.isDigit() }) return PasswordResult.NoDigit
+
+        // 4. Al menos un carácter especial
+        val specialCharacters = "!@#\$%^&*()_+-=[]{};':\"\\|,.<>/?`~"
+        if (!password.any { it in specialCharacters }) return PasswordResult.NoSpecialChar
+
+        return PasswordResult.Ok
+    }
 }
