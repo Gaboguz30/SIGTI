@@ -14,7 +14,6 @@ import com.auvenix.sigti.ui.provider.plans.ProviderPlansActivity
 import com.auvenix.sigti.ui.home.HomeActivity
 import com.auvenix.sigti.ui.home.UserMapActivity
 import com.auvenix.sigti.ui.home.UserNotificationsActivity
-import com.auvenix.sigti.ui.chat.ChatListActivity
 import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
 import com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity
 import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
@@ -160,7 +159,13 @@ class ProfileActivity : AppCompatActivity() {
                 when (item.itemId) {
                     R.id.nav_home -> { startActivity(Intent(this, HomeActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                     R.id.nav_map -> { startActivity(Intent(this, UserMapActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
-                    R.id.nav_chat -> { startActivity(Intent(this, ChatListActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    R.id.nav_chat -> {
+                        val intent = Intent(this, com.auvenix.sigti.ui.provider.chat.ProviderChatActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                        finish()
+                        true
+                    }
                     R.id.nav_notifications -> { startActivity(Intent(this, UserNotificationsActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                     R.id.nav_profile -> true
                     else -> false

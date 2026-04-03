@@ -17,11 +17,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class ProviderProfileActivity : AppCompatActivity() {
 
-    private lateinit var binding : ActivityProviderProfileBinding
+    private lateinit var binding: ActivityProviderProfileBinding
     private val auth = FirebaseAuth.getInstance()
-    private val db   = FirebaseFirestore.getInstance()
+    private val db = FirebaseFirestore.getInstance()
 
-    // Bandera para no disparar updates mientras cargamos el estado inicial
     private var isLoadingState = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +34,7 @@ class ProviderProfileActivity : AppCompatActivity() {
         setupLogoutButton()
         setupBottomNavigation()
     }
+
     private fun loadSwitchStates() {
         val uid = auth.currentUser?.uid ?: return
         isLoadingState = true
@@ -43,10 +43,10 @@ class ProviderProfileActivity : AppCompatActivity() {
             .addOnSuccessListener { doc ->
                 if (doc.exists()) {
                     // Lee los valores; si no existen en Firestore, inicia en false (apagado)
-                    val online        = doc.getBoolean("online")        ?: false
-                    val notifEnabled  = doc.getBoolean("notificaciones") ?: false
+                    val online = doc.getBoolean("online") ?: false
+                    val notifEnabled = doc.getBoolean("notificaciones") ?: false
 
-                    binding.switchStatus.isChecked        = online
+                    binding.switchStatus.isChecked = online
                     binding.switchNotifications.isChecked = notifEnabled
                 }
                 isLoadingState = false   // ya terminó de cargar, ahora sí escuchamos cambios
@@ -73,7 +73,8 @@ class ProviderProfileActivity : AppCompatActivity() {
             db.collection("users").document(uid)
                 .update("notificaciones", isChecked)
                 .addOnFailureListener {
-                    Toast.makeText(this, "Error al actualizar notificaciones", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Error al actualizar notificaciones", Toast.LENGTH_SHORT)
+                        .show()
                 }
         }
     }
@@ -83,7 +84,7 @@ class ProviderProfileActivity : AppCompatActivity() {
         db.collection("users").document(uid).get()
             .addOnSuccessListener { doc ->
                 if (doc.exists()) {
-                    val nombre   = doc.getString("nombre")    ?: ""
+                    val nombre = doc.getString("nombre") ?: ""
                     val apellido = doc.getString("apPaterno") ?: ""
                     binding.tvProfileName.text = "$nombre $apellido"
                     val plan = doc.getString("plan_actual") ?: "FREE"
@@ -108,25 +109,40 @@ class ProviderProfileActivity : AppCompatActivity() {
 
     private fun setupBottomNavigation() {
         binding.bottomNavigationProvider.selectedItemId = R.id.nav_provider_profile
+
         binding.bottomNavigationProvider.setOnItemSelectedListener { item ->
             when (item.itemId) {
+
                 R.id.nav_provider_home -> {
                     startActivity(Intent(this, ProviderHomeActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
+                    overridePendingTransition(0, 0)
+                    finish()
+                    true
                 }
+
                 R.id.nav_provider_jobs -> {
                     startActivity(Intent(this, ProviderJobsActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
+                    overridePendingTransition(0, 0)
+                    finish()
+                    true
                 }
+
                 R.id.nav_provider_chat -> {
                     startActivity(Intent(this, ProviderChatActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
+                    overridePendingTransition(0, 0)
+                    finish()
+                    true
                 }
+
                 R.id.nav_provider_catalog -> {
                     startActivity(Intent(this, ProviderCatalogActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
+                    overridePendingTransition(0, 0)
+                    finish()
+                    true
                 }
-                R.id.nav_profile -> true
+
+                R.id.nav_provider_profile -> true
+
                 else -> false
             }
         }

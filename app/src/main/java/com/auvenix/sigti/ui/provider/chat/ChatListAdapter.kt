@@ -11,8 +11,10 @@ data class ChatModel(
     val id         : String = "",
     val name       : String = "",
     val lastMessage: String = "",
-    val time       : String = ""
+    val time       : String = "",
+    val unreadCount: Int = 0   // 🔥 NUEVO
 )
+
 
 class ChatListAdapter(
     private val chatList   : List<ChatModel>,
@@ -23,6 +25,7 @@ class ChatListAdapter(
         val tvName       : TextView = view.findViewById(R.id.tvUserName)
         val tvLastMessage: TextView = view.findViewById(R.id.tvLastMessage)
         val tvTime       : TextView = view.findViewById(R.id.tvTime)
+        val tvBadge: TextView = view.findViewById(R.id.tvBadge)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
@@ -32,10 +35,23 @@ class ChatListAdapter(
     }
 
     override fun onBindViewHolder(holder: ChatViewHolder, position: Int) {
+        println("🔥 ADAPTER EJECUTANDO")
+
         val chat = chatList[position]
+        holder.tvName.text = "PRUEBAAAA"
+
+
         holder.tvName.text        = chat.name
         holder.tvLastMessage.text = chat.lastMessage
         holder.tvTime.text        = chat.time
+
+        // 🔥 AQUÍ VIVE TU BADGE
+        if (chat.unreadCount > 0) {
+            holder.tvBadge.visibility = View.VISIBLE
+            holder.tvBadge.text = "99"
+        } else {
+            holder.tvBadge.visibility = View.GONE
+        }
 
         holder.itemView.setOnClickListener { onChatClick(chat) }
     }

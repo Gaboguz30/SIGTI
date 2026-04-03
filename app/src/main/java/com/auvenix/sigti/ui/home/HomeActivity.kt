@@ -12,10 +12,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.auvenix.sigti.R
-import com.auvenix.sigti.ui.chat.ChatListActivity
 import com.auvenix.sigti.ui.profile.ProfileActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.firestore.FirebaseFirestore
+import android.widget.LinearLayout
+import android.widget.ImageView
+
 
 class HomeActivity : AppCompatActivity() {
 
@@ -34,6 +36,33 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_home)
+
+        val catPlomero = findViewById<LinearLayout>(R.id.catPlomero)
+        val catElectricista = findViewById<LinearLayout>(R.id.catElectricista)
+        val catAlbanil = findViewById<LinearLayout>(R.id.catAlbanil)
+        val catCarpintero = findViewById<LinearLayout>(R.id.catCarpintero)
+        val catPintor = findViewById<LinearLayout>(R.id.catPintor)
+
+        catPlomero.setOnClickListener {
+            Toast.makeText(this, "Plomeros", Toast.LENGTH_SHORT).show()
+        }
+
+        catElectricista.setOnClickListener {
+            Toast.makeText(this, "Electricistas", Toast.LENGTH_SHORT).show()
+        }
+
+        catAlbanil.setOnClickListener {
+            Toast.makeText(this, "Albañiles", Toast.LENGTH_SHORT).show()
+        }
+
+        catCarpintero.setOnClickListener {
+            Toast.makeText(this, "Carpinteros", Toast.LENGTH_SHORT).show()
+        }
+
+        catPintor.setOnClickListener {
+            Toast.makeText(this, "Pintores", Toast.LENGTH_SHORT).show()
+        }
+
 
         rvWorkers = findViewById(R.id.rvWorkers)
         rvWorkers.layoutManager = LinearLayoutManager(this)
@@ -159,11 +188,11 @@ class HomeActivity : AppCompatActivity() {
     // 🔥 CHIPS CONFIG
     private fun configurarChips() {
 
-        val chipAlbanil = findViewById<View>(R.id.chipAlbanil)
-        val chipElectricista = findViewById<View>(R.id.chipElectricista)
-        val chipPlomero = findViewById<View>(R.id.chipPlomero)
-        val chipCarpintero = findViewById<View>(R.id.chipCarpintero)
-        val chipPintor = findViewById<View>(R.id.chipPintor)
+        val chipAlbanil = findViewById<LinearLayout>(R.id.catAlbanil)
+        val chipElectricista = findViewById<LinearLayout>(R.id.catElectricista)
+        val chipPlomero = findViewById<LinearLayout>(R.id.catPlomero)
+        val chipCarpintero = findViewById<LinearLayout>(R.id.catCarpintero)
+        val chipPintor = findViewById<LinearLayout>(R.id.catPintor)
 
         val chips = listOf(
             chipAlbanil, chipElectricista, chipPlomero,
@@ -172,14 +201,18 @@ class HomeActivity : AppCompatActivity() {
 
         fun resetChips() {
             chips.forEach {
-                it.setBackgroundColor(Color.parseColor("#E5E7EB"))
-                if (it is TextView) {
-                    it.setTextColor(Color.parseColor("#111827"))
-                }
+                it.setBackgroundResource(R.drawable.bg_category)
+
+                val icon = it.getChildAt(0) as ImageView
+                val text = it.getChildAt(1) as TextView
+
+                icon.setColorFilter(Color.parseColor("#2563EB"))
+                text.setTextColor(Color.parseColor("#374151"))
             }
         }
 
-        fun activarChip(view: View, oficio: String) {
+        fun activarChip(view: LinearLayout, oficio: String) {
+
             if (oficioSeleccionado == oficio) {
                 oficioSeleccionado = ""
                 resetChips()
@@ -187,21 +220,23 @@ class HomeActivity : AppCompatActivity() {
                 oficioSeleccionado = oficio
                 resetChips()
 
-                view.setBackgroundColor(Color.parseColor("#2563EB"))
+                view.setBackgroundResource(R.drawable.bg_category_selected)
 
-                if (view is TextView) {
-                    view.setTextColor(Color.WHITE)
-                }
+                val icon = view.getChildAt(0) as ImageView
+                val text = view.getChildAt(1) as TextView
+
+                icon.setColorFilter(Color.WHITE)
+                text.setTextColor(Color.WHITE)
             }
 
             aplicarFiltro(etSearch.text.toString())
         }
 
-        chipAlbanil.setOnClickListener { activarChip(it, "Albañil") }
-        chipElectricista.setOnClickListener { activarChip(it, "Electricista") }
-        chipPlomero.setOnClickListener { activarChip(it, "Plomero") }
-        chipCarpintero.setOnClickListener { activarChip(it, "Carpintero") }
-        chipPintor.setOnClickListener { activarChip(it, "Pintor") }
+        chipAlbanil.setOnClickListener { activarChip(it as LinearLayout, "Albañil") }
+        chipElectricista.setOnClickListener { activarChip(it as LinearLayout, "Electricista") }
+        chipPlomero.setOnClickListener { activarChip(it as LinearLayout, "Plomero") }
+        chipCarpintero.setOnClickListener { activarChip(it as LinearLayout, "Carpintero") }
+        chipPintor.setOnClickListener { activarChip(it as LinearLayout, "Pintor") }
     }
 
     private fun setupBottomNavigation() {
@@ -216,8 +251,8 @@ class HomeActivity : AppCompatActivity() {
                     finish(); true
                 }
                 R.id.nav_chat -> {
-                    startActivity(Intent(this, ChatListActivity::class.java))
-                    finish(); true
+                    startActivity(Intent(this, com.auvenix.sigti.ui.provider.chat.ProviderChatActivity::class.java))
+                    true
                 }
                 R.id.nav_notifications -> {
                     startActivity(Intent(this, UserNotificationsActivity::class.java))

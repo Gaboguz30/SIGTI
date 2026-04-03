@@ -11,6 +11,9 @@
         android:layout_height="wrap_content"
         android:background="#3F51B5"
         android:textColor="@android:color/white"
+        android:fontFamily="@font/poppins_medium"
         android:padding="10dp"
         android:text="Mensaje"/>
+
+
 </LinearLayout>

@@ -55,16 +55,21 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnViewOffer"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/sigti_blue"
-            android:text="Ver Oferta"
-            android:textColor="@color/white"
+            android:layout_height="40dp"
+            android:text="Ver oferta"
+            android:textColor="#FFFFFF"
             android:fontFamily="@font/poppins_medium"
+            android:paddingHorizontal="16dp"
+
+            app:backgroundTint="#FF7A00"
+            app:cornerRadius="12dp"
+            app:elevation="2dp"
+            app:rippleColor="#33FFFFFF"
+
+            app:layout_constraintTop_toBottomOf="@id/tvRequestTitle"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvRequestTitle" />
+            app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

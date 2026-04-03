@@ -25,8 +25,8 @@ import com.auvenix.sigti.ui.support.ReviewAdapter
 
 import com.auvenix.sigti.ui.home.HomeActivity
 import com.auvenix.sigti.ui.home.UserMapActivity
-import com.auvenix.sigti.ui.chat.ChatListActivity
 import com.auvenix.sigti.ui.home.UserNotificationsActivity
+import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
 
 class WorkerProfileActivity : AppCompatActivity() {
 
@@ -293,8 +293,11 @@ class WorkerProfileActivity : AppCompatActivity() {
                     finish(); true
                 }
                 R.id.nav_chat -> {
-                    startActivity(Intent(this, ChatListActivity::class.java))
-                    finish(); true
+                    val intent = Intent(this, ProviderChatActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    finish()
+                    true
                 }
                 R.id.nav_notifications -> {
                     startActivity(Intent(this, UserNotificationsActivity::class.java))

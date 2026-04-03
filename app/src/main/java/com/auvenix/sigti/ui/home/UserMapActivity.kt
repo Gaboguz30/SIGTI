@@ -24,8 +24,10 @@ class UserMapActivity : AppCompatActivity() {
                 }
                 R.id.nav_map -> true
                 R.id.nav_chat -> {
-                    startActivity(Intent(this, UserChatsActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
+                    startActivity(Intent(this, com.auvenix.sigti.ui.provider.chat.ProviderChatActivity::class.java))
+                    overridePendingTransition(0, 0)
+                    finish()
+                    true
                 }
                 R.id.nav_notifications -> {
                     startActivity(Intent(this, UserNotificationsActivity::class.java))

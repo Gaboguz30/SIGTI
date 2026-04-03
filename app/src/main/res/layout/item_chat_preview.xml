@@ -23,6 +23,7 @@
         android:layout_toEndOf="@id/tvAvatar"
         android:layout_marginStart="12dp"
         android:text="Nombre"
+        android:fontFamily="@font/poppins_bold"
         android:textStyle="bold"
         android:textSize="16sp"/>
 
@@ -45,21 +46,19 @@
         android:layout_toEndOf="@id/tvAvatar"
         android:layout_marginStart="12dp"
         android:text="Último mensaje"
+        android:fontFamily="@font/poppins_medium"
         android:textSize="14sp"
         android:textColor="#777777"/>
 
     <!-- Badge -->
     <TextView
         android:id="@+id/tvBadge"
-        android:layout_width="22dp"
-        android:layout_height="22dp"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@id/tvTime"
-        android:background="@drawable/bg_badge"
-        android:text="2"
-        android:textColor="@android:color/white"
-        android:textSize="10sp"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:background="#FF0000"
+        android:text="99"
+        android:textColor="#FFFFFF"
         android:gravity="center"
-        android:visibility="gone"/>
+        android:layout_alignParentEnd="true"/>
 
 </RelativeLayout>

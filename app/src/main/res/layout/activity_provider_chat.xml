@@ -11,7 +11,8 @@
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Mis Mensajes"
+        android:text="Bandeja de Entrada"
+        android:fontFamily="@font/poppins_bold"
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="#1A1A1A"
@@ -33,17 +34,22 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationProvider"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
         app:elevation="8dp"
-        app:labelVisibilityMode="selected"
-        app:itemIconTint="#424242"
-        app:itemTextColor="#424242"
+        app:labelVisibilityMode="labeled"
+        app:itemIconTint="@color/selector_nav_blue"
+        app:itemTextColor="@color/selector_nav_blue"
         app:itemRippleColor="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+
         app:layout_constraintEnd_toEndOf="parent"
-        app:menu="@menu/provider_bottom_nav_menu" />
+        />
+
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

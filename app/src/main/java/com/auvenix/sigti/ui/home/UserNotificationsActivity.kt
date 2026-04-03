@@ -8,11 +8,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.auvenix.sigti.R
 import com.auvenix.sigti.databinding.ActivityUserNotificationsBinding
-import com.auvenix.sigti.ui.chat.ChatListActivity
 import com.auvenix.sigti.ui.profile.ProfileActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
 
 class UserNotificationsActivity : AppCompatActivity() {
 
@@ -104,21 +104,51 @@ class UserNotificationsActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_home -> {
                     startActivity(Intent(this, HomeActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
+                    overridePendingTransition(0, 0)
+                    finish()
+                    true
                 }
                 R.id.nav_map -> {
                     startActivity(Intent(this, UserMapActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
+                    overridePendingTransition(0, 0)
+                    finish()
+                    true
                 }
                 R.id.nav_chat -> {
-                    // 🔥 Corrección: Te mandamos a ChatListActivity (la que tiene Firebase Realtime)
-                    startActivity(Intent(this, ChatListActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
+                    startActivity(Intent(this, com.auvenix.sigti.ui.provider.chat.ProviderChatActivity::class.java)) // 🔥 FIX
+                    overridePendingTransition(0, 0)
+                    finish()
+                    true
                 }
-                R.id.nav_notifications -> true
+                R.id.nav_notifications -> {
+                    startActivity(Intent(this, UserNotificationsActivity::class.java))
+                    overridePendingTransition(0, 0)
+                    finish()
+                    true
+                }
                 R.id.nav_profile -> {
-                    startActivity(Intent(this, ProfileActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
+
+                    val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@setOnItemSelectedListener true
+
+                    FirebaseFirestore.getInstance()
+                        .collection("users")
+                        .document(uid)
+                        .get()
+                        .addOnSuccessListener { doc ->
+
+                            val role = doc.getString("role") ?: "SOLICITANTE"
+
+                            if (role.equals("PRESTADOR", ignoreCase = true)) {
+                                startActivity(Intent(this, com.auvenix.sigti.ui.provider.profile.ProviderProfileActivity::class.java))
+                            } else {
+                                startActivity(Intent(this, ProfileActivity::class.java))
+                            }
+
+                            overridePendingTransition(0, 0)
+                            finish()
+                        }
+
+                    true
                 }
                 else -> false
             }

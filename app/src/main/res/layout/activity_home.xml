@@ -7,43 +7,51 @@
     android:layout_height="match_parent"
     android:background="#F9FAFB">
 
-    <TextView
-        android:id="@+id/tvHomeTitle"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/header"
+        android:paddingBottom="40dp"
+        android:layout_width="0dp"
+        android:layout_marginBottom="4dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="24dp"
-        android:text="Inicio"
-        android:textColor="#111827"
-        android:textSize="26sp"
-        android:fontFamily="@font/poppins_bold"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:background="@drawable/bg_header_gradient"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <TextView
-        android:id="@+id/tvLocation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:text="Tehuacán, Puebla"
-        android:textSize="14sp"
-        android:textColor="#6B7280"
-        android:fontFamily="@font/poppins_regular"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvHomeTitle"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hola"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:fontFamily="@font/poppins_regular"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="¿Qué necesitas hoy?"
+            android:textColor="#FFFFFF"
+            android:textSize="28sp"
+            android:fontFamily="@font/poppins_bold"/>
+
+
+    </LinearLayout>
 
 
     <LinearLayout
         android:id="@+id/searchContainer"
         android:layout_width="0dp"
-        android:layout_height="50dp"
+        android:layout_height="56dp"
         android:layout_marginHorizontal="20dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="-26dp"
         android:background="@drawable/bg_search_input"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:paddingHorizontal="14dp"
-        app:layout_constraintTop_toBottomOf="@id/tvLocation"
+        android:elevation="6dp"
+        app:layout_constraintTop_toBottomOf="@id/header"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -59,7 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:background="@null"
-            android:hint="¿Qué servicio necesitas?"
+            android:hint="Buscar plomero, electricista..."
             android:textColor="#000000"
             android:textColorHint="#8E8E93"
             android:textSize="15sp"
@@ -74,79 +82,163 @@
         android:id="@+id/hsvOficios"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@id/searchContainer">
 
-        <com.google.android.material.chip.ChipGroup
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="20dp"
-            android:clipToPadding="false"
-            app:singleLine="true"
-            app:chipSpacingHorizontal="12dp">
+            android:orientation="horizontal"
+            android:paddingStart="20dp"
+            android:paddingEnd="10dp">
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipAlbanil"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="44dp"
-                android:text="Albañil"
-                android:textColor="#374151"
-                android:fontFamily="@font/poppins_medium"
-                app:chipCornerRadius="12dp"
-                app:chipBackgroundColor="#F3F4F6"
-                app:chipStrokeWidth="0dp"/>
+            <!-- Plomero -->
+            <LinearLayout
+                android:id="@+id/catPlomero"
+                android:layout_width="80dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/bg_category"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:elevation="3dp">
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipElectricista"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="44dp"
-                android:text="Electricista"
-                android:textColor="#374151"
-                android:fontFamily="@font/poppins_medium"
-                app:chipCornerRadius="12dp"
-                app:chipBackgroundColor="#F3F4F6"
-                app:chipStrokeWidth="0dp"/>
+                <ImageView
+                    android:id="@+id/iconPlomero"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_manage"
+                    app:tint="#2563EB"/>
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipPlomero"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="44dp"
-                android:text="Plomero"
-                android:textColor="#374151"
-                android:fontFamily="@font/poppins_medium"
-                app:chipCornerRadius="12dp"
-                app:chipBackgroundColor="#F3F4F6"
-                app:chipStrokeWidth="0dp"/>
+                <TextView
+                    android:id="@+id/textPlomero"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Plomero"
+                    android:layout_marginTop="4dp"
+                    android:textSize="10sp"
+                    android:textColor="#374151"
+                    android:fontFamily="@font/poppins_medium"/>
+            </LinearLayout>
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipCarpintero"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="44dp"
-                android:text="Carpintero"
-                android:textColor="#374151"
-                android:fontFamily="@font/poppins_medium"
-                app:chipCornerRadius="12dp"
-                app:chipBackgroundColor="#F3F4F6"
-                app:chipStrokeWidth="0dp"/>
+            <!-- Electricista -->
+            <LinearLayout
+                android:id="@+id/catElectricista"
+                android:layout_width="80dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/bg_category"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:elevation="3dp">
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/chipPintor"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="44dp"
-                android:text="Pintor"
-                android:textColor="#374151"
-                android:fontFamily="@font/poppins_medium"
-                app:chipCornerRadius="12dp"
-                app:chipBackgroundColor="#F3F4F6"
-                app:chipStrokeWidth="0dp"/>
+                <ImageView
+                    android:id="@+id/iconElectricista"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_compass"
+                    app:tint="#2563EB"/>
 
-        </com.google.android.material.chip.ChipGroup>
+                <TextView
+                    android:id="@+id/textElectricista"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Electricista"
+                    android:layout_marginTop="4dp"
+                    android:textSize="10sp"
+                    android:textColor="#374151"
+                    android:fontFamily="@font/poppins_medium"/>
+            </LinearLayout>
+
+            <!-- Albañil -->
+            <LinearLayout
+                android:id="@+id/catAlbanil"
+                android:layout_width="80dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/bg_category"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:elevation="3dp">
+
+                <ImageView
+                    android:id="@+id/iconAlbanil"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_edit"
+                    app:tint="#2563EB"/>
+
+                <TextView
+                    android:id="@+id/textAlbanil"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Albañil"
+                    android:layout_marginTop="4dp"
+                    android:textSize="11sp"
+                    android:textColor="#374151"
+                    android:fontFamily="@font/poppins_medium"/>
+            </LinearLayout>
+
+            <!-- Carpintero -->
+            <LinearLayout
+                android:id="@+id/catCarpintero"
+                android:layout_width="80dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/bg_category"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:elevation="3dp">
+
+                <ImageView
+                    android:id="@+id/iconCarpintero"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_crop"
+                    app:tint="#2563EB"/>
+
+                <TextView
+                    android:id="@+id/textCarpintero"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Carpintero"
+                    android:layout_marginTop="4dp"
+                    android:textSize="10sp"
+                    android:textColor="#374151"
+                    android:fontFamily="@font/poppins_medium"/>
+            </LinearLayout>
+
+            <!-- Pintor -->
+            <LinearLayout
+                android:id="@+id/catPintor"
+                android:layout_width="80dp"
+                android:layout_height="45dp"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/bg_category"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:elevation="3dp">
+
+                <ImageView
+                    android:id="@+id/iconPintor"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_gallery"
+                    app:tint="#2563EB"/>
+
+                <TextView
+                    android:id="@+id/textPintor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pintor"
+                    android:layout_marginTop="4dp"
+                    android:textSize="10sp"
+                    android:textColor="#374151"
+                    android:fontFamily="@font/poppins_medium"/>
+            </LinearLayout>
+
+        </LinearLayout>
     </HorizontalScrollView>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -166,10 +258,13 @@
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        app:elevation="8dp"
+        android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/bottom_nav_menu"/>
+        app:menu="@menu/bottom_nav_menu"
+        app:itemIconTint="@color/selector_nav_blue"
+        app:itemTextColor="@color/selector_nav_blue"
+        app:labelVisibilityMode="labeled"
+        app:itemRippleColor="@android:color/transparent"/>
 
 
 
