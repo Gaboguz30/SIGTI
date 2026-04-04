@@ -236,7 +236,7 @@
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
-                                android:src="@android:drawable/ic_menu_myplaces"
+                                android:src="@drawable/ic_person"
                                 app:tint="#757575"/>
                             <TextView
                                 android:layout_width="0dp"

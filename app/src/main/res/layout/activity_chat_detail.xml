@@ -13,7 +13,7 @@
         android:layout_height="24dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="40dp"
-        android:src="@android:drawable/ic_menu_revert"
+        android:src="@drawable/ic_retorno"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:padding="4dp"
         app:tint="@color/black"
@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:text="Chat"
         android:textColor="@color/black"
-        android:textSize="20sp"
+        android:textSize="22sp"
         android:fontFamily="@font/poppins_bold"
         android:layout_marginStart="12dp"
         app:layout_constraintStart_toEndOf="@id/btnBackChat"
@@ -70,6 +70,8 @@
         android:textAlignment="center"
         android:textColor="#9E9E9E"
         android:textSize="12sp"
+        android:background="#F5F5F5"
+        android:padding="10dp"
         android:fontFamily="@font/poppins_regular"
         app:layout_constraintTop_toBottomOf="@id/tvChatSubtitle"
         app:layout_constraintStart_toStartOf="parent"
@@ -110,6 +112,7 @@
         android:elevation="6dp"
         android:orientation="horizontal"
         android:padding="8dp"
+
         android:gravity="center_vertical"
         app:layout_constraintBottom_toTopOf="@id/bottomNavigationChat">
 
@@ -129,8 +132,8 @@
         <!-- BOTÓN PRO (EL QUE TE GUSTABA) -->
         <ImageView
             android:id="@+id/btnSendMessage"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_marginStart="6dp"
             android:background="@drawable/bg_send_circle"
             android:padding="10dp"

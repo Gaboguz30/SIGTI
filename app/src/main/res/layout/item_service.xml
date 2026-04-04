@@ -5,28 +5,32 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="0dp"
+
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
     app:strokeWidth="1dp"
-    app:strokeColor="#EAEAEA"
-    android:backgroundTint="@color/white">
+    app:strokeColor="#E5E7EB"
+
+    android:backgroundTint="@android:color/white"
+    android:foreground="?attr/selectableItemBackground">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="16dp"
+        android:padding="18dp"
         android:gravity="center_vertical">
 
         <ImageView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
             android:src="@android:drawable/ic_menu_agenda"
             app:tint="@color/sigti_blue"
-            android:background="#F0F8FF"
-            android:padding="8dp"
+            android:background="#EEF2FF"
+            android:padding="10dp"
             android:layout_marginEnd="16dp"/>
 
+        <!-- TEXTO -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -38,30 +42,36 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Mantenimiento preventivo"
-                android:textSize="16sp"
+                android:fontFamily="@font/poppins_medium"
+                android:textSize="17sp"
                 android:textStyle="bold"
-                android:textColor="@color/black"/>
+                android:textColor="#111827"/>
 
             <TextView
                 android:id="@+id/tvServiceDesc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Revisión general y limpieza de equipos."
+                android:fontFamily="@font/poppins_regular"
                 android:textSize="14sp"
-                android:textColor="#757575"
+                android:textColor="#6B7280"
                 android:maxLines="2"
                 android:ellipsize="end"
                 android:layout_marginTop="4dp"/>
         </LinearLayout>
 
+        <!-- PRECIO -->
         <TextView
             android:id="@+id/tvServicePrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="$500"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="@color/sigti_blue"
+            android:textColor="#2563EB"
+            android:background="#EFF6FF"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="6dp"
             android:layout_marginStart="12dp"/>
 
     </LinearLayout>

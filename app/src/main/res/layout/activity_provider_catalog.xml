@@ -59,6 +59,7 @@
         android:layout_height="wrap_content"
         android:text="Nuevo Servicio"
         app:icon="@android:drawable/ic_input_add"
+        android:fontFamily="@font/poppins_bold"
         app:backgroundTint="@color/sigti_blue"
         android:textColor="@color/white"
         app:iconTint="@color/white"

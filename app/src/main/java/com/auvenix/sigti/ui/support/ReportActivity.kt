@@ -2,8 +2,9 @@ package com.auvenix.sigti.ui.support
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.widget.ImageView
 import android.widget.Toast
+import android.widget.TextView
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import com.auvenix.sigti.R
 import com.google.android.material.button.MaterialButton
@@ -12,6 +13,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
+import android.view.View
+
 
 class ReportActivity : AppCompatActivity() {
 
@@ -29,23 +32,24 @@ class ReportActivity : AppCompatActivity() {
 
         inputIncident = findViewById(R.id.inputIncidentType)
         inputRequest = findViewById(R.id.inputRequestId)
+
         inputDate = findViewById(R.id.inputDate)
         inputDescription = findViewById(R.id.inputDescription)
 
         reportedWorkerId = intent.getStringExtra("workerId")
 
-        val btnBack = findViewById<ImageView>(R.id.btnBackReport)
         val btnSubmit = findViewById<MaterialButton>(R.id.btnSubmitReport)
-        val btn911 = findViewById<MaterialButton>(R.id.btnCall911)
+        val header = findViewById<View>(R.id.header)
 
-        btnBack.setOnClickListener { finish() }
+        val title = header.findViewById<TextView>(R.id.tvHeaderTitle)
+        title.text = "Reporte"
 
-        btn911.setOnClickListener {
-
-            val intent = android.content.Intent(android.content.Intent.ACTION_DIAL)
-            intent.data = android.net.Uri.parse("tel:911")
-            startActivity(intent)
+        val back = findViewById<ImageView>(R.id.btnBackHeader)
+        back.setOnClickListener {
+            finish()
         }
+
+
 
         inputDate.setOnClickListener {
 

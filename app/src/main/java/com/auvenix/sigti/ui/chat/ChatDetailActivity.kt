@@ -56,6 +56,11 @@ class ChatDetailActivity : AppCompatActivity() {
         val myUid = auth.currentUser?.uid ?: return
 
         targetUid = intent.getStringExtra("serviceId") ?: ""
+        if (targetUid.isEmpty()) {
+            Toast.makeText(this, "Error: chat sin usuario", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
 
         subtitle.text = "En línea"
         back.setOnClickListener { finish() }

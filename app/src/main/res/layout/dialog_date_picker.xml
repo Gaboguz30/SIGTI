@@ -10,7 +10,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Selecciona tu fecha"
+        android:text="Selecciona la fecha"
+        android:fontFamily="@font/poppins_medium"
         android:textSize="18sp"
         android:textStyle="bold"
         android:textColor="@color/black"
@@ -57,6 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Cancelar"
+            android:fontFamily="@font/poppins_medium"
             android:textColor="@color/sigti_blue"
             android:layout_marginEnd="8dp" />
 
@@ -67,6 +69,7 @@
             android:text="Aceptar"
             app:backgroundTint="@color/sigti_blue"
             android:textColor="@color/white"
+            android:fontFamily="@font/poppins_medium"
             app:cornerRadius="20dp" />
 
     </LinearLayout>

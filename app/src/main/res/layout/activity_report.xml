@@ -17,72 +17,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:paddingStart="16dp"
+            android:paddingEnd="24dp"
+            android:paddingBottom="24dp"
+            android:paddingTop="8dp">
 
-            <!-- HEADER -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+            <include
+                android:id="@+id/header"
+                layout="@layout/header_main"/>
 
-                <ImageView
-                    android:id="@+id/btnBackReport"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@android:drawable/ic_menu_revert"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="4dp"
-                    app:tint="@color/black" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Reporte"
-                    android:textSize="22sp"
-                    android:textColor="@color/black"
-                    android:fontFamily="@font/poppins_bold"
-                    android:layout_marginStart="12dp"/>
-            </LinearLayout>
-
-            <!-- ALERTA 911 -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:strokeColor="#FFCDD2"
-                app:strokeWidth="1dp"
-                app:cardBackgroundColor="#FFEBEE">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Si estás en peligro inmediato"
-                        android:textColor="#C62828"
-                        android:textSize="14sp"
-                        android:fontFamily="@font/poppins_medium"/>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnCall911"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:text="Llamar al 911"
-                        android:layout_marginTop="12dp"
-                        android:textAllCaps="false"
-                        android:textColor="@android:color/white"
-                        app:cornerRadius="12dp"
-                        android:backgroundTint="#D32F2F"/>
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
 
             <!-- TIPO INCIDENTE -->
             <TextView
@@ -153,7 +96,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:endIconMode="custom"
-                app:endIconDrawable="@android:drawable/ic_menu_my_calendar"
+                app:endIconDrawable="@drawable/ic_calendar1"
                 app:boxCornerRadiusTopStart="16dp"
                 app:boxCornerRadiusTopEnd="16dp"
                 app:boxCornerRadiusBottomStart="16dp"

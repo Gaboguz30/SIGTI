@@ -79,6 +79,11 @@ class WorkerProfileActivity : AppCompatActivity() {
         tabLayout.addTab(tabLayout.newTab().setText("Servicios"))
         tabLayout.addTab(tabLayout.newTab().setText("Reseñas"))
 
+// Selección inicial bonita
+        tabLayout.getTabAt(0)?.select()
+        rvServices.visibility = View.VISIBLE
+        rvReviews.visibility = View.GONE
+
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
 
             override fun onTabSelected(tab: TabLayout.Tab) {
@@ -186,7 +191,7 @@ class WorkerProfileActivity : AppCompatActivity() {
                 if (rating > 0f) {
                     tvRatingNumber.text = rating.toString()
                 } else {
-                    tvRatingNumber.text = "Sin reseñas"
+                    tvRatingNumber.text = "(0 reseñas)"
                 }
 
 

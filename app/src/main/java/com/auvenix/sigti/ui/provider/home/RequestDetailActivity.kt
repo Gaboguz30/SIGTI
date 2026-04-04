@@ -4,8 +4,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.InputType
 import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +11,9 @@ import com.auvenix.sigti.R
 import com.auvenix.sigti.ui.chat.ChatDetailActivity
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.firestore.FirebaseFirestore
+import android.view.View
+import android.widget.TextView
+import android.widget.ImageView
 
 class RequestDetailActivity : AppCompatActivity() {
 

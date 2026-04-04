@@ -15,6 +15,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import android.widget.ImageView
+import android.widget.TextView
 
 import android.app.AlertDialog
 import android.view.LayoutInflater
@@ -41,6 +43,15 @@ class NewRequestActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_request)
+        val header = findViewById<View>(R.id.header)
+
+        val title = header.findViewById<TextView>(R.id.tvHeaderTitle)
+        title.text = "Nueva Solicitud"
+
+        val back = header.findViewById<ImageView>(R.id.btnBackHeader)
+        back.setOnClickListener {
+            finish()
+        }
 
         setupBottomNavigation()
 
@@ -71,6 +82,7 @@ class NewRequestActivity : AppCompatActivity() {
         val etCp = findViewById<TextInputEditText>(R.id.etCp)
         val tilDesc = findViewById<TextInputLayout>(R.id.tilDescripcion)
         val etDesc = findViewById<TextInputEditText>(R.id.etDescripcion)
+
 
         // 🔥 Cargar servicios
         loadProviderCatalog(etServicio, tilServicioOtro)
@@ -118,6 +130,7 @@ class NewRequestActivity : AppCompatActivity() {
 
             alertDialog.show()
         }
+
 
         val uid = auth.currentUser?.uid
         if (uid != null) {

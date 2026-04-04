@@ -5,131 +5,145 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="12dp"
-    android:layout_marginVertical="8dp"
+    android:layout_marginVertical="10dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="4dp"
+    android:paddingVertical="10dp"
     app:cardCornerRadius="18dp"
-    app:cardElevation="3dp"
+    app:cardElevation="2dp"
+    app:strokeColor="#E5E7EB"
+    app:strokeWidth="1dp"
     app:cardBackgroundColor="@android:color/white">
 
     <LinearLayout
+        android:minHeight="70dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="horizontal"
+        app:cardElevation="1dp"
+        android:paddingVertical="18dp"
+        android:paddingHorizontal="14dp"
+        android:gravity="center_vertical">
 
-        <!-- FILA SUPERIOR -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+        <!-- FOTO -->
+        <FrameLayout
+            android:layout_width="48dp"
+            android:layout_height="48dp">
 
-            <!-- FOTO -->
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/ivWorkerProfile"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:background="#F1F5F9"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
                 android:src="@android:drawable/ic_menu_gallery"
-                android:padding="14dp"
-                app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.SmallComponent"/>
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.MaterialComponents.MediumComponent"/>
 
-            <!-- INFO -->
-            <LinearLayout
-                android:layout_width="0dp"
+            <!-- ONLINE -->
+            <View
+                android:id="@+id/viewOnline"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="3dp"
+                android:background="@drawable/bg_online_dot"
+                android:visibility="gone"/>
+        </FrameLayout>
+
+        <!-- INFO -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="12dp">
+
+            <!-- NOMBRE -->
+            <TextView
+                android:id="@+id/tvWorkerName"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:layout_marginStart="14dp">
+                android:textSize="14sp"
+                android:textColor="#111827"
+                android:fontFamily="@font/poppins_bold"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:layout_marginBottom="1dp"/>
 
-                <!-- NOMBRE -->
+            <!-- PROFESIÓN -->
+            <TextView
+                android:id="@+id/tvWorkerProfession"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:textColor="#6B7280"
+                android:textSize="13sp"
+                android:fontFamily="@font/poppins_medium"/>
+
+            <!-- DISPONIBILIDAD -->
+            <TextView
+                android:id="@+id/tvWorkerAvailability"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textColor="#16A34A"
+                android:fontFamily="@font/poppins_medium"
+                android:layout_marginTop="2dp"/>
+
+            <!-- STATS -->
+            <LinearLayout
+                android:id="@+id/layoutStats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="4dp"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@android:drawable/star_on"
+                    app:tint="#FACC15"/>
+
                 <TextView
-                    android:id="@+id/tvWorkerName"
+                    android:id="@+id/tvWorkerRating"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""
-                    android:textSize="17sp"
-                    android:textColor="#111827"
-                    android:fontFamily="@font/poppins_bold"/>
+                    android:textSize="12sp"
+                    android:textColor="#374151"
+                    android:layout_marginStart="4dp"/>
+
+                <Space
+                    android:layout_width="6dp"
+                    android:layout_height="wrap_content"/>
 
                 <TextView
-                    android:id="@+id/tvWorkerProfession"
+                    android:id="@+id/tvWorkerDistance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=""
-                    android:textSize="13sp"
-                    android:textColor="#6B7280"
-                    android:layout_marginTop="2dp"/>
-
-                <!-- DISPONIBILIDAD -->
-                <TextView
-                    android:id="@+id/tvWorkerAvailability"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=""
-                    android:textSize="13sp"
-                    android:textColor="#16A34A"
-                    android:fontFamily="@font/poppins_medium"
-                    android:layout_marginTop="2dp"/>
-
-                <!-- RATING + DISTANCIA -->
-                <LinearLayout
-                    android:id="@+id/layoutStats"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="6dp"
-                    android:gravity="center_vertical">
-
-                    <!-- ⭐ ICONO -->
-                    <ImageView
-                        android:layout_width="14dp"
-                        android:layout_height="14dp"
-                        android:src="@android:drawable/star_on"
-                        app:tint="#FACC15"/>
-
-                    <!-- RATING -->
-                    <TextView
-                        android:id="@+id/tvWorkerRating"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=""
-                        android:textSize="13sp"
-                        android:textColor="#374151"
-                        android:fontFamily="@font/poppins_regular"
-                        android:layout_marginStart="4dp"/>
-
-                    <!-- ESPACIO -->
-                    <Space
-                        android:layout_width="8dp"
-                        android:layout_height="wrap_content"/>
-
-                    <!-- DISTANCIA -->
-                    <TextView
-                        android:id="@+id/tvWorkerDistance"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=""
-                        android:textSize="13sp"
-                        android:textColor="#6B7280"
-                        android:fontFamily="@font/poppins_regular"/>
-                </LinearLayout>
-
+                    android:textSize="12sp"
+                    android:textColor="#6B7280"/>
             </LinearLayout>
 
         </LinearLayout>
 
-        <!-- BOTÓN -->
+        <!-- BOTÓN LATERAL -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnViewProfile"
-            android:layout_width="match_parent"
-            android:layout_height="44dp"
-            android:text="Ver perfil"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:text="Ver"
             android:textAllCaps="false"
-            android:textColor="@android:color/white"
+            android:textSize="12sp"
             android:fontFamily="@font/poppins_medium"
-            android:layout_marginTop="14dp"
-            app:cornerRadius="12dp"
-            app:backgroundTint="#2563EB"/>
+            android:layout_marginStart="10dp"
+            app:strokeColor="#2563EB"
+            app:strokeWidth="1dp"
+            app:backgroundTint="#2563EB"
+            android:textColor="#FFFFFF"
+            app:cornerRadius="20dp"
+            android:paddingHorizontal="16dp"/>
 
     </LinearLayout>
 

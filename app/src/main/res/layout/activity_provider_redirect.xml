@@ -39,7 +39,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Serás redireccionado a sigiti.com.mx en unos momentos..."
+        android:text="Serás redireccionado en unos momentos"
         android:textSize="14sp"
         android:fontFamily="@font/poppins_medium"
         android:textColor="@color/sigti_blue"

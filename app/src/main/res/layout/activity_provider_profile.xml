@@ -193,7 +193,7 @@
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
-                                android:src="@android:drawable/ic_menu_send"
+                                android:src="@drawable/ic_flecha1"
                                 app:tint="@color/sigti_blue"/>
                         </LinearLayout>
 
@@ -236,7 +236,7 @@
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
-                                android:src="@android:drawable/ic_menu_myplaces"
+                                android:src="@drawable/ic_person"
                                 app:tint="#757575"/>
                             <TextView
                                 android:layout_width="0dp"
@@ -250,7 +250,7 @@
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
-                                android:src="@android:drawable/ic_media_next"
+                                android:src="@drawable/ic_flecha1"
                                 app:tint="#BDBDBD"/>
                         </LinearLayout>
 
@@ -286,7 +286,7 @@
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
-                                android:src="@android:drawable/ic_media_next"
+                                android:src="@drawable/ic_flecha1"
                                 app:tint="#BDBDBD"/>
                         </LinearLayout>
 
