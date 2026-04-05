@@ -32,9 +32,9 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="¡Hola de nuevo!"
+                    android:text="¡Hola! ,"
                     android:textColor="#FFE0B2"
-                    android:textSize="13sp"
+                    android:textSize="16sp"
                     android:fontFamily="@font/poppins_medium"/>
 
                 <TextView
@@ -44,7 +44,7 @@
                     android:text="Cargando..."
                     android:textColor="#FFFFFF"
                     android:textSize="30sp"
-                    android:layout_marginTop="6dp"
+                    android:layout_marginTop="2dp"
                     android:fontFamily="@font/poppins_bold"/>
 
                 <LinearLayout
@@ -74,7 +74,6 @@
 
             </LinearLayout>
 
-            <!-- CONTENIDO -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -82,14 +81,12 @@
                 android:paddingHorizontal="24dp"
                 android:paddingTop="24dp">
 
-                <!-- CARDS -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_marginBottom="32dp">
 
-                    <!-- GANANCIAS -->
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -126,7 +123,6 @@
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
-                    <!-- CALIFICACIÓN -->
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -170,7 +166,7 @@
                                     android:layout_width="16dp"
                                     android:layout_height="16dp"
                                     android:src="@android:drawable/btn_star_big_on"
-                                    android:tint="#FFB300"
+                                    app:tint="#FFB300"
                                     android:layout_marginStart="6dp"/>
                             </LinearLayout>
 
@@ -179,7 +175,6 @@
 
                 </LinearLayout>
 
-                <!-- TITULO -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -189,12 +184,32 @@
                     android:layout_marginBottom="16dp"
                     android:fontFamily="@font/poppins_bold"/>
 
-                <!-- LISTA -->
+                <ProgressBar
+                    android:id="@+id/pbLoading"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/tvEmptyState"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Aquí aparecerán los trabajos solicitados"
+                    android:textAlignment="center"
+                    android:textColor="#9E9E9E"
+                    android:textSize="14sp"
+                    android:layout_marginTop="32dp"
+                    android:visibility="gone"
+                    android:fontFamily="@font/poppins_medium"/>
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvRequests"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:nestedScrollingEnabled="false"
+                    android:visibility="gone"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/item_request" />
 
@@ -203,14 +218,11 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- NAV -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationProvider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        app:itemIconTint="@color/selector_nav_blue"
-        app:itemTextColor="@color/selector_nav_blue"
         app:labelVisibilityMode="labeled"
         app:elevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"

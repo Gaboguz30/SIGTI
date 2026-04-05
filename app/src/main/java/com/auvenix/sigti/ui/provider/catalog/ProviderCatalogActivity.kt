@@ -19,7 +19,6 @@ import com.google.firebase.firestore.Query
 import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
 import com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity
 import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
-import com.auvenix.sigti.ui.provider.profile.ProviderProfileActivity
 
 class ProviderCatalogActivity : AppCompatActivity() {
 
@@ -48,11 +47,27 @@ class ProviderCatalogActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         adapter = CatalogAdapter(
             serviceList = serviceList,
-            onEdit = { service -> openEditService(service) }, // ✅ Abre pantalla edición
-            onDelete = { service -> confirmarEliminacion(service) }
+            onEdit = { service -> openEditService(service) },
+            onDelete = { service -> confirmarEliminacion(service) },
+            onToggleStatus = { service, nuevoEstado -> cambiarEstadoServicio(service, nuevoEstado) } // 🔥 NUEVO ENLACE AL ADAPTER
         )
         binding.rvProviderCatalog.layoutManager = LinearLayoutManager(this)
         binding.rvProviderCatalog.adapter = adapter
+    }
+
+    // 🔥 NUEVA FUNCIÓN QUE ACTUALIZA FIREBASE
+    private fun cambiarEstadoServicio(service: ServiceCatalog, nuevoEstado: Boolean) {
+        val uid = auth.currentUser?.uid ?: return
+        db.collection("users").document(uid).collection("services").document(service.id)
+            .update("active", nuevoEstado)
+            .addOnSuccessListener {
+                val msj = if (nuevoEstado) "Servicio Reactivado" else "Servicio Desactivado"
+                Toast.makeText(this, msj, Toast.LENGTH_SHORT).show()
+                // La lista se actualiza sola gracias al SnapshotListener 😎
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Error al cambiar estado", Toast.LENGTH_SHORT).show()
+            }
     }
 
     // ==========================================
@@ -72,14 +87,13 @@ class ProviderCatalogActivity : AppCompatActivity() {
                 serviceList.clear()
 
                 if (snapshots != null && !snapshots.isEmpty) {
-                    binding.tvEmptyCatalog.visibility = View.GONE // Ocultamos mensaje "vacío"
+                    binding.tvEmptyCatalog.visibility = View.GONE
                     for (doc in snapshots) {
-                        // Mapeo automático de Firestore a Kotlin
                         val service = doc.toObject(ServiceCatalog::class.java).copy(id = doc.id)
                         serviceList.add(service)
                     }
                 } else {
-                    binding.tvEmptyCatalog.visibility = View.VISIBLE // Mostramos mensaje "vacío"
+                    binding.tvEmptyCatalog.visibility = View.VISIBLE
                 }
 
                 adapter.notifyDataSetChanged()
@@ -91,7 +105,6 @@ class ProviderCatalogActivity : AppCompatActivity() {
             putExtra("EXTRA_SERVICE_ID", service.id)
             putExtra("EXTRA_SERVICE_NAME", service.name)
             putExtra("EXTRA_SERVICE_DESC", service.description)
-            putExtra("EXTRA_SERVICE_PRICE", service.price)
         }
         startActivity(intent)
     }

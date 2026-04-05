@@ -175,9 +175,6 @@
                     app:cornerRadius="24dp"
                     android:fontFamily="@font/poppins_medium"/>
 
-
-
-
                 <Space
                     android:layout_width="10dp"
                     android:layout_height="wrap_content"/>
@@ -189,8 +186,10 @@
                     android:layout_weight="1"
                     android:text="Chat"
                     android:textAllCaps="false"
-                    android:textColor="@color/white"
-                    android:backgroundTint="#1F2937"
+                    android:textColor="@color/sigti_blue"
+                    app:strokeColor="@color/sigti_blue"
+                    app:strokeWidth="2dp"
+                    android:backgroundTint="@color/white"
                     app:cornerRadius="24dp"
                     android:fontFamily="@font/poppins_medium"
                     />
@@ -240,7 +239,7 @@
             android:layout_marginTop="24dp"
             android:nestedScrollingEnabled="false"
             tools:itemCount="3"
-            tools:listitem="@layout/item_service" />
+            tools:listitem="@layout/item_public_service" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvReviews"

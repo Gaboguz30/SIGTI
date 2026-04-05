@@ -10,8 +10,8 @@ import com.auvenix.sigti.R
 // 1. Modelo de datos para cada servicio
 data class ServiceItem(
     val title: String,
-    val description: String,
-    val price: String
+    val description: String
+    // 🔥 Quitamos el price de aquí porque ya no existe en el diseño
 )
 
 // 2. El Adaptador
@@ -20,22 +20,29 @@ class ServiceAdapter(
 ) : RecyclerView.Adapter<ServiceAdapter.ServiceViewHolder>() {
 
     class ServiceViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvTitle: TextView = itemView.findViewById(R.id.tvServiceTitle)
-        val tvDesc: TextView = itemView.findViewById(R.id.tvServiceDesc)
-        val tvPrice: TextView = itemView.findViewById(R.id.tvServicePrice)
+        // 🔥 CORREGIDO: Ahora apuntan a los IDs reales de item_public_service.xml
+        val tvTitle: TextView = itemView.findViewById(R.id.tvPublicServiceName)
+        val tvDesc: TextView = itemView.findViewById(R.id.tvPublicServiceDesc)
+        // 🔥 tvPrice eliminado para que no marque error
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ServiceViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_service, parent, false)
+            .inflate(R.layout.item_public_service, parent, false)
         return ServiceViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ServiceViewHolder, position: Int) {
         val service = serviceList[position]
         holder.tvTitle.text = service.title
-        holder.tvDesc.text = service.description
-        holder.tvPrice.text = "desde $${service.price}"
+
+        // Validamos si hay descripción para ocultarla o mostrarla
+        if (service.description.isEmpty()) {
+            holder.tvDesc.visibility = View.GONE
+        } else {
+            holder.tvDesc.visibility = View.VISIBLE
+            holder.tvDesc.text = service.description
+        }
     }
 
     override fun getItemCount(): Int {

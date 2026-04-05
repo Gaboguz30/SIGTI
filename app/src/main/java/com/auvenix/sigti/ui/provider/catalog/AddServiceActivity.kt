@@ -70,17 +70,23 @@ class AddServiceActivity : AppCompatActivity() {
         binding.btnSaveService.isEnabled = false
         binding.btnSaveService.text = "Guardando..."
 
-        val serviceData = hashMapOf(
+        // 🔥 CAMBIO: Lo hacemos mutableMapOf para poder inyectarle el estado
+        val serviceData = mutableMapOf<String, Any>(
             "name" to name,
-            "description" to desc,
+            "description" to desc
         )
+
+        // 🔥 NUEVO: Si no estamos editando (es nuevo), lo hacemos ACTIVO por defecto
+        if (!isEditing) {
+            serviceData["active"] = true
+        }
 
         // Referencia a la subcolección "services" en inglés
         val servicesRef = db.collection("users").document(uid).collection("services")
 
         if (isEditing) {
             // ACTUALIZAR DOCUMENTO EXISTENTE
-            servicesRef.document(serviceId!!).update(serviceData as Map<String, Any>)
+            servicesRef.document(serviceId!!).update(serviceData)
                 .addOnSuccessListener {
                     Toast.makeText(this, "Servicio actualizado", Toast.LENGTH_SHORT).show()
                     finish()

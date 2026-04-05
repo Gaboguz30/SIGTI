@@ -17,7 +17,6 @@ import com.google.firebase.firestore.Query
 import com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity
 import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
 import com.auvenix.sigti.ui.provider.catalog.ProviderCatalogActivity
-import com.auvenix.sigti.ui.provider.profile.ProviderProfileActivity
 
 class ProviderHomeActivity : AppCompatActivity() {
 
@@ -33,19 +32,28 @@ class ProviderHomeActivity : AppCompatActivity() {
         binding = ActivityProviderHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        loadUserData() // 🔥 Jalamos el nombre del usuario
         setupRecyclerView()
-        escucharNuevasSolicitudes()
+        escucharNuevasSolicitudes() // 🔥 Escucha datos y maneja el Loader
         setupBottomNavigation()
+    }
+
+    private fun loadUserData() {
+        val uid = auth.currentUser?.uid ?: return
+        db.collection("users").document(uid).get().addOnSuccessListener { doc ->
+            if (doc.exists()) {
+                val nombre = doc.getString("nombre") ?: "Prestador"
+                binding.tvProviderName.text = "$nombre!"
+            }
+        }
     }
 
     private fun setupRecyclerView() {
         adapter = RequestAdapter(requestList) { request ->
-            // Cuando le pican a "Ver Oferta", abrimos la pantalla de detalle pasándole el ID
             val intent = Intent(this, RequestDetailActivity::class.java)
             intent.putExtra("EXTRA_REQUEST_ID", request.id)
             startActivity(intent)
         }
-        // 🔥 CORREGIDO: Usamos rvRequests en lugar de rvNewRequests
         binding.rvRequests.layoutManager = LinearLayoutManager(this)
         binding.rvRequests.adapter = adapter
     }
@@ -53,28 +61,36 @@ class ProviderHomeActivity : AppCompatActivity() {
     private fun escucharNuevasSolicitudes() {
         val myUid = auth.currentUser?.uid ?: return
 
-        // 🚨 OJO: Solo buscamos las que sean para mí y estén en "pending"
+        // Encendemos el loader y ocultamos listas al inicio
+        binding.pbLoading.visibility = View.VISIBLE
+        binding.tvEmptyState.visibility = View.GONE
+        binding.rvRequests.visibility = View.GONE
+
         db.collection("requests")
             .whereEqualTo("providerId", myUid)
             .whereEqualTo("status", "pending")
             .orderBy("timestamp", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshots, e ->
+                // Apagamos el loader en cuanto Firebase nos responde
+                binding.pbLoading.visibility = View.GONE
+
                 if (e != null) {
                     Log.w("ProviderHome", "Error escuchando solicitudes", e)
+                    binding.tvEmptyState.visibility = View.VISIBLE
                     return@addSnapshotListener
                 }
 
                 requestList.clear()
                 if (snapshots != null && !snapshots.isEmpty) {
-                    // Hay solicitudes: Ocultar textos de "vacío" si tienes, y mostrar la lista
                     binding.rvRequests.visibility = View.VISIBLE
+                    binding.tvEmptyState.visibility = View.GONE
                     for (doc in snapshots) {
                         val req = doc.toObject(RequestModel::class.java).copy(id = doc.id)
                         requestList.add(req)
                     }
                 } else {
-                    // No hay solicitudes nuevas
                     binding.rvRequests.visibility = View.GONE
+                    binding.tvEmptyState.visibility = View.VISIBLE
                 }
                 adapter.notifyDataSetChanged()
             }

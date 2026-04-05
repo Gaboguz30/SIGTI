@@ -250,8 +250,7 @@ class WorkerProfileActivity : AppCompatActivity() {
     private fun cargarServicios() {
         db.collection("users").document(workerId)
             .collection("services")
-            .orderBy("name", Query.Direction.ASCENDING)
-            .get()
+            .get() // Quitamos el orderBy de aquí, lo haremos en Kotlin para manejar el boolean
             .addOnSuccessListener { docs ->
 
                 servicesList.clear()
@@ -264,15 +263,18 @@ class WorkerProfileActivity : AppCompatActivity() {
                     rvServices.visibility = View.VISIBLE
 
                     for (doc in docs) {
-                        val service = doc.toObject(ServiceCatalog::class.java)
+                        // Mapeamos a ServiceCatalog usando copia para meterle el ID
+                        val service = doc.toObject(ServiceCatalog::class.java).copy(id = doc.id)
                         servicesList.add(service)
                     }
+
+                    // 🔥 MAGIA: Ordenamos PRIMERO por Activos (true) y SEGUNDO alfabéticamente
+                    servicesList.sortWith(compareBy({ !it.active }, { it.name.lowercase() }))
                 }
 
                 adapter.notifyDataSetChanged()
             }
     }
-
     private fun setupButtons() {
 
 
