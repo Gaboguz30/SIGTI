@@ -17,6 +17,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.database.*
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.core.widget.addTextChangedListener
+import android.widget.TextView
+import android.view.View
+import androidx.core.content.res.ResourcesCompat
 
 class ProviderChatActivity : AppCompatActivity() {
 
@@ -24,12 +28,45 @@ class ProviderChatActivity : AppCompatActivity() {
     private val chatList = mutableListOf<ChatModel>()
     private lateinit var adapter : ChatListAdapter
     private lateinit var dbRef   : DatabaseReference
+    lateinit var fullList: List<ChatModel>
     private var myRole = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProviderChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val poppins = ResourcesCompat.getFont(this, R.font.poppins_medium)
+
+        binding.chipTodos.typeface = poppins
+        binding.chipNoLeidos.typeface = poppins
+        binding.chipFavoritos.typeface = poppins
+
+        val title = findViewById<TextView>(R.id.tvHeaderTitle)
+        title.text = "Bandeja de Entrada"
+
+        binding.etSearch.addTextChangedListener {
+            adapter.filter(it.toString())
+        }
+
+
+        binding.chipTodos.setOnClickListener {
+            adapter.filter("")
+        }
+
+        binding.chipNoLeidos.setOnClickListener {
+            val filtrados = fullList.filter { it.unreadCount > 0 }
+            adapter.chatList.clear()
+            adapter.chatList.addAll(filtrados)
+            adapter.notifyDataSetChanged()
+        }
+
+        binding.chipFavoritos.setOnClickListener {
+            val favoritos = fullList.filter { it.name.contains("A") }
+            adapter.chatList.clear()
+            adapter.chatList.addAll(favoritos)
+            adapter.notifyDataSetChanged()
+        }
 
         // 🔥 OBTENER ROL (SOLO AQUÍ SE CONFIGURA EL MENÚ)
         FirebaseFirestore.getInstance()
@@ -47,6 +84,7 @@ class ProviderChatActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         adapter = ChatListAdapter(chatList) { chat ->
+            adapter.setFullList(chatList)
             startActivity(
                 Intent(this, ChatDetailActivity::class.java).apply {
                     putExtra("serviceId", chat.id)
@@ -90,8 +128,10 @@ class ProviderChatActivity : AppCompatActivity() {
                 chatList.sortByDescending {
                     snapshot.child(it.id).child("timestamp").getValue(Long::class.java) ?: 0L
                 }
-
+                fullList = chatList.toList()
+                adapter.setFullList(chatList)
                 adapter.notifyDataSetChanged()
+
             }
 
             override fun onCancelled(error: DatabaseError) {}

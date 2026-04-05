@@ -42,7 +42,6 @@ class AddServiceActivity : AppCompatActivity() {
             binding.tvCardTitle.text = "Modificar Detalles"
             binding.etServiceName.setText(name)
             binding.etServiceDesc.setText(desc)
-            if (price != -1.0) binding.etServicePrice.setText(price.toString())
         } else {
             binding.tvCardTitle.text = "Detalles del Servicio"
         }
@@ -51,7 +50,6 @@ class AddServiceActivity : AppCompatActivity() {
     private fun validateAndSave() {
         val name = binding.etServiceName.text.toString().trim()
         val desc = binding.etServiceDesc.text.toString().trim()
-        val priceStr = binding.etServicePrice.text.toString().trim()
         val uid = auth.currentUser?.uid ?: return
 
         var hasError = false
@@ -66,12 +64,6 @@ class AddServiceActivity : AppCompatActivity() {
             hasError = true
         } else { binding.tilServiceDesc.error = null }
 
-        val price = priceStr.toDoubleOrNull()
-        if (price == null || price <= 0) {
-            binding.tilServicePrice.error = "Precio inválido"
-            hasError = true
-        } else { binding.tilServicePrice.error = null }
-
         if (hasError) return
 
         // Mostramos estado de carga
@@ -81,7 +73,6 @@ class AddServiceActivity : AppCompatActivity() {
         val serviceData = hashMapOf(
             "name" to name,
             "description" to desc,
-            "price" to price
         )
 
         // Referencia a la subcolección "services" en inglés

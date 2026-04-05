@@ -27,6 +27,34 @@
                 layout="@layout/header_main"/>
 
 
+            <!-- ID SERVICIO -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ID del servicio"
+                android:textSize="15sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppins_medium"
+                android:layout_marginTop="24dp"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inputRequestId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Elige que servicio fue"
+                    android:fontFamily="@font/poppins_regular"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+
             <!-- TIPO INCIDENTE -->
             <TextView
                 android:layout_width="wrap_content"
@@ -35,7 +63,7 @@
                 android:textSize="15sp"
                 android:textColor="@color/black"
                 android:fontFamily="@font/poppins_medium"
-                android:layout_marginTop="24dp"/>
+                android:layout_marginTop="16dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -54,32 +82,6 @@
                     android:fontFamily="@font/poppins_regular"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- ID SERVICIO -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ID del servicio"
-                android:textSize="15sp"
-                android:textColor="@color/black"
-                android:fontFamily="@font/poppins_medium"
-                android:layout_marginTop="16dp"/>
-
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:boxCornerRadiusTopStart="16dp"
-                app:boxCornerRadiusTopEnd="16dp"
-                app:boxCornerRadiusBottomStart="16dp"
-                app:boxCornerRadiusBottomEnd="16dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/inputRequestId"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Ej. SERV-001"
-                    android:fontFamily="@font/poppins_regular"/>
-            </com.google.android.material.textfield.TextInputLayout>
 
             <!-- FECHA -->
             <TextView

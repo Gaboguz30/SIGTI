@@ -17,6 +17,11 @@ class ChangePasswordActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityChangePasswordBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.header.tvHeaderTitle.text = "Cambiar Contraseña"
+
+        binding.header.btnBackHeader.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
 
         // Botón de confirmar el cambio
         binding.btnConfirmChange.setOnClickListener {

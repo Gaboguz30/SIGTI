@@ -40,7 +40,6 @@ class SigtiMessagingService : FirebaseMessagingService() {
 
         val channelId = "sigti_notifications_channel"
 
-        // 🔥 CORREGIDO: Usando tu icono real icon_notification
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.icon_notification)
             .setContentTitle(title)

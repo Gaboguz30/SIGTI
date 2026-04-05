@@ -18,6 +18,10 @@ class MyDataActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMyDataBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.header.btnBackHeader.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+        binding.header.tvHeaderTitle.text = "Información Personal"
 
         cargarDatosUsuario()
 

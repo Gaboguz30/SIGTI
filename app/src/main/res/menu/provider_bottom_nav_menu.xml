@@ -7,7 +7,7 @@
 
     <item
         android:id="@+id/nav_provider_jobs"
-        android:icon="@drawable/icon_calendar"
+        android:icon="@drawable/ic_catalogo"
         android:title="Trabajos" />
 
     <item
@@ -17,7 +17,7 @@
 
     <item
         android:id="@+id/nav_provider_catalog"
-        android:icon="@drawable/icon_search"
+        android:icon="@drawable/ic_trabajo"
         android:title="Catálogo" />
 
     <item

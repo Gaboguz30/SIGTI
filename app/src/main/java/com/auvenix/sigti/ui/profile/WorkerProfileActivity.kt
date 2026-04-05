@@ -53,6 +53,15 @@ class WorkerProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_worker_profile)
+        val header = findViewById<View>(R.id.header)
+
+        val title = header.findViewById<TextView>(R.id.tvHeaderTitle)
+        title.text = "Perfil"
+        val back = header.findViewById<ImageView>(R.id.btnBackHeader)
+
+        back.setOnClickListener {
+            finish()
+        }
 
         workerId = intent.getStringExtra("EXTRA_WORKER_UID") ?: ""
 
@@ -70,11 +79,18 @@ class WorkerProfileActivity : AppCompatActivity() {
         setupBottomNav()
     }
 
+
     private fun setupTabs() {
 
         val tabLayout = findViewById<TabLayout>(R.id.tabLayout)
         val rvServices = findViewById<RecyclerView>(R.id.rvServices)
         val rvReviews = findViewById<RecyclerView>(R.id.rvReviews)
+        val header = findViewById<View>(R.id.header)
+        val back = header.findViewById<ImageView>(R.id.btnBackHeader)
+
+        back.setOnClickListener {
+            finish()
+        }
 
         tabLayout.addTab(tabLayout.newTab().setText("Servicios"))
         tabLayout.addTab(tabLayout.newTab().setText("Reseñas"))
@@ -259,9 +275,6 @@ class WorkerProfileActivity : AppCompatActivity() {
 
     private fun setupButtons() {
 
-        findViewById<ImageView>(R.id.btnBack).setOnClickListener {
-            finish()
-        }
 
         findViewById<TextView>(R.id.btnReport).setOnClickListener {
             val intent = Intent(this, ReportActivity::class.java)

@@ -13,6 +13,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
+import android.widget.TextView
 
 class UserNotificationsActivity : AppCompatActivity() {
 
@@ -27,6 +28,9 @@ class UserNotificationsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityUserNotificationsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val title = findViewById<TextView>(R.id.tvHeaderTitle)
+        title.text = "Notificaciones"
 
         setupRecyclerView()
         escucharNotificaciones()

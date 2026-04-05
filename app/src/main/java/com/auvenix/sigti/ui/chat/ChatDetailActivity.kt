@@ -14,6 +14,8 @@ import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
+import android.widget.TextView
+import android.widget.ImageView
 
 import com.auvenix.sigti.ui.home.*
 import com.auvenix.sigti.ui.profile.ProfileActivity
@@ -41,14 +43,20 @@ class ChatDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_detail)
+        val header = findViewById<View>(R.id.header)
+
+        val title = header.findViewById<TextView>(R.id.tvHeaderTitle)
+        val back = header.findViewById<ImageView>(R.id.btnBackHeader)
+
+        back.setOnClickListener {
+            finish()
+        }
         setupBottomNavigation()
 
         val rv = findViewById<RecyclerView>(R.id.rvChatMessages)
         val input = findViewById<EditText>(R.id.etMessageInput)
         val send = findViewById<ImageView>(R.id.btnSendMessage)
-        val title = findViewById<TextView>(R.id.tvChatTitle)
         val subtitle = findViewById<TextView>(R.id.tvChatSubtitle)
-        val back = findViewById<ImageView>(R.id.btnBackChat)
 
         tvUnreadBanner = findViewById(R.id.tvUnreadBanner)
 
@@ -63,7 +71,6 @@ class ChatDetailActivity : AppCompatActivity() {
         }
 
         subtitle.text = "En línea"
-        back.setOnClickListener { finish() }
 
         rv.layoutManager = LinearLayoutManager(this).apply { stackFromEnd = true }
         adapter = ChatAdapter(chatMessages)

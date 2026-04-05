@@ -1,64 +1,98 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="12dp">
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:background="?attr/selectableItemBackground">
 
-    <!-- Avatar -->
-    <TextView
-        android:id="@+id/tvAvatar"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:background="@drawable/bg_circle"
-        android:gravity="center"
-        android:text="A"
-        android:textSize="18sp"/>
-
-    <!-- Nombre -->
-    <TextView
-        android:id="@+id/tvUserName"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toEndOf="@id/tvAvatar"
-        android:layout_marginStart="12dp"
-        android:text="Nombre"
-        android:fontFamily="@font/poppins_bold"
-        android:textStyle="bold"
-        android:textSize="16sp"/>
+        android:paddingTop="4dp"
+        android:paddingBottom="10dp"
+        android:paddingHorizontal="12dp">
 
-    <!-- Hora -->
-    <TextView
-        android:id="@+id/tvTime"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:text="14:52"
-        android:textSize="12sp"
-        android:textColor="#888888"/>
 
-    <!-- Mensaje -->
-    <TextView
-        android:id="@+id/tvLastMessage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tvUserName"
-        android:layout_toEndOf="@id/tvAvatar"
-        android:layout_marginStart="12dp"
-        android:text="Último mensaje"
-        android:fontFamily="@font/poppins_medium"
-        android:textSize="14sp"
-        android:textColor="#777777"/>
+        <!-- Avatar -->
+        <TextView
+            android:id="@+id/tvAvatar"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_circle"
+            android:gravity="center"
+            android:text="A"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="#2979FF"/>
 
-    <!-- Badge -->
-    <TextView
-        android:id="@+id/tvBadge"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="#FF0000"
-        android:text="99"
-        android:textColor="#FFFFFF"
-        android:gravity="center"
-        android:layout_alignParentEnd="true"/>
+        <!-- Nombre -->
+        <TextView
+            android:id="@+id/tvUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/tvAvatar"
+            android:layout_marginStart="10dp"
+            android:text="Nombre"
+            android:fontFamily="@font/poppins_bold"
+            android:textSize="16sp"
+            android:layout_marginBottom="1dp"
+            android:textColor="#111111"/>
 
-</RelativeLayout>
+        <!-- Hora -->
+        <TextView
+            android:id="@+id/tvTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="14:52"
+            android:textSize="12sp"
+            android:textColor="#9E9E9E"
+            android:fontFamily="@font/poppins_regular"/>
+
+        <TextView
+            android:id="@+id/tvLastMessage"
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvUserName"
+            android:layout_toEndOf="@id/tvAvatar"
+            android:layout_toStartOf="@id/tvTime"
+            android:layout_marginStart="12dp"
+            android:text="Último mensaje"
+            android:fontFamily="@font/poppins_regular"
+            android:textSize="13sp"
+            android:layout_marginTop="0dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="#757575"/>
+
+        <!-- Badge -->
+        <TextView
+            android:id="@+id/tvBadge"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:text="1"
+            android:textColor="#FFFFFF"
+            android:textSize="11sp"
+            android:gravity="center"
+            android:layout_below="@id/tvTime"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/bg_badge_blue"
+            android:fontFamily="@font/poppins_bold"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="19dp"
+            android:background="#EEEEEE"
+            android:layout_marginStart="60dp"
+            android:layout_marginEnd="12dp"/>
+
+
+
+    </RelativeLayout>
+
+</LinearLayout>

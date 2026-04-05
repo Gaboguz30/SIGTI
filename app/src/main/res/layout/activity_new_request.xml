@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="#FAFAFA">
 
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -97,7 +98,7 @@
                 app:boxCornerRadiusTopEnd="16dp"
                 app:boxCornerRadiusBottomStart="16dp"
                 app:boxCornerRadiusBottomEnd="16dp"
-                android:hint="DD/MM/AAAA">
+                android:hint="Seleccionar fecha">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etFecha"
@@ -110,7 +111,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Domicilio"
+                android:text="Domicilio donde se llevara a cabo el Servicio"
                 android:textSize="16sp"
                 android:textColor="@color/black"
                 android:fontFamily="@font/poppins_medium"
@@ -159,7 +160,8 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etNumExt"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_regular"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -169,6 +171,7 @@
                     android:layout_marginStart="6dp"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:hint="Núm. Interior (opc.)"
+                    android:fontFamily="@font/poppins_regular"
                     app:boxCornerRadiusTopStart="16dp"
                     app:boxCornerRadiusTopEnd="16dp"
                     app:boxCornerRadiusBottomStart="16dp"
@@ -177,7 +180,8 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etNumInt"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_regular"/>
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
@@ -205,7 +209,8 @@
                         android:id="@+id/etCp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="number"/>
+                        android:inputType="number"
+                        android:fontFamily="@font/poppins_regular"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -223,14 +228,15 @@
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etColonia"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_regular"/>
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Descripción de la tarea"
+                android:text="Descripción del Servicio"
                 android:textSize="16sp"
                 android:textColor="@color/black"
                 android:fontFamily="@font/poppins_medium"
@@ -241,7 +247,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:hint="Describe el trabajo y detalles importantes..."
+                android:hint="Describe el trabajo con detalles"
                 app:boxCornerRadiusTopStart="16dp"
                 app:boxCornerRadiusTopEnd="16dp"
                 app:boxCornerRadiusBottomStart="16dp"
@@ -261,7 +267,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:layout_marginTop="32dp"
-                android:text="Enviar Oferta"
+                android:text="Enviar Solicitud"
                 android:textSize="16sp"
                 android:textAllCaps="false"
                 android:fontFamily="@font/poppins_medium"

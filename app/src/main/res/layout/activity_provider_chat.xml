@@ -1,55 +1,116 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white">
 
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Bandeja de Entrada"
-        android:fontFamily="@font/poppins_bold"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:textColor="#1A1A1A"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvChats"
-        android:layout_width="0dp"
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavigationProvider"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/item_chat_list" />
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationProvider">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <include
+                layout="@layout/header_main1"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/searchLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxCornerRadiusTopStart="50dp"
+                app:boxCornerRadiusTopEnd="50dp"
+                app:boxCornerRadiusBottomStart="50dp"
+                app:boxCornerRadiusBottomEnd="50dp"
+                app:endIconDrawable="@drawable/ic_search"
+                app:endIconMode="custom"
+                app:boxStrokeWidth="1dp"
+                app:boxStrokeColor="#E0E0E0"
+                android:hint="Cuenta y mensajes">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_regular"
+                    android:paddingVertical="10dp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="8dp"
+                app:singleSelection="true"
+                app:chipSpacing="8dp"
+                android:fontFamily="@font/poppins_regular">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipTodos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Todos"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:checked="true"
+                    android:fontFamily="@font/poppins_medium"
+                    app:chipCornerRadius="50dp"
+                    app:chipStrokeWidth="0dp"
+                    app:chipBackgroundColor="@color/chip_selector_bg"
+                    android:textColor="@color/chip_selector_text"/>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipNoLeidos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No leídos"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:fontFamily="@font/poppins_medium"
+                    app:chipCornerRadius="50dp"
+                    app:chipStrokeWidth="0dp"
+                    app:chipBackgroundColor="@color/chip_selector_bg"
+                    android:textColor="@color/chip_selector_text"/>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFavoritos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Favoritos"
+                    style="@style/Widget.MaterialComponents.Chip.Choice"
+                    android:fontFamily="@font/poppins_medium"
+                    app:chipCornerRadius="50dp"
+                    app:chipStrokeWidth="0dp"
+                    app:chipBackgroundColor="@color/chip_selector_bg"
+                    android:textColor="@color/chip_selector_text"/>
+            </com.google.android.material.chip.ChipGroup>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvChats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"/>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationProvider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        app:elevation="8dp"
-        app:labelVisibilityMode="labeled"
-        app:itemIconTint="@color/selector_nav_blue"
-        app:itemTextColor="@color/selector_nav_blue"
-        app:itemRippleColor="@android:color/transparent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-
-        app:layout_constraintEnd_toEndOf="parent"
-        />
-
-
-
-
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+

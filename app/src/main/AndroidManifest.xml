@@ -110,7 +110,8 @@
             android:exported="false" /> <!-- ── SOLICITUDES / SOPORTE ──────────────────────────── -->
         <activity
             android:name=".ui.request.NewRequestActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.SIGTI"/>
         <activity
             android:name=".ui.support.ReportActivity"
             android:exported="false" />
