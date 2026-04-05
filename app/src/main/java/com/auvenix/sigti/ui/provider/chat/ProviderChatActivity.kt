@@ -2,25 +2,24 @@ package com.auvenix.sigti.ui.provider.chat
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.auvenix.sigti.R
 import com.auvenix.sigti.databinding.ActivityProviderChatBinding
+import com.auvenix.sigti.session.SessionManager // 🔥 IMPORTAMOS LA MEMORIA LOCAL
 import com.auvenix.sigti.ui.chat.ChatDetailActivity
 import com.auvenix.sigti.ui.profile.ProfileActivity
 import com.auvenix.sigti.ui.provider.catalog.ProviderCatalogActivity
 import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
 import com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity
-import com.auvenix.sigti.ui.provider.profile.ProviderProfileActivity
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.database.*
+import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
-import androidx.core.widget.addTextChangedListener
-import android.widget.TextView
-import android.view.View
-import androidx.core.content.res.ResourcesCompat
 
 class ProviderChatActivity : AppCompatActivity() {
 
@@ -29,12 +28,16 @@ class ProviderChatActivity : AppCompatActivity() {
     private lateinit var adapter : ChatListAdapter
     private lateinit var dbRef   : DatabaseReference
     lateinit var fullList: List<ChatModel>
+
+    private lateinit var sessionManager: SessionManager // 🔥 VARIABLE DE SESIÓN
     private var myRole = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProviderChatBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        sessionManager = SessionManager(this)
 
         val poppins = ResourcesCompat.getFont(this, R.font.poppins_medium)
 
@@ -48,7 +51,6 @@ class ProviderChatActivity : AppCompatActivity() {
         binding.etSearch.addTextChangedListener {
             adapter.filter(it.toString())
         }
-
 
         binding.chipTodos.setOnClickListener {
             adapter.filter("")
@@ -68,14 +70,23 @@ class ProviderChatActivity : AppCompatActivity() {
             adapter.notifyDataSetChanged()
         }
 
-        // 🔥 OBTENER ROL (SOLO AQUÍ SE CONFIGURA EL MENÚ)
+        // 🔥 MAGIA CONTRA EL PARPADEO (Carga en 1 milisegundo)
+        myRole = sessionManager.getRole() ?: "SOLICITANTE"
+        setupBottomNavigation() // Pinta la barra de INMEDIATO
+
+        // 🔥 AUTO-CURACIÓN: Consultamos Firebase en segundo plano solo para confirmar
         FirebaseFirestore.getInstance()
             .collection("users")
             .document(FirebaseAuth.getInstance().currentUser?.uid ?: "")
             .get()
             .addOnSuccessListener { doc ->
-                myRole = doc.getString("role") ?: "SOLICITANTE"
-                setupBottomNavigation()
+                val realRole = doc.getString("role") ?: "SOLICITANTE"
+                // Si la memoria estaba mal, la corrige y repinta, si no, no hace nada visualmente
+                if (myRole != realRole) {
+                    sessionManager.saveRole(realRole)
+                    myRole = realRole
+                    setupBottomNavigation()
+                }
             }
 
         setupRecyclerView()
@@ -139,12 +150,10 @@ class ProviderChatActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNavigation() {
-
         val nav = binding.bottomNavigationProvider
         nav.menu.clear()
 
         if (myRole.equals("PRESTADOR", ignoreCase = true)) {
-
             nav.inflateMenu(R.menu.provider_bottom_nav_menu)
             nav.selectedItemId = R.id.nav_provider_chat
 
@@ -154,13 +163,12 @@ class ProviderChatActivity : AppCompatActivity() {
                     R.id.nav_provider_jobs -> start(ProviderJobsActivity::class.java)
                     R.id.nav_provider_chat -> true
                     R.id.nav_provider_catalog -> start(ProviderCatalogActivity::class.java)
-                    R.id.nav_provider_profile -> start(ProviderProfileActivity::class.java)
+                    R.id.nav_provider_profile -> start(ProfileActivity::class.java) // 🔥 CORREGIDO (Ya no usa el fantasma)
                     else -> false
                 }
             }
 
         } else {
-
             nav.inflateMenu(R.menu.bottom_nav_menu)
             nav.selectedItemId = R.id.nav_chat
 
@@ -177,11 +185,13 @@ class ProviderChatActivity : AppCompatActivity() {
         }
     }
 
+    // 🔥 Le metemos el overridePendingTransition(0,0) aquí para matar las animaciones bruscas del Android
     private fun start(activity: Class<*>): Boolean {
         if (this::class.java == activity) return true
 
         val intent = Intent(this, activity)
         startActivity(intent)
+        overridePendingTransition(0, 0)
         finish()
         return true
     }

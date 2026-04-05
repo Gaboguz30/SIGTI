@@ -35,9 +35,7 @@ class ProfileActivity : AppCompatActivity() {
 
         sessionManager = SessionManager(this)
 
-        // 🔥 LA MAGIA CONTRA EL PARPADEO:
         // Leemos el rol de la memoria local (1 milisegundo) y pintamos la barra AL INSTANTE.
-        // Nota: Asumo que en tu SessionManager la función se llama getRole(). Si le pusiste otro nombre (como fetchRole), solo cámbialo aquí.
         val rolGuardado = sessionManager.getRole() ?: "SOLICITANTE"
         configurarBottomMenu(rolGuardado)
 
@@ -62,6 +60,13 @@ class ProfileActivity : AppCompatActivity() {
                     val plan = doc.getString("plan_actual") ?: "FREE"
                     val isAvailable = doc.getBoolean("online") ?: false
 
+                    // 🔥 LA MAGIA DE AUTO-CURACIÓN QUE FALTABA
+                    // Si el rol en Firebase es diferente al que tenía el teléfono, lo actualiza y corrige la barra.
+                    if (sessionManager.getRole() != rol) {
+                        sessionManager.saveRole(rol)
+                        configurarBottomMenu(rol)
+                    }
+
                     binding.tvProfileName.text = "$nombre $apPaterno $apMaterno".trim()
 
                     if (rol == "PRESTADOR") {
@@ -71,8 +76,6 @@ class ProfileActivity : AppCompatActivity() {
                         binding.tvProfilePlan.text = "Solicitante"
                         configurarComoSolicitante()
                     }
-
-                    // 🔥 Aquí borramos el configurarBottomMenu que causaba el parpadeo
                 }
             }
             .addOnFailureListener {
@@ -127,7 +130,8 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun cerrarSesion() {
         auth.signOut()
-        sessionManager.clearToken() // Asegúrate de limpiar todo en tu SessionManager
+        sessionManager.clearToken()
+        sessionManager.clearAll() // 🔥 Limpiamos todo al salir para no arrastrar roles viejos
         val intent = Intent(this, RoleActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
@@ -160,13 +164,14 @@ class ProfileActivity : AppCompatActivity() {
                     R.id.nav_home -> { startActivity(Intent(this, HomeActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                     R.id.nav_map -> { startActivity(Intent(this, UserMapActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                     R.id.nav_chat -> {
-                        val intent = Intent(this, com.auvenix.sigti.ui.provider.chat.ProviderChatActivity::class.java)
+                        // 🔥 Regresamos a tu configuración original que sí funcionaba
+                        val intent = Intent(this, ProviderChatActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                         startActivity(intent)
+                        overridePendingTransition(0, 0)
                         finish()
                         true
-                    }
-                    R.id.nav_notifications -> { startActivity(Intent(this, UserNotificationsActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    }                    R.id.nav_notifications -> { startActivity(Intent(this, UserNotificationsActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                     R.id.nav_profile -> true
                     else -> false
                 }
