@@ -47,6 +47,11 @@ class ReviewAdapter(
                 ivPhoto.visibility = View.VISIBLE
                 // TODO: Aquí meterás Glide cuando conectes Firebase Storage
                 // Glide.with(itemView.context).load(review.imageUrl).into(ivPhoto)
+                ivPhoto.visibility = View.VISIBLE // Aseguramos que se vea
+                com.bumptech.glide.Glide.with(itemView.context)
+                    .load(review.imageUrl)
+                    .centerCrop()
+                    .into(ivPhoto)
             }
         }
     }

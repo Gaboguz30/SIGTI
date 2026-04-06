@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.auvenix.sigti.R
 import com.auvenix.sigti.databinding.ActivityProfileBinding
 import com.auvenix.sigti.session.SessionManager
+import com.auvenix.sigti.ui.auth.LoginActivity
 import com.auvenix.sigti.ui.role.RoleActivity
 import com.auvenix.sigti.ui.provider.plans.ProviderPlansActivity
 import com.auvenix.sigti.ui.home.HomeActivity
@@ -132,7 +133,7 @@ class ProfileActivity : AppCompatActivity() {
         auth.signOut()
         sessionManager.clearToken()
         sessionManager.clearAll() // 🔥 Limpiamos todo al salir para no arrastrar roles viejos
-        val intent = Intent(this, RoleActivity::class.java)
+        val intent = Intent(this, LoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()

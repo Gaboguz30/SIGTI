@@ -69,6 +69,21 @@ class HomeActivity : AppCompatActivity() {
 
         etSearch = findViewById(R.id.etSearch)
 
+// 🔥 FILTRO PARA SOLO LETRAS (Incluye espacios y acentos)
+        val soloLetrasFilter = android.text.InputFilter { source, start, end, dest, dstart, dend ->
+            for (i in start until end) {
+                val char = source[i]
+                // Solo permite letras (incluyendo ñ y acentos) y espacios
+                if (!Character.isLetter(char) && !Character.isSpaceChar(char)) {
+                    return@InputFilter ""
+                }
+            }
+            null
+        }
+
+// Aplicamos el filtro al EditText
+        etSearch.filters = arrayOf(soloLetrasFilter)
+
         // 🔍 BUSCADOR EN TIEMPO REAL
         etSearch.addTextChangedListener(object : android.text.TextWatcher {
             override fun afterTextChanged(s: android.text.Editable?) {}

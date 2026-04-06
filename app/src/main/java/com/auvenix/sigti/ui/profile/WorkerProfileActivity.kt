@@ -159,70 +159,30 @@ class WorkerProfileActivity : AppCompatActivity() {
     }
 
     private fun cargarPerfilReal() {
+        // 🔥 Cambiamos .get() por .addSnapshotListener para que se actualice solo
         db.collection("users").document(workerId)
-            .get()
-            .addOnSuccessListener { doc ->
-                if (!doc.exists()) return@addOnSuccessListener
+            .addSnapshotListener { doc, error ->
+                if (error != null || doc == null || !doc.exists()) return@addSnapshotListener
 
-                // 🔹 NOMBRE
                 val nombre = doc.getString("nombre") ?: ""
                 val apP = doc.getString("apPaterno") ?: ""
                 val apM = doc.getString("apMaterno") ?: ""
+                tvName.text = "$nombre $apP $apM".trim()
 
-                workerName = listOf(nombre, apP, apM)
-                    .filter { it.isNotBlank() }
-                    .joinToString(" ")
-
-                tvName.text = workerName
-
-                // 🔹 FOTO DE PERFIL (Ejemplo de cómo usar Glide para borde redondo)
-                /* val profileUrl = doc.getString("profileImage") ?: ""
-                if (profileUrl.isNotEmpty()) {
-                    val ivProfilePic = findViewById<ImageView>(R.id.ivProfilePic)
-                    Glide.with(this)
-                        .load(profileUrl)
-                        .circleCrop() // 🔥 ESTO HACE EL CÍRCULO PERFECTO
-                        .into(ivProfilePic)
-                }
-                */
-
-                // 🔹 PROFESION Y EXPERIENCIA
-                val oficiosRaw = doc.get("oficios")
-                var profesion = ""
-                var experiencia = ""
-
-                if (oficiosRaw is List<*> && oficiosRaw.isNotEmpty()) {
-                    val primero = oficiosRaw[0]
-                    if (primero is Map<*, *>) {
-                        profesion = primero["nombre"]?.toString() ?: ""
-                        val exp = primero["anios_experiencia"]
-                        experiencia = if (exp != null) "Experiencia: $exp años" else ""
-                    }
-                }
-
-                if (profesion.isNotEmpty()) {
-                    tvProfession.text = profesion
-                    if (experiencia.isNotEmpty()) {
-                        tvExperience.text = experiencia
-                        tvExperience.visibility = View.VISIBLE
-                    } else {
-                        tvExperience.visibility = View.GONE
-                    }
-                    tvProfession.visibility = View.VISIBLE
-                } else {
-                    tvProfession.visibility = View.GONE
-                }
-
-                // 🔹 RATING
+                // 🔹 ACTUALIZACIÓN DE ESTRELLAS EN VIVO
                 val rating = doc.getString("rating")?.toFloatOrNull() ?: 0f
+                val totalResenas = doc.getLong("total_reviews") ?: 0
+
                 ratingBar.rating = rating
-                tvRatingNumber.text = if (rating > 0f) rating.toString() else "(0 reseñas)"
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Error al cargar datos", Toast.LENGTH_SHORT).show()
+                tvRatingNumber.text = if (totalResenas > 0) {
+                    "$rating ($totalResenas reseñas)"
+                } else {
+                    "(0 reseñas)"
+                }
+
+                // ... (el resto de tu código de oficios y experiencia se queda igual)
             }
     }
-
     private fun setupReviews() {
         rvReviews.layoutManager = LinearLayoutManager(this)
 

@@ -16,7 +16,7 @@ class ProviderRedirectActivity : AppCompatActivity() {
         binding = ActivityProviderRedirectBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val url = "https://sigti.com.mx"
+        val url = "https://sigti.com.mx/registro"
 
         binding.btnGoToWeb.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
@@ -27,6 +27,6 @@ class ProviderRedirectActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             startActivity(intent)
-        }, 4000)
+        }, 1000)
     }
 }

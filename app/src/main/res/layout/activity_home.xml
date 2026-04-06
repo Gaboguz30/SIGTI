@@ -75,7 +75,8 @@
             android:padding="0dp"
             android:textCursorDrawable="@null"
             android:importantForAutofill="no"
-            android:inputType="text"/>
+            android:inputType="textCapSentences|textNoSuggestions"
+            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZáéíóúÁÉÍÓÚñÑ "/>
     </LinearLayout>
 
     <HorizontalScrollView

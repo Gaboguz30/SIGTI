@@ -29,10 +29,18 @@
             android:exported="false" />
         <activity
             android:name=".ui.provider.catalog.AddServiceActivity"
-            android:exported="false" /> <!-- ── LAUNCHER ──────────────────────────────────────── -->
+            android:exported="false" />
+        <!-- ── LAUNCHER ──────────────────────────────────────── -->
         <activity
             android:name=".ui.auth.AuthEntryActivity"
-            android:exported="true" /> <!-- ── AUTENTICACIÓN ──────────────────────────────────── -->
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <!-- ── AUTENTICACIÓN ──────────────────────────────────── -->
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="false" />
@@ -50,13 +58,7 @@
             android:exported="false" /> <!-- ── ROLES / REGISTRO ───────────────────────────────── -->
         <activity
             android:name=".ui.role.RoleActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="false"/>
         <activity
             android:name=".ui.register.RegisterGeneralActivity"
             android:exported="false" />
@@ -81,9 +83,7 @@
         <activity
             android:name=".ui.chat.ChatDetailActivity"
             android:exported="false" />
-        <activity
-            android:name=".ui.chat.ChatListActivity"
-            android:exported="false" /> <!-- ── PERFIL USUARIO ─────────────────────────────────── -->
+        <!-- ── PERFIL USUARIO ─────────────────────────────────── -->
         <activity
             android:name=".ui.profile.ProfileActivity"
             android:exported="false" />

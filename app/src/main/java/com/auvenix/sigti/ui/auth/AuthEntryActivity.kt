@@ -49,7 +49,7 @@ class AuthEntryActivity : AppCompatActivity() {
             val rolRecibido = intent.getStringExtra("EXTRA_ROLE") ?: "SOLICITANTE"
 
             // 2. Preparamos el viaje a la siguiente pantalla
-            val intent = Intent(this, RegisterGeneralActivity::class.java) // Asegúrate de que sea tu actividad correcta
+            val intent = Intent(this, RoleActivity::class.java) // Asegúrate de que sea tu actividad correcta
 
             // 3. Le pasamos la mochila con el rol para que no lo olvide
             intent.putExtra("EXTRA_ROLE", rolRecibido)
