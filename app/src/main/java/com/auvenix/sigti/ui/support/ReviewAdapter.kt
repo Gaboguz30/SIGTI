@@ -8,10 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.auvenix.sigti.R
 import com.google.android.material.imageview.ShapeableImageView
-// Importar Glide o Picasso si vas a cargar fotos reales desde URL
-// import com.bumptech.glide.Glide
 
-// 2. EL ADAPTADOR
 class ReviewAdapter(
     private val reviewList: List<Review>
 ) : RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder>() {
@@ -23,6 +20,7 @@ class ReviewAdapter(
 
     override fun onBindViewHolder(holder: ReviewViewHolder, position: Int) {
         holder.bind(reviewList[position])
+
     }
 
     override fun getItemCount(): Int = reviewList.size
@@ -35,12 +33,11 @@ class ReviewAdapter(
         private val ivPhoto: ShapeableImageView = itemView.findViewById(R.id.ivReviewPhoto)
 
         fun bind(review: Review) {
-            tvUser.text = review.user
+            tvUser.text = review.userName
             tvDate.text = review.date
             tvComment.text = review.comment
             rbStars.rating = review.rating
 
-            // 🔥 MAGIA DE LA FOTO: Si no hay foto, colapsamos el espacio
             if (review.imageUrl.isNullOrEmpty()) {
                 ivPhoto.visibility = View.GONE
             } else {
@@ -49,7 +46,7 @@ class ReviewAdapter(
                 // Glide.with(itemView.context).load(review.imageUrl).into(ivPhoto)
                 ivPhoto.visibility = View.VISIBLE // Aseguramos que se vea
                 com.bumptech.glide.Glide.with(itemView.context)
-                    .load(review.imageUrl)
+                    .load(android.net.Uri.parse(review.imageUrl))
                     .centerCrop()
                     .into(ivPhoto)
             }

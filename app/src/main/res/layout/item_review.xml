@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
-    android:layout_marginHorizontal="4dp"
+    android:layout_marginHorizontal="5dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
     app:strokeWidth="1dp"
@@ -18,6 +18,7 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
+        <!-- Avatar -->
         <ImageView
             android:id="@+id/ivReviewAvatar"
             android:layout_width="40dp"
@@ -30,6 +31,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- Nombre -->
         <TextView
             android:id="@+id/tvReviewUser"
             android:layout_width="0dp"
@@ -38,11 +40,24 @@
             android:fontFamily="@font/poppins_bold"
             android:textColor="#111827"
             android:textSize="14sp"
-            app:layout_constraintEnd_toStartOf="@+id/tvReviewDate"
             app:layout_constraintStart_toEndOf="@id/ivReviewAvatar"
+            app:layout_constraintEnd_toStartOf="@id/tvReviewDate"
             app:layout_constraintTop_toTopOf="@id/ivReviewAvatar"
             tools:text="Carlos Mendoza" />
 
+        <!-- Fecha -->
+        <TextView
+            android:id="@+id/tvReviewDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/poppins_regular"
+            android:textColor="#9CA3AF"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/tvReviewUser"
+            tools:text="12 Oct 2026" />
+
+        <!-- Rating -->
         <RatingBar
             android:id="@+id/rbReviewStars"
             style="?android:attr/ratingBarStyleSmall"
@@ -57,17 +72,7 @@
             app:layout_constraintTop_toBottomOf="@id/tvReviewUser"
             tools:rating="4.5" />
 
-        <TextView
-            android:id="@+id/tvReviewDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/poppins_regular"
-            android:textColor="#9CA3AF"
-            android:textSize="12sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tvReviewUser"
-            tools:text="12 Oct 2026" />
-
+        <!-- Comentario -->
         <TextView
             android:id="@+id/tvReviewComment"
             android:layout_width="0dp"
@@ -75,23 +80,25 @@
             android:layout_marginTop="12dp"
             android:fontFamily="@font/poppins_regular"
             android:textColor="#374151"
-            android:textSize="14sp"
+            android:textSize="13sp"
+            android:lineSpacingExtra="2dp"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/tvReviewUser"
             app:layout_constraintTop_toBottomOf="@id/rbReviewStars"
             tools:text="Excelente servicio, llegó a tiempo y resolvió el problema del cableado." />
 
+        <!-- Imagen -->
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/ivReviewPhoto"
             android:layout_width="0dp"
-            android:layout_height="180dp"
-            android:layout_marginTop="12dp"
+            android:layout_height="160dp"
+            android:layout_marginTop="10dp"
             android:scaleType="centerCrop"
             android:visibility="gone"
             app:cornerFamily="rounded"
             app:cornerSize="12dp"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@id/tvReviewUser"
             app:layout_constraintTop_toBottomOf="@id/tvReviewComment"
             tools:background="#E5E7EB"
             tools:visibility="visible" />

@@ -19,6 +19,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.auvenix.sigti.ui.support.Review
 import com.auvenix.sigti.ui.support.ReviewAdapter
 
@@ -26,9 +27,7 @@ import com.auvenix.sigti.ui.home.HomeActivity
 import com.auvenix.sigti.ui.home.UserMapActivity
 import com.auvenix.sigti.ui.home.UserNotificationsActivity
 import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
-
-// 🔥 IMPORTANTE: Cuando tengas Firebase Storage, asegúrate de tener Glide en tu build.gradle
-// import com.bumptech.glide.Glide
+import com.auvenix.sigti.ui.support.ReviewActivity1
 
 class WorkerProfileActivity : AppCompatActivity() {
 
@@ -37,28 +36,26 @@ class WorkerProfileActivity : AppCompatActivity() {
     private lateinit var rvServices: RecyclerView
     private lateinit var ratingBar: RatingBar
     private lateinit var tvRatingNumber: TextView
-    private lateinit var tvEmptyServices: TextView
-    private lateinit var tvExperience: TextView
-    private lateinit var rvReviews: RecyclerView
 
-    // Variables de datos
+    private lateinit var tvEmptyServices: TextView
+
     private var workerId: String = ""
     private var workerName: String = ""
+    private lateinit var tvExperience: TextView
+    private lateinit var rvReviews: RecyclerView
     private lateinit var reviewAdapter: ReviewAdapter
     private val reviewList = mutableListOf<Review>()
-    private val servicesList = mutableListOf<ServiceCatalog>()
-    private lateinit var adapter: PublicServiceAdapter
-
-    private lateinit var fabAddReview: com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 
     private val db = FirebaseFirestore.getInstance()
+
+    private val servicesList = mutableListOf<ServiceCatalog>()
+    private lateinit var adapter: PublicServiceAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_worker_profile)
-
-        // 1. Cabecera y botón de retroceso (Ya no está duplicado)
         val header = findViewById<View>(R.id.header)
+
         val title = header.findViewById<TextView>(R.id.tvHeaderTitle)
         title.text = "Perfil"
         val back = header.findViewById<ImageView>(R.id.btnBackHeader)
@@ -67,7 +64,6 @@ class WorkerProfileActivity : AppCompatActivity() {
             finish()
         }
 
-        // 2. Obtenemos el ID del trabajador que nos pasaron
         workerId = intent.getStringExtra("EXTRA_WORKER_UID") ?: ""
 
         if (workerId.isEmpty()) {
@@ -76,13 +72,55 @@ class WorkerProfileActivity : AppCompatActivity() {
             return
         }
 
-        // 3. Inicializamos todo
         initViews()
         setupRecycler()
         cargarPerfilReal()
         cargarServicios()
         setupButtons()
         setupBottomNav()
+    }
+
+
+    private fun setupTabs() {
+
+        val tabLayout = findViewById<TabLayout>(R.id.tabLayout)
+        val rvServices = findViewById<RecyclerView>(R.id.rvServices)
+        val rvReviews = findViewById<RecyclerView>(R.id.rvReviews)
+        val header = findViewById<View>(R.id.header)
+        val back = header.findViewById<ImageView>(R.id.btnBackHeader)
+
+        back.setOnClickListener {
+            finish()
+        }
+
+        tabLayout.addTab(tabLayout.newTab().setText("Servicios"))
+        tabLayout.addTab(tabLayout.newTab().setText("Reseñas"))
+
+// Selección inicial bonita
+        tabLayout.getTabAt(0)?.select()
+        rvServices.visibility = View.VISIBLE
+        rvReviews.visibility = View.GONE
+
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                when (tab.position) {
+
+                    0 -> { // Servicios
+                        rvServices.visibility = View.VISIBLE
+                        rvReviews.visibility = View.GONE
+                    }
+
+                    1 -> { // Reseñas
+                        rvServices.visibility = View.GONE
+                        rvReviews.visibility = View.VISIBLE
+                    }
+                }
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {}
+            override fun onTabReselected(tab: TabLayout.Tab) {}
+        })
     }
 
     private fun initViews() {
@@ -92,64 +130,13 @@ class WorkerProfileActivity : AppCompatActivity() {
         tvEmptyServices = findViewById(R.id.tvEmptyServicesPerfil)
         ratingBar = findViewById(R.id.ratingBar)
         tvRatingNumber = findViewById(R.id.tvRatingNumber)
+
+        // 🔥 ESTA LÍNEA FALTABA
         tvExperience = findViewById(R.id.tvProfileExperience)
         rvReviews = findViewById(R.id.rvReviews)
-
         setupTabs()
         setupReviews()
 
-        fabAddReview = findViewById(R.id.fabAddReview)
-        fabAddReview.setOnClickListener {
-            // 🔥 Levantamos el BottomSheet y le pasamos el ID del prestador
-            val bottomSheet = com.auvenix.sigti.ui.support.AddReviewBottomSheet(workerId)
-            bottomSheet.show(supportFragmentManager, "AddReviewBottomSheet")
-        }
-    }
-
-    private fun setupTabs() {
-        val tabLayout = findViewById<TabLayout>(R.id.tabLayout)
-
-        tabLayout.addTab(tabLayout.newTab().setText("Servicios"))
-        tabLayout.addTab(tabLayout.newTab().setText("Reseñas"))
-
-        // Selección inicial (Sin animación)
-        tabLayout.getTabAt(0)?.select()
-        rvServices.visibility = View.VISIBLE
-        rvReviews.visibility = View.GONE
-
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                when (tab.position) {
-                    0 -> {
-                        crossfadeAnim(rvReviews, rvServices)
-                        fabAddReview.hide() // 🔥 Ocultamos el botón en Servicios
-                    }
-                    1 -> {
-                        crossfadeAnim(rvServices, rvReviews)
-                        fabAddReview.show() // 🔥 Mostramos el botón en Reseñas
-                    }
-                }
-            }
-            override fun onTabUnselected(tab: TabLayout.Tab) {}
-            override fun onTabReselected(tab: TabLayout.Tab) {}
-        })
-    }
-
-    // 🔥 LA FUNCIÓN MÁGICA DE ANIMACIÓN (Crossfade)
-    private fun crossfadeAnim(viewToHide: View, viewToShow: View) {
-        viewToHide.animate()
-            .alpha(0f)
-            .setDuration(150)
-            .withEndAction {
-                viewToHide.visibility = View.GONE
-                viewToShow.alpha = 0f
-                viewToShow.visibility = View.VISIBLE
-                viewToShow.animate()
-                    .alpha(1f)
-                    .setDuration(150)
-                    .start()
-            }
-            .start()
     }
 
     private fun setupRecycler() {
@@ -158,49 +145,124 @@ class WorkerProfileActivity : AppCompatActivity() {
         rvServices.adapter = adapter
     }
 
+    // 🔥 SOLO DATOS REALES (SIN INVENTAR)
     private fun cargarPerfilReal() {
-        // 🔥 Cambiamos .get() por .addSnapshotListener para que se actualice solo
-        db.collection("users").document(workerId)
-            .addSnapshotListener { doc, error ->
-                if (error != null || doc == null || !doc.exists()) return@addSnapshotListener
 
+        db.collection("users").document(workerId)
+            .get()
+            .addOnSuccessListener { doc ->
+
+                if (!doc.exists()) return@addOnSuccessListener
+
+                // 🔹 NOMBRE
                 val nombre = doc.getString("nombre") ?: ""
                 val apP = doc.getString("apPaterno") ?: ""
                 val apM = doc.getString("apMaterno") ?: ""
-                tvName.text = "$nombre $apP $apM".trim()
 
-                // 🔹 ACTUALIZACIÓN DE ESTRELLAS EN VIVO
-                val rating = doc.getString("rating")?.toFloatOrNull() ?: 0f
-                val totalResenas = doc.getLong("total_reviews") ?: 0
+                workerName = listOf(nombre, apP, apM)
+                    .filter { it.isNotBlank() }
+                    .joinToString(" ")
 
-                ratingBar.rating = rating
-                tvRatingNumber.text = if (totalResenas > 0) {
-                    "$rating ($totalResenas reseñas)"
-                } else {
-                    "(0 reseñas)"
+                tvName.text = workerName
+
+                // 🔹 PROFESION DESDE OFICIOS
+                val oficiosRaw = doc.get("oficios")
+
+                var profesion = ""
+                var experiencia = ""
+
+                if (oficiosRaw is List<*>) {
+                    if (oficiosRaw.isNotEmpty()) {
+                        val primero = oficiosRaw[0]
+
+                        if (primero is Map<*, *>) {
+                            profesion = primero["nombre"]?.toString() ?: ""
+
+                            val exp = primero["anios_experiencia"]
+                            experiencia = if (exp != null) {
+                                "Experiencia: $exp años"
+                            } else {
+                                ""
+                            }
+                        }
+                    }
                 }
 
-                // ... (el resto de tu código de oficios y experiencia se queda igual)
+
+                if (profesion.isNotEmpty()) {
+                    tvProfession.text = profesion
+                    if (experiencia.isNotEmpty()) {
+                        tvExperience.text = experiencia
+                        tvExperience.visibility = View.VISIBLE
+                    } else {
+                        tvExperience.visibility = View.GONE
+                    }
+                    tvProfession.visibility = View.VISIBLE
+                } else {
+                    tvProfession.visibility = View.GONE
+                }
+
+                db.collection("reviews")
+                    .whereEqualTo("technician_uid", workerId)
+                    .get()
+                    .addOnSuccessListener { reviews ->
+
+                        var total = 0f
+                        val count = reviews.size()
+
+                        for (r in reviews) {
+                            val rating = r.getLong("rating")?.toFloat() ?: 0f
+                            total += rating
+                        }
+
+                        val promedio = if (count > 0) total / count else 0f
+
+                        ratingBar.rating = promedio
+
+                        if (count > 0) {
+                            tvRatingNumber.text = String.format("%.1f (%d reseñas)", promedio, count)
+                        } else {
+                            tvRatingNumber.text = "(0 reseñas)"
+                        }
+                    }
+
+
+
+
+            }
+
+            .addOnFailureListener {
+                Toast.makeText(this, "Error al cargar datos", Toast.LENGTH_SHORT).show()
             }
     }
+
     private fun setupReviews() {
+
         rvReviews.layoutManager = LinearLayoutManager(this)
 
         db.collection("reviews")
             .whereEqualTo("technician_uid", workerId)
             .get()
             .addOnSuccessListener { documents ->
+
                 reviewList.clear()
 
                 for (doc in documents) {
-                    val user = "Usuario" // luego lo mejoramos
+
+                    val user = doc.getString("userName") ?: "Usuario"
                     val comment = doc.getString("comment") ?: ""
                     val rating = doc.getLong("rating")?.toFloat() ?: 0f
-                    val date = doc.getTimestamp("created_at")?.toDate()?.toString() ?: ""
-                    val imageUrl = doc.getString("imageUrl") // Por si ya hay fotos
+                    val timestamp = doc.getTimestamp("created_at")?.toDate()
 
-                    // Pasamos todos los datos al modelo
-                    reviewList.add(Review(user, date, comment, rating, imageUrl))
+                    val formato = java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.getDefault())
+
+                    val date = if (timestamp != null) formato.format(timestamp) else ""
+
+                    val imageUrl = doc.getString("imageUrl")
+
+                    reviewList.add(
+                        Review(user, date, comment, rating, imageUrl)
+                    )
                 }
 
                 reviewAdapter = ReviewAdapter(reviewList)
@@ -211,8 +273,9 @@ class WorkerProfileActivity : AppCompatActivity() {
     private fun cargarServicios() {
         db.collection("users").document(workerId)
             .collection("services")
-            .get()
+            .get() // Quitamos el orderBy de aquí, lo haremos en Kotlin para manejar el boolean
             .addOnSuccessListener { docs ->
+
                 servicesList.clear()
 
                 if (docs.isEmpty) {
@@ -223,18 +286,21 @@ class WorkerProfileActivity : AppCompatActivity() {
                     rvServices.visibility = View.VISIBLE
 
                     for (doc in docs) {
+                        // Mapeamos a ServiceCatalog usando copia para meterle el ID
                         val service = doc.toObject(ServiceCatalog::class.java).copy(id = doc.id)
                         servicesList.add(service)
                     }
 
-                    // Ordenamos: Activos primero, luego alfabéticamente
+                    // 🔥 MAGIA: Ordenamos PRIMERO por Activos (true) y SEGUNDO alfabéticamente
                     servicesList.sortWith(compareBy({ !it.active }, { it.name.lowercase() }))
                 }
+
                 adapter.notifyDataSetChanged()
             }
     }
-
     private fun setupButtons() {
+
+
         findViewById<TextView>(R.id.btnReport).setOnClickListener {
             val intent = Intent(this, ReportActivity::class.java)
             intent.putExtra("workerId", workerId)
@@ -254,6 +320,12 @@ class WorkerProfileActivity : AppCompatActivity() {
             intent.putExtra("contactName", workerName)
             startActivity(intent)
         }
+
+        findViewById<TextView>(R.id.btnReview).setOnClickListener {
+            val intent = Intent(this, ReviewActivity1::class.java)
+            intent.putExtra("providerId", workerId)
+            startActivity(intent)
+        }
     }
 
     private fun setupBottomNav() {
@@ -261,8 +333,14 @@ class WorkerProfileActivity : AppCompatActivity() {
 
         nav.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.nav_home -> { startActivity(Intent(this, HomeActivity::class.java)); finish(); true }
-                R.id.nav_map -> { startActivity(Intent(this, UserMapActivity::class.java)); finish(); true }
+                R.id.nav_home -> {
+                    startActivity(Intent(this, HomeActivity::class.java))
+                    finish(); true
+                }
+                R.id.nav_map -> {
+                    startActivity(Intent(this, UserMapActivity::class.java))
+                    finish(); true
+                }
                 R.id.nav_chat -> {
                     val intent = Intent(this, ProviderChatActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
@@ -270,8 +348,14 @@ class WorkerProfileActivity : AppCompatActivity() {
                     finish()
                     true
                 }
-                R.id.nav_notifications -> { startActivity(Intent(this, UserNotificationsActivity::class.java)); finish(); true }
-                R.id.nav_profile -> { startActivity(Intent(this, ProfileActivity::class.java)); finish(); true }
+                R.id.nav_notifications -> {
+                    startActivity(Intent(this, UserNotificationsActivity::class.java))
+                    finish(); true
+                }
+                R.id.nav_profile -> {
+                    startActivity(Intent(this, ProfileActivity::class.java))
+                    finish(); true
+                }
                 else -> false
             }
         }

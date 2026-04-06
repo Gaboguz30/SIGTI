@@ -121,6 +121,8 @@
         <activity
             android:name=".MainActivity"
             android:exported="false" />
+        <activity android:name=".ui.support.ReviewActivity1" />
+
     </application>
 
 </manifest>
