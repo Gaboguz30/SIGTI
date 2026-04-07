@@ -14,7 +14,6 @@ import com.auvenix.sigti.ui.role.RoleActivity
 import com.auvenix.sigti.ui.provider.plans.ProviderPlansActivity
 import com.auvenix.sigti.ui.home.HomeActivity
 import com.auvenix.sigti.ui.home.UserMapActivity
-import com.auvenix.sigti.ui.home.UserNotificationsActivity
 import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
 import com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity
 import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
@@ -172,7 +171,7 @@ class ProfileActivity : AppCompatActivity() {
                         overridePendingTransition(0, 0)
                         finish()
                         true
-                    }                    R.id.nav_notifications -> { startActivity(Intent(this, UserNotificationsActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    }
                     R.id.nav_profile -> true
                     else -> false
                 }

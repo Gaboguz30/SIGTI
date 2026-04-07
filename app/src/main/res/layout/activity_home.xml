@@ -7,37 +7,72 @@
     android:layout_height="match_parent"
     android:background="#F9FAFB">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/header"
-        android:paddingBottom="40dp"
-        android:layout_width="0dp"
-        android:layout_marginBottom="4dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="20dp"
+        android:paddingBottom="40dp"
+        android:paddingTop="20dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:layout_marginBottom="4dp"
         android:background="@drawable/bg_header_gradient"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <TextView
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnNotifications">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hola"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:fontFamily="@font/poppins_regular"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="¿Qué necesitas hoy?"
+                android:textColor="#FFFFFF"
+                android:textSize="28sp"
+                android:fontFamily="@font/poppins_bold"/>
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/btnNotifications"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hola"
-            android:textColor="#FFFFFF"
-            android:textSize="18sp"
-            android:fontFamily="@font/poppins_regular"/>
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="¿Qué necesitas hoy?"
-            android:textColor="#FFFFFF"
-            android:textSize="28sp"
-            android:fontFamily="@font/poppins_bold"/>
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/icon_notification"
+                app:tint="#FFFFFF" /> <View
+            android:id="@+id/vRedDot"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:background="@drawable/bg_red_dot"
+            android:visibility="gone" />
+        </FrameLayout>
 
-
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <LinearLayout
@@ -158,7 +193,6 @@
                     android:fontFamily="@font/poppins_medium"/>
             </LinearLayout>
 
-            <!-- Albañil -->
             <LinearLayout
                 android:id="@+id/catAlbanil"
                 android:layout_width="80dp"
@@ -190,7 +224,6 @@
                     android:fontFamily="@font/poppins_medium"/>
             </LinearLayout>
 
-            <!-- Carpintero -->
             <LinearLayout
                 android:id="@+id/catCarpintero"
                 android:layout_width="80dp"
@@ -220,7 +253,6 @@
                     android:fontFamily="@font/poppins_medium"/>
             </LinearLayout>
 
-            <!-- Pintor -->
             <LinearLayout
                 android:id="@+id/catPintor"
                 android:layout_width="80dp"
@@ -267,8 +299,6 @@
         app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
         tools:listitem="@layout/item_worker"/>
 
-
-
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
         android:layout_width="match_parent"
@@ -280,10 +310,5 @@
         app:itemTextColor="@color/selector_nav_blue"
         app:labelVisibilityMode="labeled"
         app:itemRippleColor="@android:color/transparent"/>
-
-
-
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

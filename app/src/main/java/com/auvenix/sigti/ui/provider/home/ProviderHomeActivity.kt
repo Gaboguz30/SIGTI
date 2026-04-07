@@ -36,6 +36,14 @@ class ProviderHomeActivity : AppCompatActivity() {
         setupRecyclerView()
         escucharNuevasSolicitudes() // 🔥 Escucha datos y maneja el Loader
         setupBottomNavigation()
+
+        // 🔥 CONECTAR BOTÓN DE NOTIFICACIONES (PRESTADOR)
+        val btnNotifProvider = findViewById<View>(R.id.btnNotificationsProvider)
+        btnNotifProvider.setOnClickListener {
+            // Levantamos el MISMO BottomSheet (Es universal)
+            val bottomSheet = com.auvenix.sigti.notifications.NotificationsBottomSheet()
+            bottomSheet.show(supportFragmentManager, "NotificationsSheet")
+        }
     }
 
     private fun loadUserData() {

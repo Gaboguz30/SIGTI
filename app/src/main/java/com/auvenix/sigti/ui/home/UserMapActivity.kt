@@ -29,10 +29,7 @@ class UserMapActivity : AppCompatActivity() {
                     finish()
                     true
                 }
-                R.id.nav_notifications -> {
-                    startActivity(Intent(this, UserNotificationsActivity::class.java))
-                    overridePendingTransition(0, 0); finish(); true
-                }
+
                 R.id.nav_profile -> {
                     startActivity(Intent(this, ProfileActivity::class.java))
                     overridePendingTransition(0, 0); finish(); true

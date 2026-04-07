@@ -25,7 +25,6 @@ import com.auvenix.sigti.ui.support.ReviewAdapter
 
 import com.auvenix.sigti.ui.home.HomeActivity
 import com.auvenix.sigti.ui.home.UserMapActivity
-import com.auvenix.sigti.ui.home.UserNotificationsActivity
 import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
 import com.auvenix.sigti.ui.support.ReviewActivity1
 
@@ -348,10 +347,7 @@ class WorkerProfileActivity : AppCompatActivity() {
                     finish()
                     true
                 }
-                R.id.nav_notifications -> {
-                    startActivity(Intent(this, UserNotificationsActivity::class.java))
-                    finish(); true
-                }
+
                 R.id.nav_profile -> {
                     startActivity(Intent(this, ProfileActivity::class.java))
                     finish(); true

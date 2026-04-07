@@ -25,7 +25,6 @@ import java.util.Calendar
 
 import com.auvenix.sigti.ui.home.HomeActivity
 import com.auvenix.sigti.ui.home.UserMapActivity
-import com.auvenix.sigti.ui.home.UserNotificationsActivity
 import com.auvenix.sigti.ui.profile.ProfileActivity
 
 class NewRequestActivity : AppCompatActivity() {
@@ -250,7 +249,6 @@ class NewRequestActivity : AppCompatActivity() {
                 R.id.nav_home -> start(HomeActivity::class.java)
                 R.id.nav_map -> start(UserMapActivity::class.java)
                 R.id.nav_chat -> start(com.auvenix.sigti.ui.provider.chat.ProviderChatActivity::class.java)
-                R.id.nav_notifications -> start(UserNotificationsActivity::class.java)
                 R.id.nav_profile -> start(ProfileActivity::class.java)
                 else -> false
             }

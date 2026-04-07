@@ -177,7 +177,6 @@ class ProviderChatActivity : AppCompatActivity() {
                     R.id.nav_home -> start(com.auvenix.sigti.ui.home.HomeActivity::class.java)
                     R.id.nav_map -> start(com.auvenix.sigti.ui.home.UserMapActivity::class.java)
                     R.id.nav_chat -> true
-                    R.id.nav_notifications -> start(com.auvenix.sigti.ui.home.UserNotificationsActivity::class.java)
                     R.id.nav_profile -> start(ProfileActivity::class.java)
                     else -> false
                 }

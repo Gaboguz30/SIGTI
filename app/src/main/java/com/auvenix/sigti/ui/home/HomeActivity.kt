@@ -111,6 +111,14 @@ class HomeActivity : AppCompatActivity() {
         descargarPrestadoresDeFirestore()
 
         setupBottomNavigation()
+
+        // 🔥 CONECTAR BOTÓN DE NOTIFICACIONES (SOLICITANTE)
+        val btnNotifications = findViewById<View>(R.id.btnNotifications)
+        btnNotifications.setOnClickListener {
+            // Levantamos el BottomSheet universal
+            val bottomSheet = com.auvenix.sigti.notifications.NotificationsBottomSheet()
+            bottomSheet.show(supportFragmentManager, "NotificationsSheet")
+        }
     }
 
     // 🔥 FIRESTORE
@@ -269,10 +277,7 @@ class HomeActivity : AppCompatActivity() {
                     startActivity(Intent(this, com.auvenix.sigti.ui.provider.chat.ProviderChatActivity::class.java))
                     true
                 }
-                R.id.nav_notifications -> {
-                    startActivity(Intent(this, UserNotificationsActivity::class.java))
-                    finish(); true
-                }
+
                 R.id.nav_profile -> {
                     startActivity(Intent(this, ProfileActivity::class.java))
                     finish(); true
