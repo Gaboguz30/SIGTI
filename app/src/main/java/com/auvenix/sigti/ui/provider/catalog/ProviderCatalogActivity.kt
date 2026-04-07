@@ -49,13 +49,13 @@ class ProviderCatalogActivity : AppCompatActivity() {
             serviceList = serviceList,
             onEdit = { service -> openEditService(service) },
             onDelete = { service -> confirmarEliminacion(service) },
-            onToggleStatus = { service, nuevoEstado -> cambiarEstadoServicio(service, nuevoEstado) } // 🔥 NUEVO ENLACE AL ADAPTER
+            onToggleStatus = { service, nuevoEstado -> cambiarEstadoServicio(service, nuevoEstado) }
         )
         binding.rvProviderCatalog.layoutManager = LinearLayoutManager(this)
         binding.rvProviderCatalog.adapter = adapter
     }
 
-    // 🔥 NUEVA FUNCIÓN QUE ACTUALIZA FIREBASE
+    // 🔥 ACTUALIZA FIREBASE
     private fun cambiarEstadoServicio(service: ServiceCatalog, nuevoEstado: Boolean) {
         val uid = auth.currentUser?.uid ?: return
         db.collection("users").document(uid).collection("services").document(service.id)
@@ -71,7 +71,7 @@ class ProviderCatalogActivity : AppCompatActivity() {
     }
 
     // ==========================================
-    // MAGIA: Escuchar Firestore en tiempo real subcolección "services"
+    // MAGIA: Escuchar Firestore en tiempo real
     // ==========================================
     private fun escucharServiciosDeFirestore() {
         val uid = auth.currentUser?.uid ?: return
@@ -122,15 +122,18 @@ class ProviderCatalogActivity : AppCompatActivity() {
             .show()
     }
 
+    // 🔥 AQUI ESTÁ EL CAMBIO DE LA NAVEGACIÓN
     private fun setupBottomNavigation() {
-        binding.bottomNavigationProvider.selectedItemId = R.id.nav_provider_catalog
+        // Le indicamos que el Catálogo (posición 2) es el que debe estar en color azul
+        binding.bottomNavigationProvider.selectedItemId = R.id.nav_catalog
+
         binding.bottomNavigationProvider.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_provider_home -> { startActivity(Intent(this, ProviderHomeActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
-                R.id.nav_provider_jobs -> { startActivity(Intent(this, ProviderJobsActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
-                R.id.nav_provider_chat -> { startActivity(Intent(this, ProviderChatActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
-                R.id.nav_provider_catalog -> true
-                R.id.nav_provider_profile -> { startActivity(Intent(this, ProfileActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                R.id.nav_home_provider -> { startActivity(Intent(this, ProviderHomeActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                R.id.nav_catalog -> true // Ya estamos aquí
+                R.id.nav_chat -> { startActivity(Intent(this, ProviderChatActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                R.id.nav_jobs -> { startActivity(Intent(this, ProviderJobsActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                R.id.nav_profile -> { startActivity(Intent(this, ProfileActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                 else -> false
             }
         }

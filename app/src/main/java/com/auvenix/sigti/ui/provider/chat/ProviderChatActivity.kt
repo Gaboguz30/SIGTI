@@ -9,7 +9,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.auvenix.sigti.R
 import com.auvenix.sigti.databinding.ActivityProviderChatBinding
-import com.auvenix.sigti.session.SessionManager // 🔥 IMPORTAMOS LA MEMORIA LOCAL
+import com.auvenix.sigti.session.SessionManager
 import com.auvenix.sigti.ui.chat.ChatDetailActivity
 import com.auvenix.sigti.ui.profile.ProfileActivity
 import com.auvenix.sigti.ui.provider.catalog.ProviderCatalogActivity
@@ -29,7 +29,7 @@ class ProviderChatActivity : AppCompatActivity() {
     private lateinit var dbRef   : DatabaseReference
     lateinit var fullList: List<ChatModel>
 
-    private lateinit var sessionManager: SessionManager // 🔥 VARIABLE DE SESIÓN
+    private lateinit var sessionManager: SessionManager
     private var myRole = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,18 +70,15 @@ class ProviderChatActivity : AppCompatActivity() {
             adapter.notifyDataSetChanged()
         }
 
-        // 🔥 MAGIA CONTRA EL PARPADEO (Carga en 1 milisegundo)
         myRole = sessionManager.getRole() ?: "SOLICITANTE"
-        setupBottomNavigation() // Pinta la barra de INMEDIATO
+        setupBottomNavigation()
 
-        // 🔥 AUTO-CURACIÓN: Consultamos Firebase en segundo plano solo para confirmar
         FirebaseFirestore.getInstance()
             .collection("users")
             .document(FirebaseAuth.getInstance().currentUser?.uid ?: "")
             .get()
             .addOnSuccessListener { doc ->
                 val realRole = doc.getString("role") ?: "SOLICITANTE"
-                // Si la memoria estaba mal, la corrige y repinta, si no, no hace nada visualmente
                 if (myRole != realRole) {
                     sessionManager.saveRole(realRole)
                     myRole = realRole
@@ -149,21 +146,22 @@ class ProviderChatActivity : AppCompatActivity() {
         })
     }
 
+    // 🔥 MENÚ CORREGIDO CON LOS NUEVOS IDs Y LA PANTALLA RECICLADA
     private fun setupBottomNavigation() {
         val nav = binding.bottomNavigationProvider
         nav.menu.clear()
 
         if (myRole.equals("PRESTADOR", ignoreCase = true)) {
             nav.inflateMenu(R.menu.provider_bottom_nav_menu)
-            nav.selectedItemId = R.id.nav_provider_chat
+            nav.selectedItemId = R.id.nav_chat // 🔥 ID unificado
 
             nav.setOnItemSelectedListener { item ->
                 when (item.itemId) {
-                    R.id.nav_provider_home -> start(ProviderHomeActivity::class.java)
-                    R.id.nav_provider_jobs -> start(ProviderJobsActivity::class.java)
-                    R.id.nav_provider_chat -> true
-                    R.id.nav_provider_catalog -> start(ProviderCatalogActivity::class.java)
-                    R.id.nav_provider_profile -> start(ProfileActivity::class.java) // 🔥 CORREGIDO (Ya no usa el fantasma)
+                    R.id.nav_home_provider -> start(ProviderHomeActivity::class.java)
+                    R.id.nav_catalog -> start(ProviderCatalogActivity::class.java) // 🔥 Catálogo
+                    R.id.nav_chat -> true
+                    R.id.nav_jobs -> start(ProviderJobsActivity::class.java) // 🔥 Trabajos
+                    R.id.nav_profile -> start(ProfileActivity::class.java)
                     else -> false
                 }
             }
@@ -177,6 +175,7 @@ class ProviderChatActivity : AppCompatActivity() {
                     R.id.nav_home -> start(com.auvenix.sigti.ui.home.HomeActivity::class.java)
                     R.id.nav_map -> start(com.auvenix.sigti.ui.home.UserMapActivity::class.java)
                     R.id.nav_chat -> true
+                    R.id.nav_jobs -> start(ProviderJobsActivity::class.java) // 🔥 TRABAJOS AÑADIDO PARA SOLICITANTE
                     R.id.nav_profile -> start(ProfileActivity::class.java)
                     else -> false
                 }
@@ -184,7 +183,6 @@ class ProviderChatActivity : AppCompatActivity() {
         }
     }
 
-    // 🔥 Le metemos el overridePendingTransition(0,0) aquí para matar las animaciones bruscas del Android
     private fun start(activity: Class<*>): Boolean {
         if (this::class.java == activity) return true
 

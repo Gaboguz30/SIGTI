@@ -10,7 +10,6 @@ import com.auvenix.sigti.R
 import com.auvenix.sigti.databinding.ActivityProfileBinding
 import com.auvenix.sigti.session.SessionManager
 import com.auvenix.sigti.ui.auth.LoginActivity
-import com.auvenix.sigti.ui.role.RoleActivity
 import com.auvenix.sigti.ui.provider.plans.ProviderPlansActivity
 import com.auvenix.sigti.ui.home.HomeActivity
 import com.auvenix.sigti.ui.home.UserMapActivity
@@ -60,8 +59,7 @@ class ProfileActivity : AppCompatActivity() {
                     val plan = doc.getString("plan_actual") ?: "FREE"
                     val isAvailable = doc.getBoolean("online") ?: false
 
-                    // 🔥 LA MAGIA DE AUTO-CURACIÓN QUE FALTABA
-                    // Si el rol en Firebase es diferente al que tenía el teléfono, lo actualiza y corrige la barra.
+                    // Si el rol en Firebase es diferente al que tenía el teléfono, lo actualiza.
                     if (sessionManager.getRole() != rol) {
                         sessionManager.saveRole(rol)
                         configurarBottomMenu(rol)
@@ -131,31 +129,34 @@ class ProfileActivity : AppCompatActivity() {
     private fun cerrarSesion() {
         auth.signOut()
         sessionManager.clearToken()
-        sessionManager.clearAll() // 🔥 Limpiamos todo al salir para no arrastrar roles viejos
+        sessionManager.clearAll() // Limpiamos todo al salir
         val intent = Intent(this, LoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
     }
 
+    // 🔥 AQUI ESTA LA MAGIA CORREGIDA PARA AMBOS MUNDOS
     private fun configurarBottomMenu(rol: String) {
         binding.bottomNavigation.menu.clear()
 
         if (rol == "PRESTADOR") {
             binding.bottomNavigation.inflateMenu(R.menu.provider_bottom_nav_menu)
-            binding.bottomNavigation.selectedItemId = R.id.nav_provider_profile
+            binding.bottomNavigation.selectedItemId = R.id.nav_profile // Apuntamos al ID correcto del perfil
 
             binding.bottomNavigation.setOnItemSelectedListener { item ->
                 when (item.itemId) {
-                    R.id.nav_provider_home -> { startActivity(Intent(this, ProviderHomeActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
-                    R.id.nav_provider_jobs -> { startActivity(Intent(this, ProviderJobsActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
-                    R.id.nav_provider_chat -> { startActivity(Intent(this, ProviderChatActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
-                    R.id.nav_provider_catalog -> { startActivity(Intent(this, ProviderCatalogActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
-                    R.id.nav_provider_profile -> true
+                    R.id.nav_home_provider -> { startActivity(Intent(this, ProviderHomeActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    // 🔥 Catálogo y Trabajos en su nuevo lugar
+                    R.id.nav_catalog -> { startActivity(Intent(this, ProviderCatalogActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    R.id.nav_chat -> { startActivity(Intent(this, ProviderChatActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    R.id.nav_jobs -> { startActivity(Intent(this, ProviderJobsActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    R.id.nav_profile -> true
                     else -> false
                 }
             }
         } else {
+            // 🔥 MENÚ DEL SOLICITANTE / CLIENTE
             binding.bottomNavigation.inflateMenu(R.menu.bottom_nav_menu)
             binding.bottomNavigation.selectedItemId = R.id.nav_profile
 
@@ -164,10 +165,16 @@ class ProfileActivity : AppCompatActivity() {
                     R.id.nav_home -> { startActivity(Intent(this, HomeActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                     R.id.nav_map -> { startActivity(Intent(this, UserMapActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                     R.id.nav_chat -> {
-                        // 🔥 Regresamos a tu configuración original que sí funcionaba
                         val intent = Intent(this, ProviderChatActivity::class.java)
                         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                         startActivity(intent)
+                        overridePendingTransition(0, 0)
+                        finish()
+                        true
+                    }
+                    // 🔥 AQUÍ CONECTAMOS LA PANTALLA RECICLADA DE TRABAJOS AL USUARIO
+                    R.id.nav_jobs -> {
+                        startActivity(Intent(this, ProviderJobsActivity::class.java))
                         overridePendingTransition(0, 0)
                         finish()
                         true

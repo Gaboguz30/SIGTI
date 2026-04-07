@@ -1,13 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
         android:id="@+id/nav_home"
-        android:icon="@drawable/ic_home2"
+        android:icon="@drawable/ic_home"
         android:title="Inicio" />
 
     <item
         android:id="@+id/nav_map"
-        android:icon="@drawable/ic_location"
+        android:icon="@drawable/icon_map"
         android:title="Mapa" />
 
     <item
@@ -16,13 +17,13 @@
         android:title="Chat" />
 
     <item
-        android:id="@+id/nav_notifications"
-        android:icon="@drawable/ic_notification"
-        android:title="Avisos" />
+        android:id="@+id/nav_jobs"
+        android:icon="@drawable/ic_trabajo"
+        android:title="Trabajos" />
 
     <item
         android:id="@+id/nav_profile"
-        android:icon="@drawable/ic_person"
+        android:icon="@drawable/ic_profile"
         android:title="Perfil" />
 
 </menu>

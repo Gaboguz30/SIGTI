@@ -17,6 +17,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.firestore.FirebaseFirestore
 import android.widget.LinearLayout
 import android.widget.ImageView
+import com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity
 
 
 class HomeActivity : AppCompatActivity() {
@@ -264,22 +265,32 @@ class HomeActivity : AppCompatActivity() {
 
     private fun setupBottomNavigation() {
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+
+        // 🔥 ESTA ES LA CLAVE: Le decimos que pinte de AZUL el botón de Inicio
         bottomNavigation.selectedItemId = R.id.nav_home
 
         bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_home -> true
+                R.id.nav_home -> true // Ya estamos aquí, no hacemos nada
                 R.id.nav_map -> {
                     startActivity(Intent(this, UserMapActivity::class.java))
+                    overridePendingTransition(0, 0) // 🔥 Truco para que no parpadee la pantalla
                     finish(); true
                 }
                 R.id.nav_chat -> {
                     startActivity(Intent(this, com.auvenix.sigti.ui.provider.chat.ProviderChatActivity::class.java))
-                    true
+                    overridePendingTransition(0, 0)
+                    finish(); true
                 }
-
+                R.id.nav_jobs -> {
+                    // Esta es la pantalla reciclada que usará el prestador también
+                    startActivity(Intent(this, com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity::class.java))
+                    overridePendingTransition(0, 0)
+                    finish(); true
+                }
                 R.id.nav_profile -> {
                     startActivity(Intent(this, ProfileActivity::class.java))
+                    overridePendingTransition(0, 0)
                     finish(); true
                 }
                 else -> false

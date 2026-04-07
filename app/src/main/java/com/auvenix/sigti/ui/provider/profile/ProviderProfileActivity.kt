@@ -42,14 +42,13 @@ class ProviderProfileActivity : AppCompatActivity() {
         db.collection("users").document(uid).get()
             .addOnSuccessListener { doc ->
                 if (doc.exists()) {
-                    // Lee los valores; si no existen en Firestore, inicia en false (apagado)
                     val online = doc.getBoolean("online") ?: false
                     val notifEnabled = doc.getBoolean("notificaciones") ?: false
 
                     binding.switchStatus.isChecked = online
                     binding.switchNotifications.isChecked = notifEnabled
                 }
-                isLoadingState = false   // ya terminó de cargar, ahora sí escuchamos cambios
+                isLoadingState = false
             }
             .addOnFailureListener {
                 isLoadingState = false
@@ -73,8 +72,7 @@ class ProviderProfileActivity : AppCompatActivity() {
             db.collection("users").document(uid)
                 .update("notificaciones", isChecked)
                 .addOnFailureListener {
-                    Toast.makeText(this, "Error al actualizar notificaciones", Toast.LENGTH_SHORT)
-                        .show()
+                    Toast.makeText(this, "Error al actualizar notificaciones", Toast.LENGTH_SHORT).show()
                 }
         }
     }
@@ -107,42 +105,37 @@ class ProviderProfileActivity : AppCompatActivity() {
         }
     }
 
+    // 🔥 EL MENÚ CON LOS NUEVOS IDs Y EL TRUCO PARA QUE NO PARPADEE
     private fun setupBottomNavigation() {
-        binding.bottomNavigationProvider.selectedItemId = R.id.nav_provider_profile
+        binding.bottomNavigationProvider.selectedItemId = R.id.nav_profile
 
         binding.bottomNavigationProvider.setOnItemSelectedListener { item ->
             when (item.itemId) {
-
-                R.id.nav_provider_home -> {
+                R.id.nav_home_provider -> {
                     startActivity(Intent(this, ProviderHomeActivity::class.java))
                     overridePendingTransition(0, 0)
                     finish()
                     true
                 }
-
-                R.id.nav_provider_jobs -> {
-                    startActivity(Intent(this, ProviderJobsActivity::class.java))
-                    overridePendingTransition(0, 0)
-                    finish()
-                    true
-                }
-
-                R.id.nav_provider_chat -> {
-                    startActivity(Intent(this, ProviderChatActivity::class.java))
-                    overridePendingTransition(0, 0)
-                    finish()
-                    true
-                }
-
-                R.id.nav_provider_catalog -> {
+                R.id.nav_catalog -> {
                     startActivity(Intent(this, ProviderCatalogActivity::class.java))
                     overridePendingTransition(0, 0)
                     finish()
                     true
                 }
-
-                R.id.nav_provider_profile -> true
-
+                R.id.nav_chat -> {
+                    startActivity(Intent(this, ProviderChatActivity::class.java))
+                    overridePendingTransition(0, 0)
+                    finish()
+                    true
+                }
+                R.id.nav_jobs -> {
+                    startActivity(Intent(this, ProviderJobsActivity::class.java))
+                    overridePendingTransition(0, 0)
+                    finish()
+                    true
+                }
+                R.id.nav_profile -> true
                 else -> false
             }
         }
