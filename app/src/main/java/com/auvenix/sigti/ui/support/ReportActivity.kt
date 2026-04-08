@@ -14,6 +14,15 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
 import android.view.View
+import java.util.Date
+import android.net.Uri
+import android.content.Intent
+import android.app.Activity
+import com.google.firebase.storage.FirebaseStorage
+import java.util.UUID
+
+
+
 
 
 class ReportActivity : AppCompatActivity() {
@@ -24,11 +33,21 @@ class ReportActivity : AppCompatActivity() {
     private lateinit var inputDescription: TextInputEditText
 
     private var reportedWorkerId: String? = null
+    private var selectedFileUri: Uri? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_report)
+
+        val btnAddEvidence = findViewById<MaterialButton>(R.id.btnAddEvidence)
+
+        btnAddEvidence.setOnClickListener {
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.type = "image/*"
+            startActivityForResult(intent, 100)
+        }
 
         inputIncident = findViewById(R.id.inputIncidentType)
         inputRequest = findViewById(R.id.inputRequestId)
@@ -50,33 +69,22 @@ class ReportActivity : AppCompatActivity() {
         }
 
 
-
-        inputDate.setOnClickListener {
-
-            val calendar = Calendar.getInstance()
-
-            val dialog = DatePickerDialog(
-                this,
-                { _, year, month, day ->
-
-                    val selected = Calendar.getInstance()
-                    selected.set(year, month, day)
-
-                    val format = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-                    inputDate.setText(format.format(selected.time))
-
-                },
-                calendar.get(Calendar.YEAR),
-                calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH)
-            )
-
-            dialog.show()
-        }
+        // 🔹 FECHA AUTOMÁTICA
+        val formato = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        inputDate.setText(formato.format(Date()))
 
         btnSubmit.setOnClickListener {
 
             sendReport()
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == 100 && resultCode == Activity.RESULT_OK) {
+            selectedFileUri = data?.data
+            Toast.makeText(this, "Archivo seleccionado", Toast.LENGTH_SHORT).show()
         }
     }
 

@@ -115,12 +115,28 @@ class NewRequestActivity : AppCompatActivity() {
             npYear.value = c.get(Calendar.YEAR)
 
             btnAceptar.setOnClickListener {
+
+                val selectedCalendar = Calendar.getInstance()
+                selectedCalendar.set(npYear.value, npMonth.value, npDay.value, 0, 0, 0)
+
+                val today = Calendar.getInstance()
+                today.set(Calendar.HOUR_OF_DAY, 0)
+                today.set(Calendar.MINUTE, 0)
+                today.set(Calendar.SECOND, 0)
+                today.set(Calendar.MILLISECOND, 0)
+
+                if (selectedCalendar.before(today)) {
+                    Toast.makeText(this, "No puedes seleccionar una fecha anterior a la actual", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
                 val date = String.format(
                     "%02d/%02d/%04d",
                     npDay.value,
                     npMonth.value + 1,
                     npYear.value
                 )
+
                 etFecha.setText(date)
                 alertDialog.dismiss()
             }

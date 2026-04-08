@@ -8,6 +8,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.auvenix.sigti.R
 import com.google.android.material.imageview.ShapeableImageView
+import android.content.Intent
+import com.bumptech.glide.Glide
+import com.auvenix.sigti.ui.support.FullImageActivity
 
 class ReviewAdapter(
     private val reviewList: List<Review>
@@ -46,9 +49,15 @@ class ReviewAdapter(
                 // Glide.with(itemView.context).load(review.imageUrl).into(ivPhoto)
                 ivPhoto.visibility = View.VISIBLE // Aseguramos que se vea
                 com.bumptech.glide.Glide.with(itemView.context)
-                    .load(android.net.Uri.parse(review.imageUrl))
+                    .load(review.imageUrl)
                     .centerCrop()
                     .into(ivPhoto)
+
+                ivPhoto.setOnClickListener {
+                    val intent = android.content.Intent(itemView.context, FullImageActivity::class.java)
+                    intent.putExtra("imageUrl", review.imageUrl)
+                    itemView.context.startActivity(intent)
+                }
             }
         }
     }
