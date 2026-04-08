@@ -14,6 +14,7 @@ import com.auvenix.sigti.ui.profile.ProfileActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import android.widget.TextView
 
 // Imports de navegación
 import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
@@ -33,6 +34,10 @@ class ProviderCatalogActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityProviderCatalogBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val header = findViewById<View>(R.id.headerMain)
+        val tvTitle = header.findViewById<TextView>(R.id.tvHeaderTitle)
+
+        tvTitle.text = "Mi Catálogo"
 
         setupRecyclerView()
         setupBottomNavigation()

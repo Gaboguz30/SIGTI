@@ -6,18 +6,6 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="56dp">
 
-    <!-- BACK -->
-    <ImageView
-        android:id="@+id/btnBackHeader"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="-4dp"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:padding="4dp"
-        app:tint="@color/black"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
     <!-- TITULO -->
     <TextView
         android:id="@+id/tvHeaderTitle"
@@ -25,11 +13,10 @@
         android:layout_height="wrap_content"
         android:text="Titulo"
         android:textColor="@color/black"
-        android:textSize="22sp"
+        android:textSize="24sp"
         android:fontFamily="@font/poppins_bold"
         android:layout_marginStart="12dp"
-        app:layout_constraintStart_toEndOf="@id/btnBackHeader"
-        app:layout_constraintTop_toTopOf="@id/btnBackHeader"
-        app:layout_constraintBottom_toBottomOf="@id/btnBackHeader"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

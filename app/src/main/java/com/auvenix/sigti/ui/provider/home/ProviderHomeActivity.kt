@@ -37,6 +37,7 @@ class ProviderHomeActivity : AppCompatActivity() {
         setupRecyclerView()
         escucharNuevasSolicitudes() // 🔥 Escucha datos y maneja el Loader
         setupBottomNavigation()
+        cargarCalificacion()
 
         // 🔥 CONECTAR BOTÓN DE NOTIFICACIONES (PRESTADOR)
         val btnNotifProvider = findViewById<View>(R.id.btnNotificationsProvider)
@@ -132,5 +133,28 @@ class ProviderHomeActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+
+    private fun cargarCalificacion() {
+        val myUid = auth.currentUser?.uid ?: return
+
+        db.collection("reviews")
+            .whereEqualTo("technician_uid", myUid)
+            .get()
+            .addOnSuccessListener { result ->
+
+                var total = 0f
+                var count = 0
+
+                for (doc in result) {
+                    val rating = doc.getLong("rating")?.toFloat() ?: 0f
+                    total += rating
+                    count++
+                }
+
+                val promedio = if (count > 0) total / count else 0f
+
+                binding.tvRating.text = String.format("%.1f", promedio)
+            }
     }
 }

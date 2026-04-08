@@ -161,26 +161,30 @@ class HomeActivity : AppCompatActivity() {
                     Log.d("FIREBASE", "Oficios: $oficiosRaw")
                     Log.d("FIREBASE", "Profesion: $profesion")
 
-                    val rating = document.getString("rating")
                     val price = document.getString("price")
                     val distance = document.getString("distance")
                     val online = document.getBoolean("online") ?: false
                     val availability = if (online) "Disponible" else "No disponible"
 
-                    val worker = Worker(
-                        uid = uid,
-                        name = nombreCompleto,
-                        profession = profesion,
-                        rating = rating,
-                        price = price,
-                        distance = distance,
-                        availability = availability
-                    )
+                    // 🔥 AQUÍ TRAEMOS LAS RESEÑAS
+                    obtenerRatingPromedio(uid) { ratingPromedio ->
 
-                    workerList.add(worker)
+                        val worker = Worker(
+                            uid = uid,
+                            name = nombreCompleto,
+                            profession = profesion,
+                            rating = ratingPromedio,
+                            price = price,
+                            distance = distance,
+                            availability = availability
+                        )
+
+                        workerList.add(worker)
+
+                        // 🔥 actualiza la lista en tiempo real
+                        aplicarFiltro(etSearch.text.toString())
+                    }
                 }
-
-                aplicarFiltro("")
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Error al cargar datos", Toast.LENGTH_SHORT).show()
@@ -296,5 +300,33 @@ class HomeActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+    private fun obtenerRatingPromedio(workerId: String, callback: (String?) -> Unit) {
+
+        db.collection("reviews")
+            .whereEqualTo("technician_uid", workerId)
+            .get()
+            .addOnSuccessListener { documents ->
+
+                if (documents.isEmpty) {
+                    callback(null)
+                    return@addOnSuccessListener
+                }
+
+                var suma = 0.0
+                var total = 0
+
+                for (doc in documents) {
+                    val rating = doc.getDouble("rating") ?: 0.0
+                    suma += rating
+                    total++
+                }
+
+                val promedio = suma / total
+                callback(String.format("%.1f", promedio))
+            }
+            .addOnFailureListener {
+                callback(null)
+            }
     }
 }
