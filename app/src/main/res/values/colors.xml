@@ -14,4 +14,6 @@
     <color name="yellow_star">#FFC107</color>
     <color name="orange_start">#FF7A00</color>
     <color name="orange_end">#FFB347</color>
+    <color name="nav_blue">#1976D2</color>
+    <color name="nav_orange">#F57C00</color>
 </resources>

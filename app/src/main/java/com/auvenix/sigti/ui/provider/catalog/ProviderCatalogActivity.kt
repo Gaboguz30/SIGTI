@@ -138,7 +138,11 @@ class ProviderCatalogActivity : AppCompatActivity() {
                 R.id.nav_catalog -> true // Ya estamos aquí
                 R.id.nav_chat -> { startActivity(Intent(this, ProviderChatActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                 R.id.nav_jobs -> { startActivity(Intent(this, ProviderJobsActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
-                R.id.nav_profile -> { startActivity(Intent(this, ProfileActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                R.id.nav_profile -> {
+                    startActivity(Intent(this, ProfileActivity::class.java))
+                    overridePendingTransition(0, 0)
+                    finish(); true
+                }
                 else -> false
             }
         }

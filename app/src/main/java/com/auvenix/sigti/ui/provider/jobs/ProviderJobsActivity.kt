@@ -183,7 +183,11 @@ class ProviderJobsActivity : AppCompatActivity() {
                     R.id.nav_catalog -> { startActivity(Intent(this, ProviderCatalogActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                     R.id.nav_chat -> { startActivity(Intent(this, ProviderChatActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                     R.id.nav_jobs -> true
-                    R.id.nav_profile -> { startActivity(Intent(this, ProviderProfileActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    R.id.nav_profile -> {
+                        startActivity(Intent(this, ProfileActivity::class.java))
+                        overridePendingTransition(0, 0)
+                        true
+                    }
                     else -> false
                 }
             }
@@ -199,7 +203,11 @@ class ProviderJobsActivity : AppCompatActivity() {
                     R.id.nav_map -> { startActivity(Intent(this, UserMapActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                     R.id.nav_chat -> { startActivity(Intent(this, ProviderChatActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                     R.id.nav_jobs -> true
-                    R.id.nav_profile -> { startActivity(Intent(this, ProfileActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    R.id.nav_profile -> {
+                        startActivity(Intent(this, ProfileActivity::class.java))
+                        overridePendingTransition(0, 0)
+                        true
+                    }
                     else -> false
                 }
             }

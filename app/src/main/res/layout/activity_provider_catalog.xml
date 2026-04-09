@@ -79,15 +79,19 @@
     <!-- Bottom Nav -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationProvider"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/white"
         app:itemIconTint="@color/selector_nav_blue"
         app:itemTextColor="@color/selector_nav_blue"
-        app:labelVisibilityMode="labeled"
+        app:labelVisibilityMode="selected"
         app:itemRippleColor="@android:color/transparent"
         app:elevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/provider_bottom_nav_menu" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

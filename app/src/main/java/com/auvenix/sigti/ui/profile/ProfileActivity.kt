@@ -37,11 +37,13 @@ class ProfileActivity : AppCompatActivity() {
 
         sessionManager = SessionManager(this)
 
-        // Leemos el rol de la memoria local (1 milisegundo) y pintamos la barra AL INSTANTE.
-        val rolGuardado = sessionManager.getRole() ?: "SOLICITANTE"
-        configurarBottomMenu(rolGuardado)
+        val rolGuardado = sessionManager.getRole()
 
-        loadUserData()
+        if (rolGuardado != null) {
+            configurarBottomMenu(rolGuardado)
+        }
+
+        loadUserData()   // 🔥 ESTA ES LA CLAVE QUE TE FALTA
         setupClickListeners()
     }
 

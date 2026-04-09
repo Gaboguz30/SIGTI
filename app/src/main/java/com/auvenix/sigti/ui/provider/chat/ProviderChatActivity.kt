@@ -20,6 +20,9 @@ import com.google.firebase.database.*
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
+import android.content.res.ColorStateList
+import android.graphics.Color
+import androidx.core.content.ContextCompat
 
 class ProviderChatActivity : AppCompatActivity() {
 
@@ -146,21 +149,20 @@ class ProviderChatActivity : AppCompatActivity() {
         })
     }
 
-    // 🔥 MENÚ CORREGIDO CON LOS NUEVOS IDs Y LA PANTALLA RECICLADA
     private fun setupBottomNavigation() {
         val nav = binding.bottomNavigationProvider
         nav.menu.clear()
 
         if (myRole.equals("PRESTADOR", ignoreCase = true)) {
             nav.inflateMenu(R.menu.provider_bottom_nav_menu)
-            nav.selectedItemId = R.id.nav_chat // 🔥 ID unificado
+            nav.selectedItemId = R.id.nav_chat
 
             nav.setOnItemSelectedListener { item ->
                 when (item.itemId) {
                     R.id.nav_home_provider -> start(ProviderHomeActivity::class.java)
-                    R.id.nav_catalog -> start(ProviderCatalogActivity::class.java) // 🔥 Catálogo
+                    R.id.nav_catalog -> start(ProviderCatalogActivity::class.java)
                     R.id.nav_chat -> true
-                    R.id.nav_jobs -> start(ProviderJobsActivity::class.java) // 🔥 Trabajos
+                    R.id.nav_jobs -> start(ProviderJobsActivity::class.java)
                     R.id.nav_profile -> start(ProfileActivity::class.java)
                     else -> false
                 }
@@ -175,14 +177,36 @@ class ProviderChatActivity : AppCompatActivity() {
                     R.id.nav_home -> start(com.auvenix.sigti.ui.home.HomeActivity::class.java)
                     R.id.nav_map -> start(com.auvenix.sigti.ui.home.UserMapActivity::class.java)
                     R.id.nav_chat -> true
-                    R.id.nav_jobs -> start(ProviderJobsActivity::class.java) // 🔥 TRABAJOS AÑADIDO PARA SOLICITANTE
+                    R.id.nav_jobs -> start(ProviderJobsActivity::class.java)
                     R.id.nav_profile -> start(ProfileActivity::class.java)
                     else -> false
                 }
             }
         }
-    }
 
+        // 🔥 👉 COLOR (AHORA SÍ AL FINAL)
+        val color = if (myRole.equals("PRESTADOR", ignoreCase = true)) {
+            ContextCompat.getColor(this, R.color.nav_blue)
+        } else {
+            ContextCompat.getColor(this, R.color.nav_orange)
+        }
+
+        val colorStateList = ColorStateList(
+            arrayOf(
+                intArrayOf(android.R.attr.state_checked),
+                intArrayOf(-android.R.attr.state_checked)
+            ),
+            intArrayOf(
+                color,
+                Color.parseColor("#BDBDBD")
+            )
+        )
+
+        nav.post {
+            nav.itemIconTintList = colorStateList
+            nav.itemTextColor = colorStateList
+        }
+    }
     private fun start(activity: Class<*>): Boolean {
         if (this::class.java == activity) return true
 
