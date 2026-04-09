@@ -14,6 +14,8 @@ import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
 import com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import android.net.Uri
+import com.auvenix.sigti.ui.support.AyudaActivity
 
 class ProviderProfileActivity : AppCompatActivity() {
 
@@ -28,11 +30,14 @@ class ProviderProfileActivity : AppCompatActivity() {
         binding = ActivityProviderProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         loadProfileData()
         loadSwitchStates()
         setupSwitchListeners()
         setupLogoutButton()
+        setupSupportButtons()
         setupBottomNavigation()
+
     }
 
     private fun loadSwitchStates() {
@@ -102,6 +107,20 @@ class ProviderProfileActivity : AppCompatActivity() {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             })
             finish()
+        }
+    }
+
+    private fun setupSupportButtons() {
+
+        val ayuda = findViewById<android.view.View>(R.id.llAyuda)
+        val terminos = findViewById<android.view.View>(R.id.llTerminos)
+
+        ayuda.setOnClickListener {
+            Toast.makeText(this, "CLICK AYUDA", Toast.LENGTH_LONG).show()
+        }
+
+        terminos.setOnClickListener {
+            Toast.makeText(this, "CLICK TERMINOS", Toast.LENGTH_LONG).show()
         }
     }
 

@@ -15,8 +15,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SIGTI"
         android:usesCleartextTraffic="true">
-
-        <activity android:name=".ui.support.FullImageActivity"/>
+        <activity
+            android:name=".ui.support.ComoFunciona2Activity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.support.ComoFunciona1Activity"
+            android:exported="false" />
+        <activity android:name=".ui.support.AyudaActivity" />
+        <activity android:name=".ui.support.TerminosActivity" />
+        <activity android:name=".ui.support.FullImageActivity" />
         <activity
             android:name=".ui.profile.ChangePasswordActivity"
             android:exported="false" />
@@ -31,18 +38,16 @@
             android:exported="false" />
         <activity
             android:name=".ui.provider.catalog.AddServiceActivity"
-            android:exported="false" />
-        <!-- ── LAUNCHER ──────────────────────────────────────── -->
+            android:exported="false" /> <!-- ── LAUNCHER ──────────────────────────────────────── -->
         <activity
             android:name=".ui.auth.AuthEntryActivity"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <!-- ── AUTENTICACIÓN ──────────────────────────────────── -->
+        </activity> <!-- ── AUTENTICACIÓN ──────────────────────────────────── -->
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="false" />
@@ -60,7 +65,7 @@
             android:exported="false" /> <!-- ── ROLES / REGISTRO ───────────────────────────────── -->
         <activity
             android:name=".ui.role.RoleActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".ui.register.RegisterGeneralActivity"
             android:exported="false" />
@@ -84,8 +89,7 @@
             android:exported="false" /> <!-- ── CHAT ───────────────────────────────────────────── -->
         <activity
             android:name=".ui.chat.ChatDetailActivity"
-            android:exported="false" />
-        <!-- ── PERFIL USUARIO ─────────────────────────────────── -->
+            android:exported="false" /> <!-- ── PERFIL USUARIO ─────────────────────────────────── -->
         <activity
             android:name=".ui.profile.ProfileActivity"
             android:exported="false" />
@@ -113,7 +117,7 @@
         <activity
             android:name=".ui.request.NewRequestActivity"
             android:exported="false"
-            android:theme="@style/Theme.SIGTI"/>
+            android:theme="@style/Theme.SIGTI" />
         <activity
             android:name=".ui.support.ReportActivity"
             android:exported="false" />
@@ -124,7 +128,7 @@
             android:name=".MainActivity"
             android:exported="false" />
         <activity android:name=".ui.support.ReviewActivity1" />
-
+        <activity android:name=".ui.support.QueEsSigtiActivity"/>
     </application>
 
 </manifest>

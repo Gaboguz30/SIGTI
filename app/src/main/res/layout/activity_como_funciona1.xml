@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btnSiguiente"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <include
+                android:id="@+id/header"
+                layout="@layout/header_main"/>
+
+            <!-- 🔵 BARRAS -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="8dp"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="40dp">
+
+                <View android:layout_weight="1" android:layout_width="0dp" android:layout_height="match_parent" android:background="@color/sigti_blue"/>
+                <View android:layout_weight="1" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="6dp" android:background="@color/sigti_blue"/>
+                <View android:layout_weight="1" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="6dp" android:background="#E0E0E0"/>
+                <View android:layout_weight="1" android:layout_width="0dp" android:layout_height="match_parent" android:layout_marginStart="6dp" android:background="#E0E0E0"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="¿Cómo funciona SIGTI?"
+                android:textSize="20sp"
+                android:fontFamily="@font/poppins_bold"
+                android:layout_marginBottom="12dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Los clientes pueden encontrarte y solicitar tu servicio directamente."
+                android:textSize="15sp"
+                android:fontFamily="@font/poppins_regular"
+                android:layout_marginBottom="20dp"/>
+
+
+
+            <!-- IMAGEN -->
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:src="@drawable/servicios"
+                android:scaleType="centerCrop"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_card"/>
+
+            <!-- TEXTO FINAL -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Un cliente podrá contratarte si ofreces esa categoría y se encuentra en tu catalogo"
+                android:textSize="15sp"
+                android:fontFamily="@font/poppins_regular"
+                android:layout_marginBottom="16dp"
+                android:textColor="#424242"/>
+
+            <!-- TEXTO FINAL -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Si escoge tu perfil, reservará tu servicio en función de tu disponibilidad y te enviará una solicitud, que tendrás que aceptar/rechazar."
+                android:textSize="15sp"
+                android:fontFamily="@font/poppins_regular"
+                android:textColor="#424242"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSiguiente"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:text="Siguiente"
+        android:backgroundTint="@color/sigti_blue"
+        android:textColor="@android:color/white"
+        android:fontFamily="@font/poppins_medium"
+        app:cornerRadius="12dp"
+        android:layout_margin="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -260,6 +260,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
+        app:itemIconTint="@color/selector_nav_blue"
+        app:itemTextColor="@color/selector_nav_blue"
         app:labelVisibilityMode="labeled"
         app:elevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -267,5 +269,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:itemRippleColor="@android:color/transparent"
         app:menu="@menu/provider_bottom_nav_menu" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

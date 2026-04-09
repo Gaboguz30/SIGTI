@@ -19,6 +19,8 @@ import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
 import com.auvenix.sigti.ui.provider.catalog.ProviderCatalogActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import android.net.Uri
+import com.auvenix.sigti.ui.support.QueEsSigtiActivity
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -26,6 +28,7 @@ class ProfileActivity : AppCompatActivity() {
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
     private lateinit var sessionManager: SessionManager
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,6 +126,18 @@ class ProfileActivity : AppCompatActivity() {
                 .setPositiveButton("Sí, salir") { _, _ -> cerrarSesion() }
                 .setNegativeButton("Cancelar", null)
                 .show()
+        }
+        binding.llAyuda.setOnClickListener {
+            startActivity(Intent(this, com.auvenix.sigti.ui.support.AyudaActivity::class.java))
+        }
+
+        binding.llTerminos.setOnClickListener {
+            val url = "https://sigti.com.mx/terminos"
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(intent)
+        }
+        binding.btnQueEs.setOnClickListener {
+            startActivity(Intent(this, QueEsSigtiActivity::class.java))
         }
     }
 

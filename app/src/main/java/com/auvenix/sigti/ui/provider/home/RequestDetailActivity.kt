@@ -25,6 +25,17 @@ class RequestDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_request_detail)
+        val headerTitle = findViewById<TextView>(R.id.tvHeaderTitle)
+        val btnBack = findViewById<ImageView>(R.id.btnBackHeader)
+
+// cambiar título
+        headerTitle.text = "Detalles de Oferta"
+
+// botón regresar
+        btnBack.setOnClickListener {
+            onBackPressedDispatcher.onBackPressed()
+        }
+
 
         requestId = intent.getStringExtra("EXTRA_REQUEST_ID") ?: ""
         if (requestId.isEmpty()) { finish(); return }
@@ -48,14 +59,18 @@ class RequestDetailActivity : AppCompatActivity() {
                     val offer = doc.getDouble("priceOffer") ?: 0.0
 
                     val fecha = doc.getString("fecha") ?: ""
-                    findViewById<TextView>(R.id.tvDetailClientInfo).text = "Cliente: $clientName\nFecha solicitada: $fecha"
+
+                    findViewById<TextView>(R.id.tvDetailClientInfo).text = clientName
+                    findViewById<TextView>(R.id.tvDetailDate).text = "Se requiere el servicio el dia: $fecha"
 
                     val calle = doc.getString("calle") ?: ""
                     val num = doc.getString("numExt") ?: ""
                     val cp = doc.getString("cp") ?: ""
-                    findViewById<TextView>(R.id.tvDetailAddress).text = "Domicilio: $calle #$num, CP: $cp"
+                    findViewById<TextView>(R.id.tvStreet).text = "$calle #$num"
+                    findViewById<TextView>(R.id.tvCity).text = "Tehuacán, Puebla"
+                    findViewById<TextView>(R.id.tvPostalCode).text = "CP: $cp"
 
-                    findViewById<TextView>(R.id.tvDetailDesc).text = "Descripción:\n${doc.getString("description")}"
+                    findViewById<TextView>(R.id.tvDetailDesc).text = doc.getString("description")
                 }
             }
     }

@@ -23,6 +23,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import android.widget.TextView
 
 class ProviderJobsActivity : AppCompatActivity() {
 
@@ -51,7 +52,11 @@ class ProviderJobsActivity : AppCompatActivity() {
         setupRecyclerView()
         setupTabs()
         loadJobs(tab = 0)
-        setupBottomNavigation() // 🔥 Ahora este menú es inteligente
+        setupBottomNavigation()
+        val header = findViewById<View>(R.id.headerMain)
+        val tvTitle = header.findViewById<TextView>(R.id.tvHeaderTitle)
+
+        tvTitle.text = "Servicios"
     }
 
     override fun onStop() {
@@ -107,10 +112,10 @@ class ProviderJobsActivity : AppCompatActivity() {
             }
 
             if (jobList.isEmpty()) {
-                binding.tvTabContentStatus.visibility = View.VISIBLE
                 binding.tvTabContentStatus.text = when (tab) {
-                    0    -> if (myRole == "PRESTADOR") "No tienes trabajos activos" else "No has solicitado ningún trabajo"
-                    1    -> "Tu historial está vacío"
+                    0 -> if (myRole == "PRESTADOR") "No tienes trabajos activos" else "No has solicitado ningún trabajo"
+                    1 -> "Tu historial está vacío"
+                    2 -> "No tienes trabajos cancelados"
                     else -> ""
                 }
             } else {

@@ -4,83 +4,201 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA">
+    android:background="@color/white">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/clToolbarDetail"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
-        app:layout_constraintTop_toTopOf="parent">
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/poppins_bold"
-            android:layout_marginTop="25dp"
-            android:paddingStart="28dp"
-            android:text="Detalles de Oferta"
-            android:textColor="@color/black"
-            android:textSize="24sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+    <!-- SCROLL -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:fillViewport="true"
         app:layout_constraintBottom_toTopOf="@id/llBotones"
-        app:layout_constraintTop_toBottomOf="@id/clToolbarDetail">
+        app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="24dp"
+            >
 
-            <TextView
-                android:id="@+id/tvDetailTitle"
+            <!-- HEADER (CORRECTO) -->
+            <include
+                android:id="@+id/header"
+                layout="@layout/header_main" />
+
+            <!-- TITULO + STATUS -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/poppins_bold"
-                android:text="Cargando..."
-                android:textColor="#212121"
-                android:textSize="22sp" />
+                android:orientation="vertical"
+                android:layout_marginTop="16dp">
+
+                <TextView
+                    android:id="@+id/tvDetailTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_medium"
+                    android:text="Cargando..."
+                    android:textColor="#212121"
+                    android:textSize="18sp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Solicitud activa"
+                    android:textColor="@color/sigti_blue"
+                    android:textSize="13sp"
+                    android:fontFamily="@font/poppins_medium"
+                    android:layout_marginTop="4dp"/>
+            </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:orientation="vertical"
+
+                    android:background="@drawable/bg_card_modern"
+                    android:elevation="1dp"
+                    android:padding="20dp">
+
+                    <!-- CLIENTE -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:src="@drawable/ic_profile1"
+                            android:background="@drawable/bg_circle_light"
+                            android:padding="12dp"
+                            app:tint="@color/sigti_blue"/>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="14dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Cliente"
+                                android:textColor="#9E9E9E"
+                                android:textSize="11sp"
+                                android:fontFamily="@font/poppins_medium"/>
+
+                            <TextView
+                                android:id="@+id/tvDetailClientInfo"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="#111111"
+                                android:textSize="16sp"
+                                android:fontFamily="@font/poppins_medium"/>
+
+                            <TextView
+                                android:id="@+id/tvDetailDate"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="#212121"
+                                android:textSize="13sp"
+                                android:fontFamily="@font/poppins_regular"
+                                android:layout_marginTop="4dp"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- DIVIDER -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="16dp"
+                        android:background="@drawable/divider_soft"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="top">
+
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:layout_marginTop="2dp"
+                            android:src="@drawable/ic_location"
+                            app:tint="@color/sigti_blue"/>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:layout_marginStart="10dp">
+
+                            <TextView
+                                android:id="@+id/tvStreet"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="#212121"
+                                android:textSize="13sp"
+                                android:fontFamily="@font/poppins_regular"/>
+
+                            <TextView
+                                android:id="@+id/tvCity"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="#212121"
+                                android:textSize="13sp"
+                                android:fontFamily="@font/poppins_regular"
+                                android:layout_marginTop="2dp"/>
+
+                            <TextView
+                                android:id="@+id/tvPostalCode"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/sigti_blue"
+                                android:textSize="12sp"
+                                android:fontFamily="@font/poppins_regular"
+                                android:layout_marginTop="4dp"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- DIVIDER -->
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="16dp"
+                        android:background="@drawable/divider_soft"/>
+
+                    <!-- DESCRIPCIÓN -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Descripción"
+                        android:textColor="#9E9E9E"
+                        android:textSize="11sp"
+                        android:fontFamily="@font/poppins_medium"/>
+
+                    <TextView
+                        android:id="@+id/tvDetailDesc"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:padding="16dp"
+                        android:background="@drawable/bg_desc_soft"
+                        android:textColor="#212121"
+                        android:textSize="14sp"
+                        android:fontFamily="@font/poppins_regular"/>
+                </LinearLayout>
 
 
-            <TextView
-                android:id="@+id/tvDetailClientInfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:fontFamily="@font/poppins_regular"
-                android:text="Cliente: \nFecha solicitada: "
-                android:textColor="#424242"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/tvDetailAddress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:fontFamily="@font/poppins_regular"
-                android:text="Domicilio: "
-                android:textColor="#424242"
-                android:textSize="15sp" />
-
-            <TextView
-                android:id="@+id/tvDetailDesc"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:fontFamily="@font/poppins_regular"
-                android:text="Descripción: "
-                android:textColor="#424242"
-                android:textSize="15sp" />
         </LinearLayout>
     </ScrollView>
 
+    <!-- BOTONES -->
     <LinearLayout
         android:id="@+id/llBotones"
         android:layout_width="match_parent"
@@ -99,7 +217,7 @@
             android:fontFamily="@font/poppins_bold"
             android:text="Aceptar y Fíjar Precio Final"
             android:textColor="@color/white"
-            app:cornerRadius="12dp" />
+            app:cornerRadius="16dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
