@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:fillViewport="true"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationRequest"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
@@ -282,6 +282,7 @@
         android:id="@+id/bottomNavigationRequest"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:background="@android:color/white"
         app:itemIconTint="@color/selector_nav_blue"
         app:itemTextColor="@color/selector_nav_blue"

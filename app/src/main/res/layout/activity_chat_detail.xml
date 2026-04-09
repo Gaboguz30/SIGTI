@@ -23,7 +23,8 @@
             android:paddingStart="16dp"
             android:paddingEnd="24dp"
             android:paddingTop="8dp"
-            android:paddingBottom="8dp">
+            android:paddingBottom="8dp"
+            >
 
             <include
                 android:id="@+id/header"
@@ -72,12 +73,12 @@
         android:id="@+id/llInputArea"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:elevation="6dp"
+        android:background="#FAFAFA"
         android:orientation="horizontal"
         android:padding="8dp"
+        android:layout_marginBottom="10dp"
         android:gravity="center_vertical"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavigationChat"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -105,11 +106,12 @@
             app:tint="@color/white"/>
     </LinearLayout>
 
-    <!-- NAV -->
+    <!-- NAV (OCULTO PERO EXISTE PARA NO ROMPER KOTLIN) -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationChat"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         android:background="@color/white"
         app:itemIconTint="@color/selector_nav_blue"
         app:itemTextColor="@color/selector_nav_blue"

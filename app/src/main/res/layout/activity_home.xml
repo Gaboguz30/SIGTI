@@ -301,14 +301,18 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigation"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/bottom_nav_menu"
         app:itemIconTint="@color/selector_nav_blue"
         app:itemTextColor="@color/selector_nav_blue"
-        app:labelVisibilityMode="labeled"
-        app:itemRippleColor="@android:color/transparent"/>
+        app:labelVisibilityMode="selected"
+        app:elevation="8dp"
+        app:itemRippleColor="@android:color/transparent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
