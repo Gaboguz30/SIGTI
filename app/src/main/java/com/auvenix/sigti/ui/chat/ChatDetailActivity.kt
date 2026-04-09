@@ -49,9 +49,8 @@ class ChatDetailActivity : AppCompatActivity() {
         val back = header.findViewById<ImageView>(R.id.btnBackHeader)
 
         back.setOnClickListener {
-            finish()
+            finish() // Aquí no usamos la función mágica porque el botón de 'Atrás' del header solo debe cerrar la pestaña
         }
-        setupBottomNavigation()
 
         val rv = findViewById<RecyclerView>(R.id.rvChatMessages)
         val input = findViewById<EditText>(R.id.etMessageInput)
@@ -82,22 +81,15 @@ class ChatDetailActivity : AppCompatActivity() {
             .document(targetUid)
             .get()
             .addOnSuccessListener { doc ->
-
                 val nombre = doc.getString("nombre") ?: ""
                 val apP = doc.getString("apPaterno") ?: ""
                 val apM = doc.getString("apMaterno") ?: ""
 
-                val full = listOf(nombre, apP, apM)
-                    .filter { it.isNotBlank() }
-                    .joinToString(" ")
-
+                val full = listOf(nombre, apP, apM).filter { it.isNotBlank() }.joinToString(" ")
                 contactName = if (full.isNotEmpty()) full else "Usuario"
-
                 title.text = contactName
-
             }
 
-        // 🔥 TU NOMBRE
         db.collection("users").document(myUid).get()
             .addOnSuccessListener {
                 val nombre = it.getString("nombre") ?: ""
@@ -107,19 +99,15 @@ class ChatDetailActivity : AppCompatActivity() {
                 if (myName.isEmpty()) myName = "Usuario"
 
                 myRole = it.getString("role") ?: "SOLICITANTE"
-                setupBottomNavigation()
+                setupBottomNavigation() // Lo llamamos hasta aquí para saber qué menú pintar
             }
 
-        // 🔥 CHAT
         val roomId = if (myUid < targetUid) "${myUid}_$targetUid" else "${targetUid}_$myUid"
 
-        chatRef = FirebaseDatabase.getInstance()
-            .getReference("chats")
-            .child(roomId)
+        chatRef = FirebaseDatabase.getInstance().getReference("chats").child(roomId)
 
         chatRef.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(s: DataSnapshot, p: String?) {
-
                 val msg = s.child("message").value?.toString() ?: return
                 val sender = s.child("sender_uid").getValue(String::class.java) ?: ""
                 val time = s.child("timestamp").getValue(Long::class.java) ?: 0
@@ -139,7 +127,6 @@ class ChatDetailActivity : AppCompatActivity() {
         })
 
         send.setOnClickListener {
-
             val texto = input.text.toString().trim()
             if (texto.isEmpty()) return@setOnClickListener
 
@@ -168,27 +155,55 @@ class ChatDetailActivity : AppCompatActivity() {
                 "unreadCount" to 1
             )
 
-            conversationsRef.child(myUid)
-                .child(targetUid)
-                .updateChildren(dataMe)
-
-            conversationsRef.child(targetUid)
-                .child(myUid)
-                .updateChildren(dataOther)
+            conversationsRef.child(myUid).child(targetUid).updateChildren(dataMe)
+            conversationsRef.child(targetUid).child(myUid).updateChildren(dataOther)
 
             input.setText("")
         }
     }
 
+    // 🔥 NAVEGACIÓN SUAVE DINÁMICA (Decide qué menú mostrar)
     private fun setupBottomNavigation() {
         val nav = findViewById<BottomNavigationView>(R.id.bottomNavigationChat)
 
         if (myRole.equals("PRESTADOR", ignoreCase = true)) {
             nav.menu.clear()
             nav.inflateMenu(R.menu.provider_bottom_nav_menu)
+
+            nav.setOnItemSelectedListener { item ->
+                when (item.itemId) {
+                    R.id.nav_home_provider -> { irAPantalla(ProviderHomeActivity::class.java); true }
+                    R.id.nav_catalog -> { irAPantalla(ProviderCatalogActivity::class.java); true }
+                    R.id.nav_chat -> { irAPantalla(com.auvenix.sigti.ui.provider.chat.ProviderChatActivity::class.java); true }
+                    R.id.nav_jobs -> { irAPantalla(ProviderJobsActivity::class.java); true }
+                    R.id.nav_profile -> { irAPantalla(ProfileActivity::class.java); true }
+                    else -> false
+                }
+            }
         } else {
             nav.menu.clear()
             nav.inflateMenu(R.menu.bottom_nav_menu)
+
+            nav.setOnItemSelectedListener { item ->
+                when (item.itemId) {
+                    R.id.nav_home -> { irAPantalla(HomeActivity::class.java); true }
+                    R.id.nav_map -> { irAPantalla(UserMapActivity::class.java); true }
+                    R.id.nav_chat -> { irAPantalla(com.auvenix.sigti.ui.provider.chat.ProviderChatActivity::class.java); true }
+                    R.id.nav_jobs -> { irAPantalla(ProviderJobsActivity::class.java); true }
+                    R.id.nav_profile -> { irAPantalla(ProfileActivity::class.java); true }
+                    else -> false
+                }
+            }
         }
+    }
+
+    // 🔥 LA FUNCIÓN MÁGICA
+    private fun irAPantalla(activityClass: Class<*>) {
+        if (this::class.java == activityClass) return
+        val intent = Intent(this, activityClass)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        finish()
     }
 }

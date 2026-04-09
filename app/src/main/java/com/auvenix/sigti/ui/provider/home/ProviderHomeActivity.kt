@@ -35,11 +35,10 @@ class ProviderHomeActivity : AppCompatActivity() {
 
         loadUserData()
         setupRecyclerView()
-        escucharNuevasSolicitudes() // 🔥 Lógica blindada para el estado vacío
+        escucharNuevasSolicitudes()
         setupBottomNavigation()
         cargarCalificacion()
 
-        // CONECTAR BOTÓN DE NOTIFICACIONES
         val btnNotifProvider = findViewById<View>(R.id.btnNotificationsProvider)
         btnNotifProvider.setOnClickListener {
             val bottomSheet = com.auvenix.sigti.notifications.NotificationsBottomSheet()
@@ -70,7 +69,6 @@ class ProviderHomeActivity : AppCompatActivity() {
     private fun escucharNuevasSolicitudes() {
         val myUid = auth.currentUser?.uid ?: return
 
-        // 1. Encendemos el loader y ocultamos listas al inicio
         binding.pbLoading.visibility = View.VISIBLE
         binding.tvEmptyState.visibility = View.GONE
         binding.rvRequests.visibility = View.GONE
@@ -78,10 +76,9 @@ class ProviderHomeActivity : AppCompatActivity() {
         db.collection("requests")
             .whereEqualTo("providerId", myUid)
             .whereEqualTo("status", "pending")
-            //2.orderBy("timestamp", Query.Direction.DESCENDING)
+            //.orderBy("timestamp", Query.Direction.DESCENDING) // Comentado para evitar el error de Indice Compuesto
             .addSnapshotListener { snapshots, e ->
 
-                // 2. Apagamos el loader en cuanto Firebase responde
                 binding.pbLoading.visibility = View.GONE
 
                 if (e != null) {
@@ -90,10 +87,8 @@ class ProviderHomeActivity : AppCompatActivity() {
                     return@addSnapshotListener
                 }
 
-                // 3. Limpiamos la lista para evitar duplicados
                 requestList.clear()
 
-                // 4. Llenamos la lista con los datos de Firebase
                 if (snapshots != null) {
                     for (doc in snapshots) {
                         val req = doc.toObject(RequestModel::class.java).copy(id = doc.id)
@@ -101,13 +96,10 @@ class ProviderHomeActivity : AppCompatActivity() {
                     }
                 }
 
-                // 🔥 5. EL BLINDAJE ABSOLUTO: Contamos los elementos reales en la lista
                 if (requestList.isEmpty()) {
-                    // No hay chambas -> Mostramos el letrero, ocultamos la lista
                     binding.tvEmptyState.visibility = View.VISIBLE
                     binding.rvRequests.visibility = View.GONE
                 } else {
-                    // Sí hay chambas -> Ocultamos el letrero, mostramos la lista
                     binding.tvEmptyState.visibility = View.GONE
                     binding.rvRequests.visibility = View.VISIBLE
                 }
@@ -116,6 +108,7 @@ class ProviderHomeActivity : AppCompatActivity() {
             }
     }
 
+    // 🔥 NAVEGACIÓN SUAVE APLICADA
     private fun setupBottomNavigation() {
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigationProvider)
         bottomNavigation.selectedItemId = R.id.nav_home_provider
@@ -123,26 +116,10 @@ class ProviderHomeActivity : AppCompatActivity() {
         bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home_provider -> true
-                R.id.nav_catalog -> {
-                    startActivity(Intent(this, ProviderCatalogActivity::class.java))
-                    overridePendingTransition(0, 0)
-                    finish(); true
-                }
-                R.id.nav_chat -> {
-                    startActivity(Intent(this, ProviderChatActivity::class.java))
-                    overridePendingTransition(0, 0)
-                    finish(); true
-                }
-                R.id.nav_jobs -> {
-                    startActivity(Intent(this, ProviderJobsActivity::class.java))
-                    overridePendingTransition(0, 0)
-                    finish(); true
-                }
-                R.id.nav_profile -> {
-                    startActivity(Intent(this, ProfileActivity::class.java))
-                    overridePendingTransition(0, 0)
-                    finish(); true
-                }
+                R.id.nav_catalog -> { irAPantalla(ProviderCatalogActivity::class.java); true }
+                R.id.nav_chat -> { irAPantalla(ProviderChatActivity::class.java); true }
+                R.id.nav_jobs -> { irAPantalla(ProviderJobsActivity::class.java); true }
+                R.id.nav_profile -> { irAPantalla(ProfileActivity::class.java); true }
                 else -> false
             }
         }
@@ -155,7 +132,6 @@ class ProviderHomeActivity : AppCompatActivity() {
             .whereEqualTo("technician_uid", myUid)
             .get()
             .addOnSuccessListener { result ->
-
                 var total = 0f
                 var count = 0
 
@@ -164,10 +140,18 @@ class ProviderHomeActivity : AppCompatActivity() {
                     total += rating
                     count++
                 }
-
                 val promedio = if (count > 0) total / count else 0f
-
                 binding.tvRating.text = String.format("%.1f", promedio)
             }
+    }
+
+    // 🔥 LA FUNCIÓN MÁGICA
+    private fun irAPantalla(activityClass: Class<*>) {
+        if (this::class.java == activityClass) return
+        val intent = Intent(this, activityClass)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        finish()
     }
 }

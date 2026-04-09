@@ -43,7 +43,7 @@ class ProfileActivity : AppCompatActivity() {
             configurarBottomMenu(rolGuardado)
         }
 
-        loadUserData()   // 🔥 ESTA ES LA CLAVE QUE TE FALTA
+        loadUserData()
         setupClickListeners()
     }
 
@@ -118,7 +118,10 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         binding.llUpgradePlan.setOnClickListener {
-            val url = "sigti.com.mx/index#planes"
+            var url = "http://sigti.com.mx/index#planes"
+            if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                url = "http://$url"
+            }
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             startActivity(intent)
         }
@@ -131,6 +134,7 @@ class ProfileActivity : AppCompatActivity() {
                 .setNegativeButton("Cancelar", null)
                 .show()
         }
+
         binding.llAyuda.setOnClickListener {
             startActivity(Intent(this, com.auvenix.sigti.ui.support.AyudaActivity::class.java))
         }
@@ -140,6 +144,7 @@ class ProfileActivity : AppCompatActivity() {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             startActivity(intent)
         }
+
         binding.btnQueEs.setOnClickListener {
             startActivity(Intent(this, QueEsSigtiActivity::class.java))
         }
@@ -155,53 +160,48 @@ class ProfileActivity : AppCompatActivity() {
         finish()
     }
 
-    // 🔥 AQUI ESTA LA MAGIA CORREGIDA PARA AMBOS MUNDOS
+    // 🔥 MENÚ DINÁMICO CON NAVEGACIÓN SUAVE
     private fun configurarBottomMenu(rol: String) {
         binding.bottomNavigation.menu.clear()
 
         if (rol == "PRESTADOR") {
             binding.bottomNavigation.inflateMenu(R.menu.provider_bottom_nav_menu)
-            binding.bottomNavigation.selectedItemId = R.id.nav_profile // Apuntamos al ID correcto del perfil
+            binding.bottomNavigation.selectedItemId = R.id.nav_profile
 
             binding.bottomNavigation.setOnItemSelectedListener { item ->
                 when (item.itemId) {
-                    R.id.nav_home_provider -> { startActivity(Intent(this, ProviderHomeActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
-                    // 🔥 Catálogo y Trabajos en su nuevo lugar
-                    R.id.nav_catalog -> { startActivity(Intent(this, ProviderCatalogActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
-                    R.id.nav_chat -> { startActivity(Intent(this, ProviderChatActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
-                    R.id.nav_jobs -> { startActivity(Intent(this, ProviderJobsActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    R.id.nav_home_provider -> { irAPantalla(ProviderHomeActivity::class.java); true }
+                    R.id.nav_catalog -> { irAPantalla(ProviderCatalogActivity::class.java); true }
+                    R.id.nav_chat -> { irAPantalla(ProviderChatActivity::class.java); true }
+                    R.id.nav_jobs -> { irAPantalla(ProviderJobsActivity::class.java); true }
                     R.id.nav_profile -> true
                     else -> false
                 }
             }
         } else {
-            // 🔥 MENÚ DEL SOLICITANTE / CLIENTE
             binding.bottomNavigation.inflateMenu(R.menu.bottom_nav_menu)
             binding.bottomNavigation.selectedItemId = R.id.nav_profile
 
             binding.bottomNavigation.setOnItemSelectedListener { item ->
                 when (item.itemId) {
-                    R.id.nav_home -> { startActivity(Intent(this, HomeActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
-                    R.id.nav_map -> { startActivity(Intent(this, UserMapActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
-                    R.id.nav_chat -> {
-                        val intent = Intent(this, ProviderChatActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
-                        overridePendingTransition(0, 0)
-                        finish()
-                        true
-                    }
-                    // 🔥 AQUÍ CONECTAMOS LA PANTALLA RECICLADA DE TRABAJOS AL USUARIO
-                    R.id.nav_jobs -> {
-                        startActivity(Intent(this, ProviderJobsActivity::class.java))
-                        overridePendingTransition(0, 0)
-                        finish()
-                        true
-                    }
+                    R.id.nav_home -> { irAPantalla(HomeActivity::class.java); true }
+                    R.id.nav_map -> { irAPantalla(UserMapActivity::class.java); true }
+                    R.id.nav_chat -> { irAPantalla(ProviderChatActivity::class.java); true }
+                    R.id.nav_jobs -> { irAPantalla(ProviderJobsActivity::class.java); true }
                     R.id.nav_profile -> true
                     else -> false
                 }
             }
         }
+    }
+
+    // 🔥 LA FUNCIÓN MÁGICA
+    private fun irAPantalla(activityClass: Class<*>) {
+        if (this::class.java == activityClass) return
+        val intent = Intent(this, activityClass)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        finish()
     }
 }

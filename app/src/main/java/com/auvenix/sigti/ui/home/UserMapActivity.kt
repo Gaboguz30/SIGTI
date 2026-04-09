@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.auvenix.sigti.R
@@ -18,7 +19,7 @@ class UserMapActivity : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
     private val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
-    private val lista = mutableListOf<String>()
+    private val lista = mutableListOf<FavoriteWorker>()
     private lateinit var adapter: FavoritosAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,89 +27,86 @@ class UserMapActivity : AppCompatActivity() {
         binding = ActivityUserMapBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-// 🔥 TITULO HEADER
         binding.headerMain.tvHeaderTitle.text = "Favoritos"
-
-        // 🔥 ICONO ACTIVO (puedes cambiar si tienes otro id)
         binding.bottomNavigation.selectedItemId = R.id.nav_map
 
-        // 🔥 RECYCLER
-        adapter = FavoritosAdapter(lista)
+        adapter = FavoritosAdapter(lista) { fav ->
+            AlertDialog.Builder(this)
+                .setTitle("Quitar de Favoritos")
+                .setMessage("¿Estás seguro de quitar a ${fav.name} de tus favoritos?")
+                .setPositiveButton("Sí, quitar") { _, _ ->
+                    db.collection("favorites").document(fav.favoriteDocId).delete()
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Eliminado de favoritos", Toast.LENGTH_SHORT).show()
+                            cargarFavoritos()
+                        }
+                }
+                .setNegativeButton("Cancelar", null)
+                .show()
+        }
         binding.rvFavoritos.layoutManager = LinearLayoutManager(this)
         binding.rvFavoritos.adapter = adapter
 
-        // 🔥 CARGAR DATOS
         cargarFavoritos()
 
-        // 🔥 NAV
+        // 🔥 NAVEGACIÓN SUAVE
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
-
-                R.id.nav_home -> {
-                    startActivity(Intent(this, HomeActivity::class.java))
-                    finish()
-                    true
-                }
-
+                R.id.nav_home -> { irAPantalla(HomeActivity::class.java); true }
                 R.id.nav_map -> true
-
-                R.id.nav_chat -> {
-                    startActivity(Intent(this, com.auvenix.sigti.ui.provider.chat.ProviderChatActivity::class.java))
-                    finish()
-                    true
-                }
-
-                R.id.nav_jobs -> {
-                    startActivity(Intent(this, com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity::class.java))
-                    finish()
-                    true
-                }
-
-                R.id.nav_profile -> {
-                    startActivity(Intent(this, ProfileActivity::class.java))
-                    finish()
-                    true
-                }
-
+                R.id.nav_chat -> { irAPantalla(com.auvenix.sigti.ui.provider.chat.ProviderChatActivity::class.java); true }
+                R.id.nav_jobs -> { irAPantalla(com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity::class.java); true }
+                R.id.nav_profile -> { irAPantalla(ProfileActivity::class.java); true }
                 else -> false
             }
         }
     }
 
-    // 🔥 FAVORITOS
     private fun cargarFavoritos() {
-
         db.collection("favorites")
             .whereEqualTo("user_uid", userId)
             .get()
             .addOnSuccessListener { result ->
-
                 lista.clear()
 
                 if (result.isEmpty) {
                     binding.tvEmptyFavoritos.visibility = View.VISIBLE
+                    adapter.notifyDataSetChanged()
                     return@addOnSuccessListener
                 }
 
                 binding.tvEmptyFavoritos.visibility = View.GONE
 
                 for (doc in result) {
+                    val favDocId = doc.id
                     val providerId = doc.getString("technician_uid") ?: ""
 
-                    db.collection("providers")
+                    db.collection("users")
                         .document(providerId)
                         .get()
                         .addOnSuccessListener { prov ->
+                            if (prov.exists()) {
+                                val nombre = "${prov.getString("nombre") ?: ""} ${prov.getString("apPaterno") ?: ""}".trim()
+                                val oficio = prov.getString("oficio") ?: "Servicio Profesional"
 
-                            val nombre = (prov.getString("nombre") ?: "") + " " +
-                                    (prov.getString("apPaterno") ?: "")
-                            lista.add(nombre)
-                            adapter.notifyDataSetChanged()
+                                lista.add(FavoriteWorker(favDocId, providerId, nombre, oficio))
+                                adapter.notifyDataSetChanged()
+                            }
                         }
                 }
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Error cargando favoritos", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    // 🔥 LA FUNCIÓN MÁGICA
+    private fun irAPantalla(activityClass: Class<*>) {
+        if (this::class.java == activityClass) return
+        val intent = Intent(this, activityClass)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        finish()
     }
 }

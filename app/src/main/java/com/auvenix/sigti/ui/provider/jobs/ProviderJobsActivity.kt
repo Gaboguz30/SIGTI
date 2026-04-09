@@ -48,7 +48,6 @@ class ProviderJobsActivity : AppCompatActivity() {
 
         setupRecyclerView()
 
-        // 🔥 MAGIA: Nos aseguramos de que existan 3 pestañas
         if (binding.tabLayoutJobs.tabCount < 3) {
             binding.tabLayoutJobs.addTab(binding.tabLayoutJobs.newTab().setText("Rechazados"))
         }
@@ -79,7 +78,6 @@ class ProviderJobsActivity : AppCompatActivity() {
         val uid = auth.currentUser?.uid ?: return
         val campoFiltro = if (myRole == "PRESTADOR") "providerId" else "clientId"
 
-        // 🔥 EL CEREBRO DE LAS 3 PESTAÑAS
         val query = when (tab) {
             0 -> db.collection("requests")
                 .whereEqualTo(campoFiltro, uid)
@@ -105,9 +103,8 @@ class ProviderJobsActivity : AppCompatActivity() {
                         clientId     = doc.getString("clientId") ?: "",
                         clientName   = doc.getString("clientName") ?: "Cliente",
                         providerId   = doc.getString("providerId") ?: "",
-                        providerName = doc.getString("providerName") ?: "Técnico", // 🔥 JALAMOS EL NOMBRE DEL TÉCNICO
+                        providerName = doc.getString("providerName") ?: "Técnico",
                         title        = doc.getString("title") ?: "Sin título",
-                        // Ojo aquí: Leemos finalPrice, y si es nulo, leemos priceOffer
                         priceOffer   = doc.getDouble("finalPrice") ?: doc.getDouble("priceOffer") ?: 0.0,
                         fecha        = doc.getString("fecha") ?: "",
                         status       = doc.getString("status") ?: ""
@@ -128,8 +125,6 @@ class ProviderJobsActivity : AppCompatActivity() {
 
             adapter.notifyDataSetChanged()
         }
-
-
     }
 
     private fun setupRecyclerView() {
@@ -143,7 +138,6 @@ class ProviderJobsActivity : AppCompatActivity() {
                 startActivity(intent)
             },
             onCompleteClick = { job ->
-                // 🔥 SI ES PRESTADOR -> FINALIZA EL TRABAJO
                 if (myRole == "PRESTADOR" && job.status == "in_progress") {
                     AlertDialog.Builder(this)
                         .setTitle("Finalizar Trabajo")
@@ -157,7 +151,6 @@ class ProviderJobsActivity : AppCompatActivity() {
                         .setNegativeButton("Cancelar", null)
                         .show()
                 }
-                // 🔥 SI ES CLIENTE -> ACEPTA EL PRECIO Y COMIENZA
                 else if (myRole == "SOLICITANTE" && job.status == "pending_client_confirmation") {
                     AlertDialog.Builder(this)
                         .setTitle("Aceptar Precio")
@@ -177,6 +170,7 @@ class ProviderJobsActivity : AppCompatActivity() {
         binding.rvJobsList.adapter = adapter
     }
 
+    // 🔥 NAVEGACIÓN SUAVE DINÁMICA
     private fun setupBottomNavigation() {
         val navView = binding.bottomNavigationProvider
 
@@ -187,11 +181,11 @@ class ProviderJobsActivity : AppCompatActivity() {
 
             navView.setOnItemSelectedListener { item ->
                 when (item.itemId) {
-                    R.id.nav_home_provider -> { startActivity(Intent(this, ProviderHomeActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
-                    R.id.nav_catalog -> { startActivity(Intent(this, ProviderCatalogActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
-                    R.id.nav_chat -> { startActivity(Intent(this, ProviderChatActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    R.id.nav_home_provider -> { irAPantalla(ProviderHomeActivity::class.java); true }
+                    R.id.nav_catalog -> { irAPantalla(ProviderCatalogActivity::class.java); true }
+                    R.id.nav_chat -> { irAPantalla(ProviderChatActivity::class.java); true }
                     R.id.nav_jobs -> true
-                    R.id.nav_profile -> { startActivity(Intent(this, ProviderProfileActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    R.id.nav_profile -> { irAPantalla(ProviderProfileActivity::class.java); true }
                     else -> false
                 }
             }
@@ -202,14 +196,24 @@ class ProviderJobsActivity : AppCompatActivity() {
 
             navView.setOnItemSelectedListener { item ->
                 when (item.itemId) {
-                    R.id.nav_home -> { startActivity(Intent(this, HomeActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
-                    R.id.nav_map -> { startActivity(Intent(this, UserMapActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
-                    R.id.nav_chat -> { startActivity(Intent(this, ProviderChatActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    R.id.nav_home -> { irAPantalla(HomeActivity::class.java); true }
+                    R.id.nav_map -> { irAPantalla(UserMapActivity::class.java); true }
+                    R.id.nav_chat -> { irAPantalla(ProviderChatActivity::class.java); true }
                     R.id.nav_jobs -> true
-                    R.id.nav_profile -> { startActivity(Intent(this, ProfileActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
+                    R.id.nav_profile -> { irAPantalla(ProfileActivity::class.java); true }
                     else -> false
                 }
             }
         }
+    }
+
+    // 🔥 LA FUNCIÓN MÁGICA
+    private fun irAPantalla(activityClass: Class<*>) {
+        if (this::class.java == activityClass) return
+        val intent = Intent(this, activityClass)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        finish()
     }
 }

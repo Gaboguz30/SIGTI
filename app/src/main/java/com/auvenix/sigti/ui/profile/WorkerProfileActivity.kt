@@ -60,7 +60,7 @@ class WorkerProfileActivity : AppCompatActivity() {
         val back = header.findViewById<ImageView>(R.id.btnBackHeader)
 
         back.setOnClickListener {
-            finish()
+            finish() // Aquí no usamos la función mágica porque es el botón normal de regresar
         }
 
         workerId = intent.getStringExtra("EXTRA_WORKER_UID") ?: ""
@@ -95,7 +95,6 @@ class WorkerProfileActivity : AppCompatActivity() {
         tabLayout.addTab(tabLayout.newTab().setText("Servicios"))
         tabLayout.addTab(tabLayout.newTab().setText("Reseñas"))
 
-// Selección inicial bonita
         tabLayout.getTabAt(0)?.select()
         rvServices.visibility = View.VISIBLE
         rvReviews.visibility = View.GONE
@@ -104,12 +103,10 @@ class WorkerProfileActivity : AppCompatActivity() {
 
             override fun onTabSelected(tab: TabLayout.Tab) {
                 when (tab.position) {
-
                     0 -> { // Servicios
                         rvServices.visibility = View.VISIBLE
                         rvReviews.visibility = View.GONE
                     }
-
                     1 -> { // Reseñas
                         rvServices.visibility = View.GONE
                         rvReviews.visibility = View.VISIBLE
@@ -129,13 +126,10 @@ class WorkerProfileActivity : AppCompatActivity() {
         tvEmptyServices = findViewById(R.id.tvEmptyServicesPerfil)
         ratingBar = findViewById(R.id.ratingBar)
         tvRatingNumber = findViewById(R.id.tvRatingNumber)
-
-        // 🔥 ESTA LÍNEA FALTABA
         tvExperience = findViewById(R.id.tvProfileExperience)
         rvReviews = findViewById(R.id.rvReviews)
         setupTabs()
         setupReviews()
-
     }
 
     private fun setupRecycler() {
@@ -144,49 +138,32 @@ class WorkerProfileActivity : AppCompatActivity() {
         rvServices.adapter = adapter
     }
 
-    // 🔥 SOLO DATOS REALES (SIN INVENTAR)
     private fun cargarPerfilReal() {
-
         db.collection("users").document(workerId)
             .get()
             .addOnSuccessListener { doc ->
 
                 if (!doc.exists()) return@addOnSuccessListener
 
-                // 🔹 NOMBRE
                 val nombre = doc.getString("nombre") ?: ""
                 val apP = doc.getString("apPaterno") ?: ""
                 val apM = doc.getString("apMaterno") ?: ""
 
-                workerName = listOf(nombre, apP, apM)
-                    .filter { it.isNotBlank() }
-                    .joinToString(" ")
-
+                workerName = listOf(nombre, apP, apM).filter { it.isNotBlank() }.joinToString(" ")
                 tvName.text = workerName
 
-                // 🔹 PROFESION DESDE OFICIOS
                 val oficiosRaw = doc.get("oficios")
-
                 var profesion = ""
                 var experiencia = ""
 
-                if (oficiosRaw is List<*>) {
-                    if (oficiosRaw.isNotEmpty()) {
-                        val primero = oficiosRaw[0]
-
-                        if (primero is Map<*, *>) {
-                            profesion = primero["nombre"]?.toString() ?: ""
-
-                            val exp = primero["anios_experiencia"]
-                            experiencia = if (exp != null) {
-                                "Experiencia: $exp años"
-                            } else {
-                                ""
-                            }
-                        }
+                if (oficiosRaw is List<*> && oficiosRaw.isNotEmpty()) {
+                    val primero = oficiosRaw[0]
+                    if (primero is Map<*, *>) {
+                        profesion = primero["nombre"]?.toString() ?: ""
+                        val exp = primero["anios_experiencia"]
+                        experiencia = if (exp != null) "Experiencia: $exp años" else ""
                     }
                 }
-
 
                 if (profesion.isNotEmpty()) {
                     tvProfession.text = profesion
@@ -205,7 +182,6 @@ class WorkerProfileActivity : AppCompatActivity() {
                     .whereEqualTo("technician_uid", workerId)
                     .get()
                     .addOnSuccessListener { reviews ->
-
                         var total = 0f
                         val count = reviews.size()
 
@@ -215,7 +191,6 @@ class WorkerProfileActivity : AppCompatActivity() {
                         }
 
                         val promedio = if (count > 0) total / count else 0f
-
                         ratingBar.rating = promedio
 
                         if (count > 0) {
@@ -224,44 +199,32 @@ class WorkerProfileActivity : AppCompatActivity() {
                             tvRatingNumber.text = "(0 reseñas)"
                         }
                     }
-
-
-
-
             }
-
             .addOnFailureListener {
                 Toast.makeText(this, "Error al cargar datos", Toast.LENGTH_SHORT).show()
             }
     }
 
     private fun setupReviews() {
-
         rvReviews.layoutManager = LinearLayoutManager(this)
 
         db.collection("reviews")
             .whereEqualTo("technician_uid", workerId)
             .get()
             .addOnSuccessListener { documents ->
-
                 reviewList.clear()
 
                 for (doc in documents) {
-
                     val user = doc.getString("userName") ?: "Usuario"
                     val comment = doc.getString("comment") ?: ""
                     val rating = doc.getLong("rating")?.toFloat() ?: 0f
                     val timestamp = doc.getTimestamp("created_at")?.toDate()
 
                     val formato = java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.getDefault())
-
                     val date = if (timestamp != null) formato.format(timestamp) else ""
-
                     val imageUrl = doc.getString("imageUrl")
 
-                    reviewList.add(
-                        Review(user, date, comment, rating, imageUrl)
-                    )
+                    reviewList.add(Review(user, date, comment, rating, imageUrl))
                 }
 
                 reviewAdapter = ReviewAdapter(reviewList)
@@ -272,9 +235,8 @@ class WorkerProfileActivity : AppCompatActivity() {
     private fun cargarServicios() {
         db.collection("users").document(workerId)
             .collection("services")
-            .get() // Quitamos el orderBy de aquí, lo haremos en Kotlin para manejar el boolean
+            .get()
             .addOnSuccessListener { docs ->
-
                 servicesList.clear()
 
                 if (docs.isEmpty) {
@@ -285,21 +247,16 @@ class WorkerProfileActivity : AppCompatActivity() {
                     rvServices.visibility = View.VISIBLE
 
                     for (doc in docs) {
-                        // Mapeamos a ServiceCatalog usando copia para meterle el ID
                         val service = doc.toObject(ServiceCatalog::class.java).copy(id = doc.id)
                         servicesList.add(service)
                     }
-
-                    // 🔥 MAGIA: Ordenamos PRIMERO por Activos (true) y SEGUNDO alfabéticamente
                     servicesList.sortWith(compareBy({ !it.active }, { it.name.lowercase() }))
                 }
-
                 adapter.notifyDataSetChanged()
             }
     }
+
     private fun setupButtons() {
-
-
         findViewById<TextView>(R.id.btnReport).setOnClickListener {
             val intent = Intent(this, ReportActivity::class.java)
             intent.putExtra("workerId", workerId)
@@ -327,33 +284,29 @@ class WorkerProfileActivity : AppCompatActivity() {
         }
     }
 
+    // 🔥 NAVEGACIÓN SUAVE APLICADA
     private fun setupBottomNav() {
         val nav = findViewById<BottomNavigationView>(R.id.bottomNavigationProfile)
 
         nav.setOnItemSelectedListener {
             when (it.itemId) {
-                R.id.nav_home -> {
-                    startActivity(Intent(this, HomeActivity::class.java))
-                    finish(); true
-                }
-                R.id.nav_map -> {
-                    startActivity(Intent(this, UserMapActivity::class.java))
-                    finish(); true
-                }
-                R.id.nav_chat -> {
-                    val intent = Intent(this, ProviderChatActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(intent)
-                    finish()
-                    true
-                }
-
-                R.id.nav_profile -> {
-                    startActivity(Intent(this, ProfileActivity::class.java))
-                    finish(); true
-                }
+                R.id.nav_home -> { irAPantalla(HomeActivity::class.java); true }
+                R.id.nav_map -> { irAPantalla(UserMapActivity::class.java); true }
+                R.id.nav_chat -> { irAPantalla(ProviderChatActivity::class.java); true }
+                R.id.nav_jobs -> { irAPantalla(com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity::class.java); true }
+                R.id.nav_profile -> { irAPantalla(ProfileActivity::class.java); true }
                 else -> false
             }
         }
+    }
+
+    // 🔥 LA FUNCIÓN MÁGICA
+    private fun irAPantalla(activityClass: Class<*>) {
+        if (this::class.java == activityClass) return
+        val intent = Intent(this, activityClass)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        finish()
     }
 }

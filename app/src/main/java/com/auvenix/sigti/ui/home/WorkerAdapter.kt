@@ -4,6 +4,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.RecyclerView
 import com.auvenix.sigti.R
 import com.google.android.material.button.MaterialButton
@@ -38,38 +40,32 @@ class WorkerAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkerViewHolder {
-        val view = LayoutInflater.from(parent.context)
-
-            .inflate(R.layout.item_worker, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_worker, parent, false)
         return WorkerViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: WorkerViewHolder, position: Int) {
-
         val worker = workerList[position]
-        // 🔥 FIREBASE
         val db = FirebaseFirestore.getInstance()
         val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-        // 🔥 VERIFICAR SI YA ES FAVORITO
+
+        // 🔥 PINTAMOS EL CORAZÓN INICIAL (Revisa si ya es favorito)
         db.collection("favorites")
             .whereEqualTo("user_uid", userId)
             .whereEqualTo("technician_uid", worker.uid)
             .get()
             .addOnSuccessListener { result ->
-
                 if (result.isEmpty) {
-                    holder.btnFavorito.setImageResource(R.drawable.ic_favorite_border)
+                    holder.btnFavorito.setImageResource(R.drawable.ic_favorite_border) // Vacío
                 } else {
-                    holder.btnFavorito.setImageResource(R.drawable.ic_favorite)
+                    holder.btnFavorito.setImageResource(R.drawable.ic_favorite) // Lleno
                 }
             }
 
         holder.tvProfession.text = worker.profession
-
-        // 🔹 NOMBRE
         holder.tvName.text = worker.name
 
-        // 🔹 RATING
+        // RATING
         if (!worker.rating.isNullOrEmpty()) {
             holder.tvRating.text = worker.rating
             holder.tvRating.visibility = View.VISIBLE
@@ -77,7 +73,7 @@ class WorkerAdapter(
             holder.tvRating.visibility = View.GONE
         }
 
-        // 🔹 DISTANCIA
+        // DISTANCIA
         if (!worker.distance.isNullOrEmpty()) {
             holder.tvDistance.text = worker.distance
             holder.tvDistance.visibility = View.VISIBLE
@@ -85,59 +81,68 @@ class WorkerAdapter(
             holder.tvDistance.visibility = View.GONE
         }
 
-        // 🔹 DISPONIBILIDAD (PREPARADO)
+        // DISPONIBILIDAD
         if (!worker.availability.isNullOrEmpty()) {
-
             holder.tvAvailability.visibility = View.VISIBLE
-
             if (worker.availability == "Disponible") {
                 holder.tvAvailability.text = "Disponible"
-                holder.tvAvailability.setTextColor(android.graphics.Color.parseColor("#16A34A")) // verde
+                holder.tvAvailability.setTextColor(android.graphics.Color.parseColor("#16A34A"))
             } else {
                 holder.tvAvailability.text = "No disponible"
-                holder.tvAvailability.setTextColor(android.graphics.Color.parseColor("#DC2626")) // rojo
+                holder.tvAvailability.setTextColor(android.graphics.Color.parseColor("#DC2626"))
             }
-
         } else {
             holder.tvAvailability.visibility = View.GONE
         }
 
-        // 🔥 OCULTAR TODO EL BLOQUE SI NO HAY DATOS
+        // OCULTAR STATS
         if (worker.rating.isNullOrEmpty() && worker.distance.isNullOrEmpty()) {
             holder.layoutStats.visibility = View.GONE
         } else {
             holder.layoutStats.visibility = View.VISIBLE
         }
 
-        holder.btnViewProfile.setOnClickListener {
-            onProfileClick(worker)
-        }
+        holder.btnViewProfile.setOnClickListener { onProfileClick(worker) }
 
-        // 🔥 TOGGLE FAVORITO
+        // 🔥 LA MAGIA DE LOS POPUPS AL TOCAR EL CORAZÓN
         holder.btnFavorito.setOnClickListener {
-
+            // Checamos en qué estado está ahorita
             db.collection("favorites")
                 .whereEqualTo("user_uid", userId)
                 .whereEqualTo("technician_uid", worker.uid)
                 .get()
                 .addOnSuccessListener { result ->
-
                     if (result.isEmpty) {
-                        // ❤️ GUARDAR
-                        val data = hashMapOf(
-                            "user_uid" to userId,
-                            "technician_uid" to worker.uid
-                        )
-
-                        db.collection("favorites").add(data)
-                        holder.btnFavorito.setImageResource(R.drawable.ic_favorite)
+                        // ❌ No estaba en favoritos -> PREGUNTAMOS PARA AGREGAR
+                        AlertDialog.Builder(holder.itemView.context)
+                            .setTitle("Agregar a Favoritos")
+                            .setMessage("¿Deseas agregar a ${worker.name} a tu pantalla de favoritos?")
+                            .setPositiveButton("Sí") { _, _ ->
+                                val data = hashMapOf(
+                                    "user_uid" to userId,
+                                    "technician_uid" to worker.uid
+                                )
+                                db.collection("favorites").add(data)
+                                holder.btnFavorito.setImageResource(R.drawable.ic_favorite) // Pintamos
+                                Toast.makeText(holder.itemView.context, "Agregado a favoritos", Toast.LENGTH_SHORT).show()
+                            }
+                            .setNegativeButton("No", null)
+                            .show()
 
                     } else {
-                        // ❌ ELIMINAR
-                        for (doc in result) {
-                            db.collection("favorites").document(doc.id).delete()
-                        }
-                        holder.btnFavorito.setImageResource(R.drawable.ic_favorite_border)
+                        // ❤️ Ya estaba en favoritos -> PREGUNTAMOS PARA QUITAR
+                        AlertDialog.Builder(holder.itemView.context)
+                            .setTitle("Quitar de Favoritos")
+                            .setMessage("¿Estás seguro de quitar a este prestador de tus favoritos?")
+                            .setPositiveButton("Sí") { _, _ ->
+                                for (doc in result) {
+                                    db.collection("favorites").document(doc.id).delete()
+                                }
+                                holder.btnFavorito.setImageResource(R.drawable.ic_favorite_border) // Despintamos
+                                Toast.makeText(holder.itemView.context, "Eliminado de favoritos", Toast.LENGTH_SHORT).show()
+                            }
+                            .setNegativeButton("No", null)
+                            .show()
                     }
                 }
         }
