@@ -33,16 +33,15 @@ class ProviderHomeActivity : AppCompatActivity() {
         binding = ActivityProviderHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        loadUserData() // 🔥 Jalamos el nombre del usuario
+        loadUserData()
         setupRecyclerView()
-        escucharNuevasSolicitudes() // 🔥 Escucha datos y maneja el Loader
+        escucharNuevasSolicitudes() // 🔥 Lógica blindada para el estado vacío
         setupBottomNavigation()
         cargarCalificacion()
 
-        // 🔥 CONECTAR BOTÓN DE NOTIFICACIONES (PRESTADOR)
+        // CONECTAR BOTÓN DE NOTIFICACIONES
         val btnNotifProvider = findViewById<View>(R.id.btnNotificationsProvider)
         btnNotifProvider.setOnClickListener {
-            // Levantamos el MISMO BottomSheet (Es universal)
             val bottomSheet = com.auvenix.sigti.notifications.NotificationsBottomSheet()
             bottomSheet.show(supportFragmentManager, "NotificationsSheet")
         }
@@ -71,7 +70,7 @@ class ProviderHomeActivity : AppCompatActivity() {
     private fun escucharNuevasSolicitudes() {
         val myUid = auth.currentUser?.uid ?: return
 
-        // Encendemos el loader y ocultamos listas al inicio
+        // 1. Encendemos el loader y ocultamos listas al inicio
         binding.pbLoading.visibility = View.VISIBLE
         binding.tvEmptyState.visibility = View.GONE
         binding.rvRequests.visibility = View.GONE
@@ -79,9 +78,10 @@ class ProviderHomeActivity : AppCompatActivity() {
         db.collection("requests")
             .whereEqualTo("providerId", myUid)
             .whereEqualTo("status", "pending")
-            .orderBy("timestamp", Query.Direction.DESCENDING)
+            //2.orderBy("timestamp", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshots, e ->
-                // Apagamos el loader en cuanto Firebase nos responde
+
+                // 2. Apagamos el loader en cuanto Firebase responde
                 binding.pbLoading.visibility = View.GONE
 
                 if (e != null) {
@@ -90,18 +90,28 @@ class ProviderHomeActivity : AppCompatActivity() {
                     return@addSnapshotListener
                 }
 
+                // 3. Limpiamos la lista para evitar duplicados
                 requestList.clear()
-                if (snapshots != null && !snapshots.isEmpty) {
-                    binding.rvRequests.visibility = View.VISIBLE
-                    binding.tvEmptyState.visibility = View.GONE
+
+                // 4. Llenamos la lista con los datos de Firebase
+                if (snapshots != null) {
                     for (doc in snapshots) {
                         val req = doc.toObject(RequestModel::class.java).copy(id = doc.id)
                         requestList.add(req)
                     }
-                } else {
-                    binding.rvRequests.visibility = View.GONE
-                    binding.tvEmptyState.visibility = View.VISIBLE
                 }
+
+                // 🔥 5. EL BLINDAJE ABSOLUTO: Contamos los elementos reales en la lista
+                if (requestList.isEmpty()) {
+                    // No hay chambas -> Mostramos el letrero, ocultamos la lista
+                    binding.tvEmptyState.visibility = View.VISIBLE
+                    binding.rvRequests.visibility = View.GONE
+                } else {
+                    // Sí hay chambas -> Ocultamos el letrero, mostramos la lista
+                    binding.tvEmptyState.visibility = View.GONE
+                    binding.rvRequests.visibility = View.VISIBLE
+                }
+
                 adapter.notifyDataSetChanged()
             }
     }
@@ -114,20 +124,23 @@ class ProviderHomeActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_home_provider -> true
                 R.id.nav_catalog -> {
-                    startActivity(Intent(this, ProviderCatalogActivity::class.java)) // <-- Pon tu clase de catálogo
+                    startActivity(Intent(this, ProviderCatalogActivity::class.java))
+                    overridePendingTransition(0, 0)
                     finish(); true
                 }
                 R.id.nav_chat -> {
                     startActivity(Intent(this, ProviderChatActivity::class.java))
-                    true
+                    overridePendingTransition(0, 0)
+                    finish(); true
                 }
-                // 🔥 AQUÍ CONECTAMOS EXACTAMENTE LA MISMA PANTALLA QUE EL USUARIO
                 R.id.nav_jobs -> {
-                    startActivity(Intent(this, ProviderJobsActivity::class.java)) // <-- MISMA CLASE
+                    startActivity(Intent(this, ProviderJobsActivity::class.java))
+                    overridePendingTransition(0, 0)
                     finish(); true
                 }
                 R.id.nav_profile -> {
                     startActivity(Intent(this, ProfileActivity::class.java))
+                    overridePendingTransition(0, 0)
                     finish(); true
                 }
                 else -> false

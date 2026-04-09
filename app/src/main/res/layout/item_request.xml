@@ -41,18 +41,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvRequestTitle" />
 
-        <TextView
-            android:id="@+id/tvRequestOffer"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Oferta: $0.00"
-            android:textColor="@color/sigti_blue"
-            android:textSize="16sp"
-            android:fontFamily="@font/poppins_bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvRequestClient" />
-
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnViewOffer"
             android:layout_width="wrap_content"

@@ -1,5 +1,6 @@
 package com.auvenix.sigti.ui.provider.jobs
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +14,7 @@ import java.util.Locale
 
 class JobAdapter(
     private val jobList: List<RequestModel>,
-    private val userRole: String, // 🔥 NUEVO: Recibe el rol del usuario
+    private val userRole: String,
     private val onChatClick: (RequestModel) -> Unit,
     private val onCompleteClick: (RequestModel) -> Unit
 ) : RecyclerView.Adapter<JobAdapter.JobViewHolder>() {
@@ -34,43 +35,65 @@ class JobAdapter(
         private val tvTitle: TextView = itemView.findViewById(R.id.tvJobTitle)
         private val tvDate: TextView = itemView.findViewById(R.id.tvJobDate)
         private val tvAddress: TextView = itemView.findViewById(R.id.tvJobAddress)
-        private val tvPrice: TextView = itemView.findViewById(R.id.tvJobPrice)
         private val btnChat: ImageView = itemView.findViewById(R.id.btnJobChat)
         private val btnComplete: MaterialButton = itemView.findViewById(R.id.btnCompleteJob)
         private val tvWaiting: TextView = itemView.findViewById(R.id.tvJobWaiting)
 
         fun bind(job: RequestModel) {
-            // Si es prestador dice Cliente, si es cliente dice Técnico
-            tvClient.text = if (userRole == "PRESTADOR") "👤 Cliente: ${job.clientName}" else "👷 Técnico: ${job.clientName}"
+
+            // 🔥 ADIÓS EMOJIS, HOLA DISEÑO LIMPIO
+            if (userRole == "PRESTADOR") {
+                tvClient.text = "Cliente: ${job.clientName}"
+            } else {
+                tvClient.text = "Técnico: ${job.providerName}"
+            }
 
             tvTitle.text = job.title
-            tvDate.text = "📅 Fecha: ${job.fecha}"
-            tvAddress.text = "📍 Ver detalles en el chat"
-            tvPrice.text = String.format(Locale.getDefault(), "$%.2f", job.priceOffer)
+            tvDate.text = "Fecha: ${job.fecha}"
+            tvAddress.text = "Ver detalles en el chat"
 
-            // 🔥 LA MAGIA DE LOS ESTADOS DEPENDIENDO DEL ROL
+            tvWaiting.setTextColor(Color.parseColor("#F57C00"))
+            btnChat.visibility = View.VISIBLE
+
+            // 🔥 LA MAGIA DE LOS ESTADOS CORREGIDA
             when (job.status) {
+                "pending" -> { // 🔥 ESTO FALTABA PARA LAS NUEVAS SOLICITUDES
+                    btnComplete.visibility = View.GONE
+                    tvWaiting.visibility = View.VISIBLE
+                    tvWaiting.text = if (userRole == "PRESTADOR") "Revisa tu pantalla de Inicio" else "A la espera de respuesta..."
+                }
                 "in_progress" -> {
                     if (userRole == "PRESTADOR") {
-                        // El técnico ve el botón para cobrar/finalizar
                         btnComplete.visibility = View.VISIBLE
+                        btnComplete.text = "Finalizar"
                         tvWaiting.visibility = View.GONE
                     } else {
-                        // El cliente solo ve un aviso de que están trabajando
                         btnComplete.visibility = View.GONE
                         tvWaiting.visibility = View.VISIBLE
-                        tvWaiting.text = "🔧 Trabajo en proceso..."
+                        tvWaiting.text = "Trabajo en proceso..."
                     }
                 }
                 "pending_client_confirmation" -> {
-                    btnComplete.visibility = View.GONE
-                    tvWaiting.visibility = View.VISIBLE
-                    tvWaiting.text = if (userRole == "PRESTADOR") "Esperando respuesta del cliente..." else "Revisa el chat para confirmar"
+                    if (userRole == "PRESTADOR") {
+                        btnComplete.visibility = View.GONE
+                        tvWaiting.visibility = View.VISIBLE
+                        tvWaiting.text = "Esperando confirmación..."
+                    } else {
+                        btnComplete.visibility = View.VISIBLE
+                        btnComplete.text = "Aceptar por $${job.priceOffer}"
+                        tvWaiting.visibility = View.GONE
+                    }
                 }
                 "completed" -> {
-                    // Ya se acabó el jale. Ocultamos ambos.
                     btnComplete.visibility = View.GONE
                     tvWaiting.visibility = View.GONE
+                }
+                "rejected" -> {
+                    btnComplete.visibility = View.GONE
+                    tvWaiting.visibility = View.VISIBLE
+                    tvWaiting.text = "Solicitud Rechazada"
+                    tvWaiting.setTextColor(Color.parseColor("#D32F2F"))
+                    btnChat.visibility = View.GONE
                 }
             }
 

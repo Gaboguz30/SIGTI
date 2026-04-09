@@ -90,18 +90,6 @@
             android:background="#EEEEEE"
             app:layout_constraintTop_toBottomOf="@id/tvJobAddress" />
 
-        <TextView
-            android:id="@+id/tvJobPrice"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="$450.00"
-            android:textColor="@color/sigti_blue"
-            android:textSize="18sp"
-            android:fontFamily="@font/poppins_bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/vDividerJob2" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnCompleteJob"

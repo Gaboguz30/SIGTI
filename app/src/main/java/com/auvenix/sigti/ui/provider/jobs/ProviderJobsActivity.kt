@@ -23,7 +23,6 @@ import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import android.widget.TextView
 
 class ProviderJobsActivity : AppCompatActivity() {
 
@@ -32,7 +31,6 @@ class ProviderJobsActivity : AppCompatActivity() {
     private val auth             = FirebaseAuth.getInstance()
     private val jobList          = mutableListOf<RequestModel>()
 
-    // 🔥 INSTANCIAMOS EL SESSION MANAGER PARA SABER QUIÉN ENTRÓ
     private lateinit var session : SessionManager
     private lateinit var myRole  : String
 
@@ -45,18 +43,19 @@ class ProviderJobsActivity : AppCompatActivity() {
         binding = ActivityProviderJobsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 🔥 LEEMOS EL ROL DEL USUARIO LOGUEADO
         session = SessionManager(this)
         myRole = session.getRole() ?: "SOLICITANTE"
 
         setupRecyclerView()
+
+        // 🔥 MAGIA: Nos aseguramos de que existan 3 pestañas
+        if (binding.tabLayoutJobs.tabCount < 3) {
+            binding.tabLayoutJobs.addTab(binding.tabLayoutJobs.newTab().setText("Rechazados"))
+        }
+
         setupTabs()
         loadJobs(tab = 0)
         setupBottomNavigation()
-        val header = findViewById<View>(R.id.headerMain)
-        val tvTitle = header.findViewById<TextView>(R.id.tvHeaderTitle)
-
-        tvTitle.text = "Servicios"
     }
 
     override fun onStop() {
@@ -78,17 +77,19 @@ class ProviderJobsActivity : AppCompatActivity() {
 
     private fun loadJobs(tab: Int) {
         val uid = auth.currentUser?.uid ?: return
-
-        // 🔥 LA MAGIA DEL FILTRO: Si es prestador busca por providerId, si es cliente busca por clientId
         val campoFiltro = if (myRole == "PRESTADOR") "providerId" else "clientId"
 
+        // 🔥 EL CEREBRO DE LAS 3 PESTAÑAS
         val query = when (tab) {
             0 -> db.collection("requests")
-                .whereEqualTo(campoFiltro, uid) // <-- Usa la variable inteligente
-                .whereIn("status", listOf("in_progress", "pending_client_confirmation"))
+                .whereEqualTo(campoFiltro, uid)
+                .whereIn("status", listOf("in_progress", "pending_client_confirmation", "pending"))
             1 -> db.collection("requests")
-                .whereEqualTo(campoFiltro, uid) // <-- Usa la variable inteligente
+                .whereEqualTo(campoFiltro, uid)
                 .whereEqualTo("status", "completed")
+            2 -> db.collection("requests")
+                .whereEqualTo(campoFiltro, uid)
+                .whereEqualTo("status", "rejected")
             else -> return
         }
 
@@ -100,22 +101,25 @@ class ProviderJobsActivity : AppCompatActivity() {
             for (doc in snapshot.documents) {
                 jobList.add(
                     RequestModel(
-                        id         = doc.id,
-                        clientId   = doc.getString("clientId") ?: "",
-                        clientName = doc.getString("clientName") ?: "Cliente",
-                        title      = doc.getString("title") ?: "Sin título",
-                        priceOffer = doc.getDouble("finalPrice") ?: 0.0,
-                        fecha      = doc.getString("fecha") ?: "",
-                        status     = doc.getString("status") ?: ""
+                        id           = doc.id,
+                        clientId     = doc.getString("clientId") ?: "",
+                        clientName   = doc.getString("clientName") ?: "Cliente",
+                        providerId   = doc.getString("providerId") ?: "",
+                        providerName = doc.getString("providerName") ?: "Técnico", // 🔥 JALAMOS EL NOMBRE DEL TÉCNICO
+                        title        = doc.getString("title") ?: "Sin título",
+                        // Ojo aquí: Leemos finalPrice, y si es nulo, leemos priceOffer
+                        priceOffer   = doc.getDouble("finalPrice") ?: doc.getDouble("priceOffer") ?: 0.0,
+                        fecha        = doc.getString("fecha") ?: "",
+                        status       = doc.getString("status") ?: ""
                     )
                 )
             }
-
             if (jobList.isEmpty()) {
+                binding.tvTabContentStatus.visibility = View.VISIBLE
                 binding.tvTabContentStatus.text = when (tab) {
-                    0 -> if (myRole == "PRESTADOR") "No tienes trabajos activos" else "No has solicitado ningún trabajo"
-                    1 -> "Tu historial está vacío"
-                    2 -> "No tienes trabajos cancelados"
+                    0    -> if (myRole == "PRESTADOR") "No tienes trabajos activos" else "No has solicitado ningún trabajo"
+                    1    -> "Tu historial está vacío"
+                    2    -> "No hay trabajos rechazados"
                     else -> ""
                 }
             } else {
@@ -124,32 +128,48 @@ class ProviderJobsActivity : AppCompatActivity() {
 
             adapter.notifyDataSetChanged()
         }
+
+
     }
 
     private fun setupRecyclerView() {
         adapter = JobAdapter(
             jobList = jobList,
-            userRole = myRole, // 🔥 ¡AQUÍ ESTÁ LA LÍNEA CORREGIDA!
+            userRole = myRole,
             onChatClick = { job ->
                 val intent = Intent(this, ChatDetailActivity::class.java)
-                // Si es prestador manda el ID del cliente, si es cliente manda el ID del prestador
                 intent.putExtra("serviceId", job.clientId)
                 intent.putExtra("contactName", job.clientName)
                 startActivity(intent)
             },
             onCompleteClick = { job ->
-                // 🔥 SEGURIDAD: Solo el prestador puede marcar como completado
-                if (myRole == "PRESTADOR") {
+                // 🔥 SI ES PRESTADOR -> FINALIZA EL TRABAJO
+                if (myRole == "PRESTADOR" && job.status == "in_progress") {
                     AlertDialog.Builder(this)
                         .setTitle("Finalizar Trabajo")
                         .setMessage("¿Estás seguro de marcar '${job.title}' como terminado?\n\nConfirma que ya recibiste el pago de $${job.priceOffer}.")
                         .setPositiveButton("Sí, ya cobré") { _, _ ->
-                            marcarComoCompletado(job.id)
+                            db.collection("requests").document(job.id).update("status", "completed")
+                                .addOnSuccessListener {
+                                    Toast.makeText(this, "¡Felicidades por cerrar el trato! 💸", Toast.LENGTH_LONG).show()
+                                }
                         }
                         .setNegativeButton("Cancelar", null)
                         .show()
-                } else {
-                    Toast.makeText(this, "El técnico debe finalizar el trabajo", Toast.LENGTH_SHORT).show()
+                }
+                // 🔥 SI ES CLIENTE -> ACEPTA EL PRECIO Y COMIENZA
+                else if (myRole == "SOLICITANTE" && job.status == "pending_client_confirmation") {
+                    AlertDialog.Builder(this)
+                        .setTitle("Aceptar Precio")
+                        .setMessage("El técnico cobrará $${job.priceOffer} por este servicio. ¿Aceptas arrancar el trabajo?")
+                        .setPositiveButton("Aceptar y Comenzar") { _, _ ->
+                            db.collection("requests").document(job.id).update("status", "in_progress")
+                                .addOnSuccessListener {
+                                    Toast.makeText(this, "¡Trabajo en marcha! 🚀", Toast.LENGTH_LONG).show()
+                                }
+                        }
+                        .setNegativeButton("Cancelar", null)
+                        .show()
                 }
             }
         )
@@ -157,22 +177,10 @@ class ProviderJobsActivity : AppCompatActivity() {
         binding.rvJobsList.adapter = adapter
     }
 
-    private fun marcarComoCompletado(jobId: String) {
-        db.collection("requests").document(jobId).update("status", "completed")
-            .addOnSuccessListener {
-                Toast.makeText(this, "¡Felicidades por cerrar el trato! 💸", Toast.LENGTH_LONG).show()
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Error al actualizar", Toast.LENGTH_SHORT).show()
-            }
-    }
-
-    // 🔥 LA MAGIA DEL MENÚ DINÁMICO
     private fun setupBottomNavigation() {
         val navView = binding.bottomNavigationProvider
 
         if (myRole == "PRESTADOR") {
-            // CARGAMOS MENÚ DE PRESTADOR
             navView.menu.clear()
             navView.inflateMenu(R.menu.provider_bottom_nav_menu)
             navView.selectedItemId = R.id.nav_jobs
@@ -183,16 +191,11 @@ class ProviderJobsActivity : AppCompatActivity() {
                     R.id.nav_catalog -> { startActivity(Intent(this, ProviderCatalogActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                     R.id.nav_chat -> { startActivity(Intent(this, ProviderChatActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                     R.id.nav_jobs -> true
-                    R.id.nav_profile -> {
-                        startActivity(Intent(this, ProfileActivity::class.java))
-                        overridePendingTransition(0, 0)
-                        true
-                    }
+                    R.id.nav_profile -> { startActivity(Intent(this, ProviderProfileActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                     else -> false
                 }
             }
         } else {
-            // 🔥 CARGAMOS MENÚ DE CLIENTE / SOLICITANTE
             navView.menu.clear()
             navView.inflateMenu(R.menu.bottom_nav_menu)
             navView.selectedItemId = R.id.nav_jobs
@@ -203,11 +206,7 @@ class ProviderJobsActivity : AppCompatActivity() {
                     R.id.nav_map -> { startActivity(Intent(this, UserMapActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                     R.id.nav_chat -> { startActivity(Intent(this, ProviderChatActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                     R.id.nav_jobs -> true
-                    R.id.nav_profile -> {
-                        startActivity(Intent(this, ProfileActivity::class.java))
-                        overridePendingTransition(0, 0)
-                        true
-                    }
+                    R.id.nav_profile -> { startActivity(Intent(this, ProfileActivity::class.java)); overridePendingTransition(0, 0); finish(); true }
                     else -> false
                 }
             }

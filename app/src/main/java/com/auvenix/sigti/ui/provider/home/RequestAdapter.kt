@@ -14,6 +14,8 @@ data class RequestModel(
     val id: String = "",
     val clientId: String = "",
     val clientName: String = "",
+    val providerId: String = "",
+    val providerName: String = "", // 🔥 NUEVO: Para que el cliente sepa quién es el técnico
     val title: String = "",
     val priceOffer: Double = 0.0,
     val fecha: String = "",
@@ -40,13 +42,11 @@ class RequestAdapter(
     inner class RequestViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val tvTitle: TextView = itemView.findViewById(R.id.tvRequestTitle)
         private val tvClient: TextView = itemView.findViewById(R.id.tvRequestClient)
-        private val tvOffer: TextView = itemView.findViewById(R.id.tvRequestOffer)
         private val btnViewOffer: MaterialButton = itemView.findViewById(R.id.btnViewOffer)
 
         fun bind(request: RequestModel) {
             tvTitle.text = request.title
             tvClient.text = "Cliente: ${request.clientName}"
-            tvOffer.text = String.format(Locale.getDefault(), "Oferta: $%.2f", request.priceOffer)
 
             btnViewOffer.setOnClickListener { onViewOffer(request) }
         }
