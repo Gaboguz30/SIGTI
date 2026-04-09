@@ -108,8 +108,8 @@
         android:id="@+id/bottomNavigationProvider"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:itemIconTint="@null"
-        app:itemTextColor="@null"
+        app:itemIconTint="@color/selector_nav_blue"
+        app:itemTextColor="@color/selector_nav_blue"
         android:background="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"/>
 

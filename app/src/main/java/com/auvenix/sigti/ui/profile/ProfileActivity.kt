@@ -118,7 +118,9 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         binding.llUpgradePlan.setOnClickListener {
-            startActivity(Intent(this, ProviderPlansActivity::class.java))
+            val url = "sigti.com.mx/index#planes"
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(intent)
         }
 
         binding.btnLogout.setOnClickListener {

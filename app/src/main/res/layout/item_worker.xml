@@ -82,6 +82,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
+
         <!-- PROFESIÓN -->
         <TextView
             android:id="@+id/tvWorkerProfession"
@@ -94,6 +95,14 @@
             app:layout_constraintStart_toStartOf="@id/tvWorkerName"
             app:layout_constraintEnd_toEndOf="@id/tvWorkerName"
             app:layout_constraintTop_toBottomOf="@id/tvWorkerName"/>
+        <ImageView
+            android:id="@+id/btnFavorito"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:src="@drawable/ic_favorite_border"
+            app:tint="#9CA3AF"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <!-- DISPONIBILIDAD -->
         <TextView
@@ -146,6 +155,8 @@
                 android:text=""
                 android:textSize="12sp"
                 android:textColor="#6B7280"/>
+
+
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

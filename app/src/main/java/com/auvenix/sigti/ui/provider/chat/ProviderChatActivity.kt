@@ -184,28 +184,6 @@ class ProviderChatActivity : AppCompatActivity() {
             }
         }
 
-        // 🔥 👉 COLOR (AHORA SÍ AL FINAL)
-        val color = if (myRole.equals("PRESTADOR", ignoreCase = true)) {
-            ContextCompat.getColor(this, R.color.nav_blue)
-        } else {
-            ContextCompat.getColor(this, R.color.nav_orange)
-        }
-
-        val colorStateList = ColorStateList(
-            arrayOf(
-                intArrayOf(android.R.attr.state_checked),
-                intArrayOf(-android.R.attr.state_checked)
-            ),
-            intArrayOf(
-                color,
-                Color.parseColor("#BDBDBD")
-            )
-        )
-
-        nav.post {
-            nav.itemIconTintList = colorStateList
-            nav.itemTextColor = colorStateList
-        }
     }
     private fun start(activity: Class<*>): Boolean {
         if (this::class.java == activity) return true
