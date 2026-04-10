@@ -8,6 +8,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.auvenix.sigti.databinding.ActivityGoogleCompleteProfileBinding
 import com.auvenix.sigti.ui.home.HomeActivity
+import com.auvenix.sigti.ui.register.PrestadorExtraActivity
+import com.auvenix.sigti.ui.register.SolicitanteExtraActivity
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
 
@@ -23,7 +25,8 @@ class GoogleCompleteProfileActivity : AppCompatActivity() {
 
         // 1. Recibir datos (Google + Rol elegido en la pantalla anterior)
         val nombreGoogle = intent.getStringExtra("EXTRA_NOMBRE_COMPLETO") ?: ""
-        val rolElegido = intent.getStringExtra("EXTRA_ROL") ?: "Solicitante"
+        // Lo pasamos a mayúsculas por seguridad (SOLICITANTE o PRESTADOR)
+        val rolElegido = intent.getStringExtra("EXTRA_ROL")?.uppercase() ?: "SOLICITANTE"
 
         // 2. Separar nombre en los 3 campos
         separarNombrePro(nombreGoogle)
@@ -93,14 +96,23 @@ class GoogleCompleteProfileActivity : AppCompatActivity() {
             "fechaNac" to fechaNac,
             "role" to rol, // El rol que venía de la pantalla anterior
             "metodoRegistro" to "Google",
+            "perfil_completado" to false, // 🔥 Aún no termina, le faltan las fotos
             "fechaRegistro" to com.google.firebase.firestore.FieldValue.serverTimestamp()
         )
 
         db.collection("users").document(uid).set(userMap)
             .addOnSuccessListener {
-                val i = Intent(this, HomeActivity::class.java)
-                i.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(i)
+
+                // 🔥 AQUÍ CONECTAMOS EL PUENTE A LA PANTALLA DE FOTOS
+                val intent = if (rol == "PRESTADOR") {
+                    Intent(this, PrestadorExtraActivity::class.java)
+                } else {
+                    Intent(this, SolicitanteExtraActivity::class.java)
+                }
+
+                // Cerramos esta pantalla para que no pueda regresar con el botón de atrás
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
                 finish()
             }
             .addOnFailureListener {
