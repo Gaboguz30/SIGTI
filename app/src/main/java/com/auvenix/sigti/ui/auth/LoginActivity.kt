@@ -78,9 +78,10 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.tvGoRegister.setOnClickListener {
-            startActivity(Intent(this, RoleActivity::class.java))
-        }
-    }
+            // 🔥 AHORA APUNTA AL LUGAR CORRECTO
+            startActivity(Intent(this, AuthEntryActivity::class.java))
+            finish() // Opcional: Esto cierra el Login para que si le da atrás, no se quede atrapado
+        }    }
 
     private fun redireccionarSegunRol() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return

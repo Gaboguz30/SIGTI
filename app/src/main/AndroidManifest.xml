@@ -47,16 +47,21 @@
             android:exported="false" />
         <activity
             android:name=".ui.provider.catalog.AddServiceActivity"
-            android:exported="false" /> <!-- ── LAUNCHER ──────────────────────────────────────── -->
+            android:exported="false" />
+
         <activity
-            android:name=".ui.auth.AuthEntryActivity"
-            android:exported="true">
+            android:name=".ui.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.SplashSigti">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- ── AUTENTICACIÓN ──────────────────────────────────── -->
+        </activity>
+
+        <activity
+            android:name=".ui.auth.AuthEntryActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="false" />
@@ -71,7 +76,8 @@
             android:exported="false" />
         <activity
             android:name=".ui.auth.GoogleCompleteProfileActivity"
-            android:exported="false" /> <!-- ── ROLES / REGISTRO ───────────────────────────────── -->
+            android:exported="false" />
+
         <activity
             android:name=".ui.role.RoleActivity"
             android:exported="false" />
@@ -80,10 +86,11 @@
             android:exported="false" />
         <activity
             android:name=".ui.register.PrestadorExtraActivity"
-            android:exported="false" /> <!-- ✅ NUEVO: pantalla extra del flujo de registro del solicitante -->
+            android:exported="false" />
         <activity
             android:name=".ui.register.SolicitanteExtraActivity"
-            android:exported="false" /> <!-- ── HOME USUARIO ───────────────────────────────────── -->
+            android:exported="false" />
+
         <activity
             android:name=".ui.home.HomeActivity"
             android:exported="false" />
@@ -93,18 +100,18 @@
         <activity
             android:name=".ui.home.UserChatsActivity"
             android:exported="false" />
-        <activity
-            android:name=".ui.home.UserNotificationsActivity"
-            android:exported="false" /> <!-- ── CHAT ───────────────────────────────────────────── -->
+
         <activity
             android:name=".ui.chat.ChatDetailActivity"
-            android:exported="false" /> <!-- ── PERFIL USUARIO ─────────────────────────────────── -->
+            android:exported="false" />
+
         <activity
             android:name=".ui.profile.ProfileActivity"
             android:exported="false" />
         <activity
             android:name=".ui.profile.WorkerProfileActivity"
-            android:exported="false" /> <!-- ── PROVEEDOR ──────────────────────────────────────── -->
+            android:exported="false" />
+
         <activity
             android:name=".ui.provider.home.ProviderHomeActivity"
             android:exported="false" />
@@ -122,7 +129,8 @@
             android:exported="false" />
         <activity
             android:name=".ui.provider.plans.ProviderPlansActivity"
-            android:exported="false" /> <!-- ── SOLICITUDES / SOPORTE ──────────────────────────── -->
+            android:exported="false" />
+
         <activity
             android:name=".ui.request.NewRequestActivity"
             android:exported="false"
@@ -132,7 +140,8 @@
             android:exported="false" />
         <activity
             android:name=".ui.support.ReviewsActivity"
-            android:exported="false" /> <!-- ── MAIN (solo arranque) ───────────────────────────── -->
+            android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="false" />

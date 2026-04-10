@@ -10,7 +10,6 @@ import com.auvenix.sigti.databinding.ActivityAuthEntryBinding
 import com.auvenix.sigti.notifications.FcmTokenManager
 import com.auvenix.sigti.ui.home.HomeActivity
 import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
-import com.auvenix.sigti.ui.register.RegisterGeneralActivity
 import com.auvenix.sigti.ui.role.RoleActivity
 import com.auvenix.sigti.utils.Constants
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -45,32 +44,25 @@ class AuthEntryActivity : AppCompatActivity() {
 
         // ── Registro manual ────────────────────────────────────
         binding.btnAcceptContinue.setOnClickListener {
-            // 1. Rescatamos el rol que nos mandó la pantalla anterior
             val rolRecibido = intent.getStringExtra("EXTRA_ROLE") ?: "SOLICITANTE"
-
-            // 2. Preparamos el viaje a la siguiente pantalla
-            val intent = Intent(this, RoleActivity::class.java) // Asegúrate de que sea tu actividad correcta
-
-            // 3. Le pasamos la mochila con el rol para que no lo olvide
+            val intent = Intent(this, RoleActivity::class.java)
             intent.putExtra("EXTRA_ROLE", rolRecibido)
-
             startActivity(intent)
         }
 
         // ── Google Sign-In ─────────────────────────────────────
+// ── Google Sign-In ─────────────────────────────────────
         binding.btnGoogle.setOnClickListener {
-            startActivityForResult(googleSignInClient.signInIntent, RC_SIGN_IN)
+            // 🔥 EL TRUCO: Le decimos a Google que olvide cualquier cuenta guardada
+            googleSignInClient.signOut().addOnCompleteListener {
+                // Una vez que ya la olvidó, ahora sí lanzamos la ventanita
+                startActivityForResult(googleSignInClient.signInIntent, RC_SIGN_IN)
+            }
         }
 
         // ── Facebook — próximamente ────────────────────────────
-        // El botón existe pero la integración aún no está lista.
-        // Se mantiene visible y muestra un aviso al tocarlo.
         binding.btnFacebook.setOnClickListener {
-            Toast.makeText(
-                this,
-                "Inicio con Facebook próximamente disponible",
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(this, "Inicio con Facebook próximamente disponible", Toast.LENGTH_SHORT).show()
         }
 
         // ── Link "¿Ya tienes cuenta? Iniciar sesión" ───────────
@@ -112,16 +104,22 @@ class AuthEntryActivity : AppCompatActivity() {
                     .collection(Constants.COLLECTION_USERS).document(uid).get()
                     .addOnSuccessListener { document ->
                         if (document.exists()) {
+                            // Usuario viejo, lo mandamos al Home
                             FcmTokenManager.saveCurrentToken()
                             redireccionarSegunRol(uid)
                         } else {
-                            // Usuario nuevo de Google → completar perfil
-                            startActivity(Intent(this, RoleActivity::class.java).apply {
-                                putExtra(Constants.EXTRA_IS_GOOGLE,    true)
-                                putExtra(Constants.EXTRA_NOMBRE,       user.displayName)
-                                putExtra(Constants.EXTRA_EMAIL_GOOGLE, user.email)
-                                putExtra(Constants.EXTRA_UID,          uid)
-                            })
+                            // 🔥 AQUÍ ESTÁ LA MAGIA ARREGLADA
+                            // Obtenemos el rol que haya elegido antes (si no, por defecto Solicitante)
+                            val rolRecibido = intent.getStringExtra("EXTRA_ROLE") ?: "SOLICITANTE"
+
+                            // Lo mandamos DIRECTO a completar sus datos
+                            val intentGoogle = Intent(this, GoogleCompleteProfileActivity::class.java).apply {
+                                putExtra("EXTRA_NOMBRE_COMPLETO", user.displayName) // Coincide perfecto con tu otra pantalla
+                                putExtra("EXTRA_EMAIL", user.email)
+                                putExtra("EXTRA_UID", uid)
+                                putExtra("EXTRA_ROL", rolRecibido)
+                            }
+                            startActivity(intentGoogle)
                             finish()
                         }
                     }
