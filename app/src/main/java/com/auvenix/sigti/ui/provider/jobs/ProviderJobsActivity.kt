@@ -23,6 +23,7 @@ import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import android.widget.TextView
 
 class ProviderJobsActivity : AppCompatActivity() {
 
@@ -139,30 +140,26 @@ class ProviderJobsActivity : AppCompatActivity() {
             },
             onCompleteClick = { job ->
                 if (myRole == "PRESTADOR" && job.status == "in_progress") {
-                    AlertDialog.Builder(this)
-                        .setTitle("Finalizar Trabajo")
-                        .setMessage("¿Estás seguro de marcar '${job.title}' como terminado?\n\nConfirma que ya recibiste el pago de $${job.priceOffer}.")
-                        .setPositiveButton("Sí, ya cobré") { _, _ ->
-                            db.collection("requests").document(job.id).update("status", "completed")
-                                .addOnSuccessListener {
-                                    Toast.makeText(this, "¡Felicidades por cerrar el trato! 💸", Toast.LENGTH_LONG).show()
-                                }
-                        }
-                        .setNegativeButton("Cancelar", null)
-                        .show()
+                    mostrarDialogConfirmacion(
+                        "Finalizar Trabajo",
+                        "¿Estás seguro de marcar '${job.title}' como terminado?\n\nConfirma que ya recibiste el pago de $${job.priceOffer}."
+                    ) {
+                        db.collection("requests").document(job.id).update("status", "completed")
+                            .addOnSuccessListener {
+                                Toast.makeText(this, "Trabajo finalizado correctamente", Toast.LENGTH_LONG).show()
+                            }
+                    }
                 }
                 else if (myRole == "SOLICITANTE" && job.status == "pending_client_confirmation") {
-                    AlertDialog.Builder(this)
-                        .setTitle("Aceptar Precio")
-                        .setMessage("El técnico cobrará $${job.priceOffer} por este servicio. ¿Aceptas arrancar el trabajo?")
-                        .setPositiveButton("Aceptar y Comenzar") { _, _ ->
-                            db.collection("requests").document(job.id).update("status", "in_progress")
-                                .addOnSuccessListener {
-                                    Toast.makeText(this, "¡Trabajo en marcha! 🚀", Toast.LENGTH_LONG).show()
-                                }
-                        }
-                        .setNegativeButton("Cancelar", null)
-                        .show()
+                    mostrarDialogConfirmacion(
+                        "Aceptar Precio",
+                        "El técnico cobrará $${job.priceOffer} por este servicio.\n\n¿Deseas comenzar el servicio?"
+                    ) {
+                        db.collection("requests").document(job.id).update("status", "in_progress")
+                            .addOnSuccessListener {
+                                Toast.makeText(this, "Trabajo en marcha", Toast.LENGTH_LONG).show()
+                            }
+                    }
                 }
             }
         )
@@ -215,6 +212,39 @@ class ProviderJobsActivity : AppCompatActivity() {
         startActivity(intent)
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         finish()
+    }
+    private fun mostrarDialogConfirmacion(
+        titulo: String,
+        mensaje: String,
+        onConfirm: () -> Unit
+    ) {
+        val view = layoutInflater.inflate(R.layout.dialog_confirmacion, null)
+
+        val tvTitulo = view.findViewById<TextView>(R.id.tvTitulo)
+        val tvMensaje = view.findViewById<TextView>(R.id.tvMensaje)
+        val btnSi = view.findViewById<TextView>(R.id.btnSi)
+        val btnNo = view.findViewById<TextView>(R.id.btnNo)
+
+        tvTitulo.text = titulo
+        tvMensaje.text = mensaje
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(view)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        dialog.show()
+        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+
+        btnSi.setOnClickListener {
+            onConfirm()
+            dialog.dismiss()
+        }
+
+        btnNo.setOnClickListener {
+            dialog.dismiss()
+        }
     }
 
 }

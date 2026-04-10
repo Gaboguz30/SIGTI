@@ -28,10 +28,9 @@ class RequestDetailActivity : AppCompatActivity() {
         val headerTitle = findViewById<TextView>(R.id.tvHeaderTitle)
         val btnBack = findViewById<ImageView>(R.id.btnBackHeader)
 
-// cambiar título
+
         headerTitle.text = "Detalles de Oferta"
 
-// botón regresar
         btnBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
