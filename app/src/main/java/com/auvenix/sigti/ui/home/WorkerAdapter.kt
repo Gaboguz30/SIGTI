@@ -12,6 +12,7 @@ import com.google.android.material.button.MaterialButton
 import android.widget.ImageView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.bumptech.glide.Glide
 
 data class Worker(
     val uid: String = "",
@@ -20,7 +21,9 @@ data class Worker(
     val rating: String? = null,
     val price: String? = null,
     val distance: String? = null,
-    val availability: String? = null
+    val availability: String? = null,
+    val photoUrl: String? = null
+
 )
 
 class WorkerAdapter(
@@ -37,6 +40,8 @@ class WorkerAdapter(
         val btnViewProfile: MaterialButton = itemView.findViewById(R.id.btnViewProfile)
         val tvProfession: TextView = itemView.findViewById(R.id.tvWorkerProfession)
         val btnFavorito: ImageView = itemView.findViewById(R.id.btnFavorito)
+
+        val imgWorker: ImageView = itemView.findViewById(R.id.ivWorkerProfile)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkerViewHolder {
@@ -56,14 +61,26 @@ class WorkerAdapter(
             .get()
             .addOnSuccessListener { result ->
                 if (result.isEmpty) {
-                    holder.btnFavorito.setImageResource(R.drawable.ic_favorite_border) // Vacío
+                    // NO favorito → gris
+                    holder.btnFavorito.setImageResource(R.drawable.ic_favorite_border)
+                    holder.btnFavorito.setColorFilter(android.graphics.Color.parseColor("#9E9E9E"))
                 } else {
-                    holder.btnFavorito.setImageResource(R.drawable.ic_favorite) // Lleno
+                    // favorito → rojo
+                    holder.btnFavorito.setImageResource(R.drawable.ic_favorite)
+                    holder.btnFavorito.setColorFilter(android.graphics.Color.parseColor("#E53935"))
                 }
             }
 
         holder.tvProfession.text = worker.profession
         holder.tvName.text = worker.name
+
+
+                Glide.with(holder.itemView.context)
+                    .load(worker.photoUrl)
+                    .placeholder(R.drawable.ic_profile1)
+                    .error(R.drawable.ic_profile1)
+                    .circleCrop()
+                    .into(holder.imgWorker)
 
         // RATING
         if (!worker.rating.isNullOrEmpty()) {
@@ -125,6 +142,7 @@ class WorkerAdapter(
 
                             db.collection("favorites").add(data)
                             holder.btnFavorito.setImageResource(R.drawable.ic_favorite)
+                            holder.btnFavorito.setColorFilter(android.graphics.Color.parseColor("#E53935"))
                             animarCorazon(holder.btnFavorito)
 
                             Toast.makeText(holder.itemView.context, "Agregado a favoritos", Toast.LENGTH_SHORT).show()
@@ -140,6 +158,7 @@ class WorkerAdapter(
                                 db.collection("favorites").document(doc.id).delete()
                             }
                             holder.btnFavorito.setImageResource(R.drawable.ic_favorite_border)
+                            holder.btnFavorito.setColorFilter(android.graphics.Color.parseColor("#9E9E9E"))
                             animarCorazon(holder.btnFavorito)
                             Toast.makeText(holder.itemView.context, "Eliminado de favoritos", Toast.LENGTH_SHORT).show()
                         }

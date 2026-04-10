@@ -43,6 +43,8 @@ class ProviderJobsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityProviderJobsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val titulo = findViewById<TextView>(R.id.tvHeaderTitle)
+        titulo.text = "Mis Trabajos"
 
         session = SessionManager(this)
         myRole = session.getRole() ?: "SOLICITANTE"
@@ -182,7 +184,7 @@ class ProviderJobsActivity : AppCompatActivity() {
                     R.id.nav_catalog -> { irAPantalla(ProviderCatalogActivity::class.java); true }
                     R.id.nav_chat -> { irAPantalla(ProviderChatActivity::class.java); true }
                     R.id.nav_jobs -> true
-                    R.id.nav_profile -> { irAPantalla(ProviderProfileActivity::class.java); true }
+                    R.id.nav_profile -> { irAPantalla(ProfileActivity::class.java); true }
                     else -> false
                 }
             }

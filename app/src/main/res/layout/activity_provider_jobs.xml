@@ -45,7 +45,7 @@
 
                 <com.google.android.material.tabs.TabItem android:text="En progreso" />
                 <com.google.android.material.tabs.TabItem android:text="Historial" />
-                <com.google.android.material.tabs.TabItem android:text="Cancelados" />
+                <com.google.android.material.tabs.TabItem android:text="Rechazados" />
             </com.google.android.material.tabs.TabLayout>
 
             <!-- LINEA DEBAJO -->

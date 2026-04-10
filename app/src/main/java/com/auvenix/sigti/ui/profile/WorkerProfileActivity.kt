@@ -27,6 +27,7 @@ import com.auvenix.sigti.ui.home.HomeActivity
 import com.auvenix.sigti.ui.home.UserMapActivity
 import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
 import com.auvenix.sigti.ui.support.ReviewActivity1
+import com.bumptech.glide.Glide
 
 class WorkerProfileActivity : AppCompatActivity() {
 
@@ -46,6 +47,7 @@ class WorkerProfileActivity : AppCompatActivity() {
     private val reviewList = mutableListOf<Review>()
 
     private val db = FirebaseFirestore.getInstance()
+    private lateinit var ivProfilePic: ImageView
 
     private val servicesList = mutableListOf<ServiceCatalog>()
     private lateinit var adapter: PublicServiceAdapter
@@ -128,8 +130,10 @@ class WorkerProfileActivity : AppCompatActivity() {
         tvRatingNumber = findViewById(R.id.tvRatingNumber)
         tvExperience = findViewById(R.id.tvProfileExperience)
         rvReviews = findViewById(R.id.rvReviews)
+        ivProfilePic = findViewById(R.id.ivProfilePic)
         setupTabs()
         setupReviews()
+
     }
 
     private fun setupRecycler() {
@@ -144,6 +148,15 @@ class WorkerProfileActivity : AppCompatActivity() {
             .addOnSuccessListener { doc ->
 
                 if (!doc.exists()) return@addOnSuccessListener
+                val documentacion = doc.get("documentacion") as? Map<*, *>
+                val photoUrl = documentacion?.get("url_selfie")?.toString()
+
+                Glide.with(this)
+                    .load(photoUrl)
+                    .placeholder(android.R.drawable.sym_def_app_icon)
+                    .error(android.R.drawable.sym_def_app_icon)
+                    .circleCrop()
+                    .into(ivProfilePic)
 
                 val nombre = doc.getString("nombre") ?: ""
                 val apP = doc.getString("apPaterno") ?: ""

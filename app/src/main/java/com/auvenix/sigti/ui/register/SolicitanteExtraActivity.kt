@@ -14,6 +14,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import java.util.UUID
+import android.widget.TextView
+import android.widget.ImageView
+import com.auvenix.sigti.R
 
 class SolicitanteExtraActivity : AppCompatActivity() {
 
@@ -61,6 +64,15 @@ class SolicitanteExtraActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivitySolicitanteExtraBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        val header = findViewById<View>(R.id.headerMain)
+
+        val tvTitle = header.findViewById<TextView>(R.id.tvHeaderTitle)
+        tvTitle.text = "Tu Perfil"
+
+        val btnBack = header.findViewById<ImageView>(R.id.btnBackHeader)
+        btnBack.setOnClickListener {
+            finish()
+        }
 
         setupListeners()
     }
@@ -143,7 +155,6 @@ class SolicitanteExtraActivity : AppCompatActivity() {
             return
         }
 
-        // Actualizamos el documento del usuario con la nueva información
         val actualizaciones = mapOf(
             "ciudad" to ciudad,
             "direccion" to direccion,
@@ -158,7 +169,6 @@ class SolicitanteExtraActivity : AppCompatActivity() {
             .addOnSuccessListener {
                 Toast.makeText(this, "¡Perfil configurado con éxito!", Toast.LENGTH_SHORT).show()
 
-                // Lo mandamos al Home por fin
                 val intent = Intent(this, HomeActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)

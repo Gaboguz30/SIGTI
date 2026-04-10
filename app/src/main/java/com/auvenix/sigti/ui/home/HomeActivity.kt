@@ -116,6 +116,8 @@ class HomeActivity : AppCompatActivity() {
                             val distance = document.getString("distance")
                             val online = document.getBoolean("online") ?: false
                             val availability = if (online) "Disponible" else "No disponible"
+                            val documentacion = document.get("documentacion") as? Map<*, *>
+                            val photoUrl = documentacion?.get("url_selfie")?.toString()
 
                             obtenerRatingPromedio(uid) { ratingPromedio ->
                                 val worker = Worker(
@@ -125,7 +127,8 @@ class HomeActivity : AppCompatActivity() {
                                     rating = ratingPromedio,
                                     price = price,
                                     distance = distance,
-                                    availability = availability
+                                    availability = availability,
+                                    photoUrl = photoUrl
                                 )
 
                                 workerList.add(worker)
