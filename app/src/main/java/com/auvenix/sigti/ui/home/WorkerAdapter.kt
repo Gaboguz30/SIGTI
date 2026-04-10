@@ -113,40 +113,88 @@ class WorkerAdapter(
                 .get()
                 .addOnSuccessListener { result ->
                     if (result.isEmpty) {
-                        // ❌ No estaba en favoritos -> PREGUNTAMOS PARA AGREGAR
-                        AlertDialog.Builder(holder.itemView.context)
-                            .setTitle("Agregar a Favoritos")
-                            .setMessage("¿Deseas agregar a ${worker.name} a tu pantalla de favoritos?")
-                            .setPositiveButton("Sí") { _, _ ->
-                                val data = hashMapOf(
-                                    "user_uid" to userId,
-                                    "technician_uid" to worker.uid
-                                )
-                                db.collection("favorites").add(data)
-                                holder.btnFavorito.setImageResource(R.drawable.ic_favorite) // Pintamos
-                                Toast.makeText(holder.itemView.context, "Agregado a favoritos", Toast.LENGTH_SHORT).show()
-                            }
-                            .setNegativeButton("No", null)
-                            .show()
+                        mostrarDialogConfirmacion(
+                            holder.itemView.context,
+                            "Agregar a Favoritos",
+                            "¿Deseas agregar a ${worker.name} a tus favoritos?"
+                        ) {
+                            val data = hashMapOf(
+                                "user_uid" to userId,
+                                "technician_uid" to worker.uid
+                            )
+
+                            db.collection("favorites").add(data)
+                            holder.btnFavorito.setImageResource(R.drawable.ic_favorite)
+                            animarCorazon(holder.btnFavorito)
+
+                            Toast.makeText(holder.itemView.context, "Agregado a favoritos", Toast.LENGTH_SHORT).show()
+                        }
 
                     } else {
-                        // ❤️ Ya estaba en favoritos -> PREGUNTAMOS PARA QUITAR
-                        AlertDialog.Builder(holder.itemView.context)
-                            .setTitle("Quitar de Favoritos")
-                            .setMessage("¿Estás seguro de quitar a este prestador de tus favoritos?")
-                            .setPositiveButton("Sí") { _, _ ->
-                                for (doc in result) {
-                                    db.collection("favorites").document(doc.id).delete()
-                                }
-                                holder.btnFavorito.setImageResource(R.drawable.ic_favorite_border) // Despintamos
-                                Toast.makeText(holder.itemView.context, "Eliminado de favoritos", Toast.LENGTH_SHORT).show()
+                        mostrarDialogConfirmacion(
+                            holder.itemView.context,
+                            "Quitar de Favoritos",
+                            "¿Estás seguro de quitar a este prestador de tus favoritos?"
+                        ) {
+                            for (doc in result) {
+                                db.collection("favorites").document(doc.id).delete()
                             }
-                            .setNegativeButton("No", null)
-                            .show()
+                            holder.btnFavorito.setImageResource(R.drawable.ic_favorite_border)
+                            animarCorazon(holder.btnFavorito)
+                            Toast.makeText(holder.itemView.context, "Eliminado de favoritos", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
         }
     }
+    private fun animarCorazon(view: ImageView) {
+        view.animate()
+            .scaleX(1.3f)
+            .scaleY(1.3f)
+            .setDuration(150)
+            .withEndAction {
+                view.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .setDuration(150)
+                    .start()
+            }
+            .start()
+    }
 
     override fun getItemCount(): Int = workerList.size
+    private fun mostrarDialogConfirmacion(
+        context: android.content.Context,
+        titulo: String,
+        mensaje: String,
+        onConfirm: () -> Unit
+    ) {
+        val view = LayoutInflater.from(context).inflate(R.layout.dialog_confirmacion, null)
+
+        val tvTitulo = view.findViewById<TextView>(R.id.tvTitulo)
+        val tvMensaje = view.findViewById<TextView>(R.id.tvMensaje)
+        val btnSi = view.findViewById<TextView>(R.id.btnSi)
+        val btnNo = view.findViewById<TextView>(R.id.btnNo)
+
+        tvTitulo.text = titulo
+        tvMensaje.text = mensaje
+
+        val dialog = AlertDialog.Builder(context)
+            .setView(view)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        dialog.show()
+        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+
+        btnSi.setOnClickListener {
+            onConfirm()
+            dialog.dismiss()
+        }
+
+        btnNo.setOnClickListener {
+            dialog.dismiss()
+        }
+    }
 }

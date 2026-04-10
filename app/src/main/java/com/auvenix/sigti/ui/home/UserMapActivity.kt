@@ -12,6 +12,7 @@ import com.auvenix.sigti.databinding.ActivityUserMapBinding
 import com.auvenix.sigti.ui.profile.ProfileActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import android.widget.TextView
 
 class UserMapActivity : AppCompatActivity() {
 
@@ -31,18 +32,16 @@ class UserMapActivity : AppCompatActivity() {
         binding.bottomNavigation.selectedItemId = R.id.nav_map
 
         adapter = FavoritosAdapter(lista) { fav ->
-            AlertDialog.Builder(this)
-                .setTitle("Quitar de Favoritos")
-                .setMessage("¿Estás seguro de quitar a ${fav.name} de tus favoritos?")
-                .setPositiveButton("Sí, quitar") { _, _ ->
-                    db.collection("favorites").document(fav.favoriteDocId).delete()
-                        .addOnSuccessListener {
-                            Toast.makeText(this, "Eliminado de favoritos", Toast.LENGTH_SHORT).show()
-                            cargarFavoritos()
-                        }
-                }
-                .setNegativeButton("Cancelar", null)
-                .show()
+            mostrarDialogConfirmacion(
+                "Quitar de Favoritos",
+                "¿Estás seguro de quitar a ${fav.name} de tus favoritos?"
+            ) {
+                db.collection("favorites").document(fav.favoriteDocId).delete()
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Eliminado de favoritos", Toast.LENGTH_SHORT).show()
+                        cargarFavoritos()
+                    }
+            }
         }
         binding.rvFavoritos.layoutManager = LinearLayoutManager(this)
         binding.rvFavoritos.adapter = adapter
@@ -108,5 +107,40 @@ class UserMapActivity : AppCompatActivity() {
         startActivity(intent)
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         finish()
+    }
+    private fun mostrarDialogConfirmacion(
+        titulo: String,
+        mensaje: String,
+        onConfirm: () -> Unit
+    ) {
+        val view = layoutInflater.inflate(R.layout.dialog_confirmacion, null)
+
+        val tvTitulo = view.findViewById<TextView>(R.id.tvTitulo)
+        val tvMensaje = view.findViewById<TextView>(R.id.tvMensaje)
+        val btnSi = view.findViewById<TextView>(R.id.btnSi)
+        val btnNo = view.findViewById<TextView>(R.id.btnNo)
+
+        tvTitulo.text = titulo
+        tvMensaje.text = mensaje
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(view)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        dialog.show()
+
+        // 🔥 animación
+        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+
+        btnSi.setOnClickListener {
+            onConfirm()
+            dialog.dismiss()
+        }
+
+        btnNo.setOnClickListener {
+            dialog.dismiss()
+        }
     }
 }

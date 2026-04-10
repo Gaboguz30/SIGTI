@@ -62,6 +62,10 @@
         <item name="cornerSizeBottomLeft">0dp</item>
         <item name="cornerSizeBottomRight">0dp</item>
     </style>
+    <style name="DialogAnimation">
+        <item name="android:windowEnterAnimation">@animator/dialog_scale</item>
+        <item name="android:windowExitAnimation">@animator/dialog_scale</item>
+    </style>
 
 
 </resources>

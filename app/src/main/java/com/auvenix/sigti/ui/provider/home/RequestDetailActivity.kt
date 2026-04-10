@@ -99,33 +99,47 @@ class RequestDetailActivity : AppCompatActivity() {
     }
 
     private fun aceptarYFijarPrecio() {
-        // 🔥 El popup mágico donde el prestador pone su precio final
-        val input = EditText(this)
-        input.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
-        input.hint = "Ej: 450.00"
 
-        AlertDialog.Builder(this)
-            .setTitle("Fijar Precio Final")
-            .setMessage("Acuerda el precio final. El cliente tendrá que confirmarlo para que el trabajo sea tuyo oficialmente.")
-            .setView(input)
-            .setPositiveButton("Enviar a Cliente") { _, _ ->
-                val finalPrice = input.text.toString().toDoubleOrNull()
+        val view = layoutInflater.inflate(R.layout.dialog_precio, null)
+        val input = view.findViewById<EditText>(R.id.inputPrecio)
+        val btnEnviar = view.findViewById<TextView>(R.id.btnEnviar)
+        val btnCancelar = view.findViewById<TextView>(R.id.btnCancelar)
 
-                if (finalPrice != null && finalPrice > 0) {
-                    val updates = mapOf(
-                        "status" to "pending_client_confirmation",
-                        "finalPrice" to finalPrice
-                    )
-                    db.collection("requests").document(requestId).update(updates)
-                        .addOnSuccessListener {
-                            Toast.makeText(this, "¡Precio enviado! Esperando confirmación del cliente.", Toast.LENGTH_LONG).show()
-                            finish()
-                        }
-                } else {
-                    Toast.makeText(this, "Precio inválido", Toast.LENGTH_SHORT).show()
-                }
+        val dialog = AlertDialog.Builder(this)
+            .setView(view)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        dialog.show()
+
+        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+
+
+        btnEnviar.setOnClickListener {
+            val finalPrice = input.text.toString().toDoubleOrNull()
+
+            if (finalPrice != null && finalPrice > 0) {
+
+                val updates = mapOf(
+                    "status" to "pending_client_confirmation",
+                    "finalPrice" to finalPrice
+                )
+
+                db.collection("requests").document(requestId).update(updates)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "¡Precio enviado!", Toast.LENGTH_LONG).show()
+                        dialog.dismiss()
+                        finish()
+                    }
+
+            } else {
+                input.error = "Precio inválido"
             }
-            .setNegativeButton("Cancelar", null)
-            .show()
+        }
+
+        btnCancelar.setOnClickListener {
+            dialog.dismiss()
+        }
     }
 }

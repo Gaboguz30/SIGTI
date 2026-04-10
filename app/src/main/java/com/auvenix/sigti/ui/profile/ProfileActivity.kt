@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import android.net.Uri
 import com.auvenix.sigti.ui.support.QueEsSigtiActivity
+import android.widget.TextView
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -127,12 +128,12 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         binding.btnLogout.setOnClickListener {
-            AlertDialog.Builder(this)
-                .setTitle("Cerrar Sesión")
-                .setMessage("¿Estás seguro de que deseas salir?")
-                .setPositiveButton("Sí, salir") { _, _ -> cerrarSesion() }
-                .setNegativeButton("Cancelar", null)
-                .show()
+            mostrarDialogConfirmacion(
+                "Cerrar Sesión",
+                "¿Estás seguro de que deseas salir?"
+            ) {
+                cerrarSesion()
+            }
         }
 
         binding.llAyuda.setOnClickListener {
@@ -203,5 +204,40 @@ class ProfileActivity : AppCompatActivity() {
         startActivity(intent)
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         finish()
+    }
+    private fun mostrarDialogConfirmacion(
+        titulo: String,
+        mensaje: String,
+        onConfirm: () -> Unit
+    ) {
+        val view = layoutInflater.inflate(R.layout.dialog_confirmacion, null)
+
+        val tvTitulo = view.findViewById<TextView>(R.id.tvTitulo)
+        val tvMensaje = view.findViewById<TextView>(R.id.tvMensaje)
+        val btnSi = view.findViewById<TextView>(R.id.btnSi)
+        val btnNo = view.findViewById<TextView>(R.id.btnNo)
+
+        tvTitulo.text = titulo
+        tvMensaje.text = mensaje
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(view)
+            .create()
+
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+
+        dialog.show()
+
+        // 🔥 animación
+        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+
+        btnSi.setOnClickListener {
+            onConfirm()
+            dialog.dismiss()
+        }
+
+        btnNo.setOnClickListener {
+            dialog.dismiss()
+        }
     }
 }
