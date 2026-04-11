@@ -1,19 +1,24 @@
 package com.auvenix.sigti.ui.auth
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import com.auvenix.sigti.databinding.ActivityPasswordBinding
+import com.auvenix.sigti.ui.register.RegisterGeneralActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 
 class PasswordActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityPasswordBinding
     private lateinit var auth    : FirebaseAuth
     private lateinit var db      : FirebaseFirestore
+    private lateinit var storage : FirebaseStorage
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,34 +27,62 @@ class PasswordActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         db   = FirebaseFirestore.getInstance()
+        storage = FirebaseStorage.getInstance()
 
-        val role  = intent.getStringExtra(EXTRA_ROLE).orEmpty()
-        val email = intent.getStringExtra(EXTRA_EMAIL).orEmpty()
+        val role  = intent.getStringExtra(RegisterGeneralActivity.EXTRA_ROLE).orEmpty()
+        val email = intent.getStringExtra(RegisterGeneralActivity.EXTRA_EMAIL).orEmpty()
 
         setupRealtimeValidation()
 
         binding.btnContinuar.setOnClickListener {
             if (!validatePasswords(showErrors = true)) return@setOnClickListener
             val pass = binding.etPassword.text.toString()
+
             binding.btnContinuar.isEnabled = false
+            binding.btnContinuar.text = "Creando cuenta..."
+
             auth.createUserWithEmailAndPassword(email, pass)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
                         val uid = auth.currentUser?.uid
-                        if (uid != null) guardarExpedienteEnBD(uid, role, email)
-                        else {
-                            binding.btnContinuar.isEnabled = true
+                        if (uid != null) {
+                            subirFotoYGuardarExpediente(uid, role, email)
+                        } else {
+                            restaurarBoton()
                             Toast.makeText(this, "Error: No se pudo obtener el UID", Toast.LENGTH_LONG).show()
                         }
                     } else {
-                        binding.btnContinuar.isEnabled = true
+                        restaurarBoton()
                         Toast.makeText(this, "Error: ${task.exception?.message}", Toast.LENGTH_LONG).show()
                     }
                 }
         }
     }
 
-    private fun guardarExpedienteEnBD(uid: String, role: String, email: String) {
+    private fun subirFotoYGuardarExpediente(uid: String, role: String, email: String) {
+        binding.btnContinuar.text = "Subiendo foto..."
+
+        val fotoUriString = intent.getStringExtra("extra_url_selfie")
+
+        if (!fotoUriString.isNullOrEmpty()) {
+            val uri = Uri.parse(fotoUriString)
+            val ref = storage.reference.child("profile_pictures").child("$uid.jpg")
+
+            ref.putFile(uri).addOnSuccessListener {
+                ref.downloadUrl.addOnSuccessListener { urlDescarga ->
+                    guardarExpedienteEnBD(uid, role, email, urlDescarga.toString())
+                }
+            }.addOnFailureListener {
+                guardarExpedienteEnBD(uid, role, email, "")
+            }
+        } else {
+            guardarExpedienteEnBD(uid, role, email, "")
+        }
+    }
+
+    private fun guardarExpedienteEnBD(uid: String, role: String, email: String, fotoUrl: String) {
+        binding.btnContinuar.text = "Configurando perfil..."
+
         val listaOficiosCruda = intent.getStringArrayListExtra("extra_oficios") ?: arrayListOf()
         val oficiosProcesados = listaOficiosCruda.map { s ->
             val p = s.split("|")
@@ -60,12 +93,12 @@ class PasswordActivity : AppCompatActivity() {
             "uid"                     to uid,
             "role"                    to role,
             "email"                   to email,
-            "nombre"                  to intent.getStringExtra(EXTRA_NOMBRE).orEmpty(),
-            "apPaterno"               to intent.getStringExtra(EXTRA_AP_PATERNO).orEmpty(),
-            "apMaterno"               to intent.getStringExtra(EXTRA_AP_MATERNO).orEmpty(),
-            "fechaNac"                to intent.getStringExtra(EXTRA_FECHA_NAC).orEmpty(),
-            "genero"                  to intent.getStringExtra(EXTRA_GENERO).orEmpty(),
-            // ✅ FIX 1: ciudad y dirección guardadas para AMBOS roles
+            "nombre"                  to intent.getStringExtra(RegisterGeneralActivity.EXTRA_NOMBRE).orEmpty(),
+            "apPaterno"               to intent.getStringExtra(RegisterGeneralActivity.EXTRA_AP_PATERNO).orEmpty(),
+            "apMaterno"               to intent.getStringExtra(RegisterGeneralActivity.EXTRA_AP_MATERNO).orEmpty(),
+            "fechaNac"                to intent.getStringExtra(RegisterGeneralActivity.EXTRA_FECHA_NAC).orEmpty(),
+            "genero"                  to intent.getStringExtra(RegisterGeneralActivity.EXTRA_GENERO).orEmpty(),
+            "url_selfie"              to fotoUrl,
             "ciudad"                  to intent.getStringExtra("extra_ciudad").orEmpty(),
             "direccion"               to intent.getStringExtra("extra_direccion").orEmpty(),
             "oficios"                 to oficiosProcesados,
@@ -73,18 +106,22 @@ class PasswordActivity : AppCompatActivity() {
             "trabajos_realizados_mes" to 0,
             "online"                  to false,
             "notificaciones"          to true,
+            "metodoRegistro"          to "Correo",
+            "perfil_completado"       to true,
             "fechaRegistro"           to com.google.firebase.firestore.FieldValue.serverTimestamp()
         )
 
+        // 🔥 COLECCIÓN LIMPIA "users"
         db.collection("users").document(uid).set(expediente)
             .addOnSuccessListener { enviarCorreoDeVerificacion(role, email) }
             .addOnFailureListener { e ->
-                binding.btnContinuar.isEnabled = true
+                restaurarBoton()
                 Toast.makeText(this, "Error al guardar perfil: ${e.message}", Toast.LENGTH_LONG).show()
             }
     }
 
     private fun enviarCorreoDeVerificacion(role: String, email: String) {
+        binding.btnContinuar.text = "Enviando verificación..."
         auth.currentUser?.sendEmailVerification()?.addOnCompleteListener { emailTask ->
             if (emailTask.isSuccessful) {
                 startActivity(Intent(this, VerifyEmailActivity::class.java).apply {
@@ -94,10 +131,15 @@ class PasswordActivity : AppCompatActivity() {
                 })
                 finish()
             } else {
-                binding.btnContinuar.isEnabled = true
+                restaurarBoton()
                 Toast.makeText(this, "Cuenta creada, pero falló el envío del correo", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun restaurarBoton() {
+        binding.btnContinuar.isEnabled = true
+        binding.btnContinuar.text = "Continuar"
     }
 
     private fun setupRealtimeValidation() {
@@ -115,8 +157,10 @@ class PasswordActivity : AppCompatActivity() {
         var ok = true
         val pass  = binding.etPassword.text?.toString().orEmpty()
         val pass2 = binding.etConfirmPassword.text?.toString().orEmpty()
+
         if (pass.isBlank())  { ok = false; if (showErrors) binding.tilPassword.error = "Obligatorio" }
         if (pass2.isBlank()) { ok = false; if (showErrors) binding.tilConfirmPassword.error = "Obligatorio" }
+
         if (pass.isNotBlank()) {
             val errors = passwordRuleErrors(pass)
             if (errors.isNotEmpty()) {
@@ -146,11 +190,6 @@ class PasswordActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_ROLE       = "extra_role"
         const val EXTRA_EMAIL      = "extra_email"
-        const val EXTRA_NOMBRE     = "extra_nombre"
-        const val EXTRA_AP_PATERNO = "extra_ap_paterno"
-        const val EXTRA_AP_MATERNO = "extra_ap_materno"
-        const val EXTRA_FECHA_NAC  = "extra_fecha_nac"
-        const val EXTRA_GENERO     = "extra_genero"
         const val EXTRA_RECORDAR   = "extra_recordar"
     }
 }

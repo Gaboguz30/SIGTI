@@ -40,7 +40,8 @@ class RegisterGeneralActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val baseExtras = Intent().apply {
+            // 🔥 1. EMPACAMOS LOS DATOS EN LA MOCHILA
+            val baseExtras = Intent(this, ConfigurarFotoActivity::class.java).apply {
                 putExtra(EXTRA_ROLE,       role)
                 putExtra(EXTRA_NOMBRE,     binding.etNombre.text.toString().trim())
                 putExtra(EXTRA_AP_PATERNO, binding.etApellidoPaterno.text.toString().trim())
@@ -50,13 +51,10 @@ class RegisterGeneralActivity : AppCompatActivity() {
                 putExtra(EXTRA_GENERO,     selectedGender!!)
             }
 
-            val destino = if (role == ROLE_PRESTADOR)
-                PrestadorExtraActivity::class.java
-            else
-                SolicitanteExtraActivity::class.java
-
-            startActivity(Intent(this, destino).putExtras(baseExtras))
+            // Lanzamos la pantalla de la foto
+            startActivity(baseExtras)
         }
+
     }
 
     // ── Filtro de input: solo letras Unicode, espacios y apóstrofes ──────────

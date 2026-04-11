@@ -7,9 +7,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.auvenix.sigti.databinding.ActivityGoogleCompleteProfileBinding
-import com.auvenix.sigti.ui.home.HomeActivity
-import com.auvenix.sigti.ui.register.PrestadorExtraActivity
-import com.auvenix.sigti.ui.register.SolicitanteExtraActivity
+import com.auvenix.sigti.ui.register.ConfigurarFotoActivity
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
 
@@ -23,18 +21,13 @@ class GoogleCompleteProfileActivity : AppCompatActivity() {
         binding = ActivityGoogleCompleteProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // 1. Recibir datos (Google + Rol elegido en la pantalla anterior)
         val nombreGoogle = intent.getStringExtra("EXTRA_NOMBRE_COMPLETO") ?: ""
-        // Lo pasamos a mayúsculas por seguridad (SOLICITANTE o PRESTADOR)
         val rolElegido = intent.getStringExtra("EXTRA_ROL")?.uppercase() ?: "SOLICITANTE"
 
-        // 2. Separar nombre en los 3 campos
         separarNombrePro(nombreGoogle)
 
-        // 3. Calendario
         binding.etFechaNac.setOnClickListener { mostrarCalendario() }
 
-        // 4. Guardado final
         binding.btnFinalizar.setOnClickListener {
             guardarEnFirestore(rolElegido)
         }
@@ -82,7 +75,6 @@ class GoogleCompleteProfileActivity : AppCompatActivity() {
             return
         }
 
-        // Mostrar carga y bloquear botón
         binding.btnFinalizar.text = ""
         binding.pbLoading.visibility = View.VISIBLE
         binding.btnFinalizar.isEnabled = false
@@ -94,25 +86,22 @@ class GoogleCompleteProfileActivity : AppCompatActivity() {
             "apPaterno" to paterno,
             "apMaterno" to materno,
             "fechaNac" to fechaNac,
-            "role" to rol, // El rol que venía de la pantalla anterior
+            "role" to rol,
             "metodoRegistro" to "Google",
-            "perfil_completado" to false, // 🔥 Aún no termina, le faltan las fotos
+            "perfil_completado" to false,
             "fechaRegistro" to com.google.firebase.firestore.FieldValue.serverTimestamp()
         )
 
+        // 🔥 COLECCIÓN LIMPIA "users"
         db.collection("users").document(uid).set(userMap)
             .addOnSuccessListener {
 
-                // 🔥 AQUÍ CONECTAMOS EL PUENTE A LA PANTALLA DE FOTOS
-                val intent = if (rol == "PRESTADOR") {
-                    Intent(this, PrestadorExtraActivity::class.java)
-                } else {
-                    Intent(this, SolicitanteExtraActivity::class.java)
-                }
+                val intentFoto = Intent(this, ConfigurarFotoActivity::class.java)
+                intentFoto.putExtra("EXTRA_IS_GOOGLE", true)
+                intentFoto.putExtra("EXTRA_ROLE", rol)
 
-                // Cerramos esta pantalla para que no pueda regresar con el botón de atrás
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
+                intentFoto.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intentFoto)
                 finish()
             }
             .addOnFailureListener {
