@@ -16,6 +16,12 @@
         android:theme="@style/Theme.SIGTI"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".ui.support.SolucionRapidaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.support.AyudaDetalleActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.register.ConfigurarFotoActivity"
             android:exported="false" />
 
