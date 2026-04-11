@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F7FB"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/header"
+        layout="@layout/header_main" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/tvTituloProblema"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_bold"
+                android:text="Título del problema"
+                android:textColor="#1F3B64"
+                android:textSize="20sp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeWidth="0dp">
+
+                <TextView
+                    android:id="@+id/tvTextoSolucion"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_regular"
+                    android:padding="16dp"
+                    android:text="Cargando solución..."
+                    android:textColor="#424242"
+                    android:textSize="15sp"
+                    android:lineSpacingExtra="4dp"/>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="¿Esto no resolvió tu problema?"
+                android:textColor="#1F3B64"
+                android:textSize="16sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/poppins_regular"
+                android:text="Contáctanos directamente. Estamos para ayudarte."
+                android:textColor="#757575"
+                android:textSize="14sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLlamar"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="16dp"
+                android:text="Llamar a Soporte"
+                android:textColor="@color/white"
+                android:fontFamily="@font/poppins_medium"
+                android:textAllCaps="false"
+                app:cornerRadius="12dp"
+                app:icon="@android:drawable/ic_menu_call"
+                app:iconTint="@color/white"
+                app:iconGravity="textStart" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnWhatsApp"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="12dp"
+                android:text="Escribir por WhatsApp"
+                android:textColor="#128C7E"
+                android:fontFamily="@font/poppins_medium"
+                android:textAllCaps="false"
+                app:backgroundTint="#E8F5E9"
+                app:cornerRadius="12dp"
+                app:strokeColor="#128C7E"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCorreo"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginTop="12dp"
+                android:text="Enviar Correo"
+                android:textColor="#424242"
+                android:fontFamily="@font/poppins_medium"
+                android:textAllCaps="false"
+                app:backgroundTint="@color/white"
+                app:cornerRadius="12dp"
+                app:strokeColor="#BDBDBD"
+                app:strokeWidth="1dp" />
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

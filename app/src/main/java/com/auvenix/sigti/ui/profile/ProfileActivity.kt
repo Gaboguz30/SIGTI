@@ -22,7 +22,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import android.net.Uri
 import com.auvenix.sigti.ui.support.QueEsSigtiActivity
 import android.widget.TextView
-import com.bumptech.glide.Glide
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -73,17 +72,6 @@ class ProfileActivity : AppCompatActivity() {
                     }
 
                     binding.tvProfileName.text = "$nombre $apPaterno $apMaterno".trim()
-                    val documentacion = doc.get("documentacion") as? Map<*, *>
-                    val photoUrl = documentacion?.get("url_selfie")?.toString()
-
-                    Glide.with(this)
-                        .load(photoUrl)
-                        .placeholder(android.R.drawable.sym_def_app_icon)
-                        .error(android.R.drawable.sym_def_app_icon)
-                        .circleCrop()
-                        .into(binding.ivProfilePic)
-
-
 
                     if (rol == "PRESTADOR") {
                         binding.tvProfilePlan.text = "Prestador | $plan"

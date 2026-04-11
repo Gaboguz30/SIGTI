@@ -15,6 +15,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SIGTI"
         android:usesCleartextTraffic="true">
+        <activity
+            android:name=".ui.support.SolucionRapidaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.support.AyudaDetalleActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.register.ConfigurarFotoActivity"
+            android:exported="false" />
 
         <service
             android:name=".notifications.SigtiMessagingService"
@@ -48,17 +57,16 @@
         <activity
             android:name=".ui.provider.catalog.AddServiceActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.SplashSigti">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.auth.AuthEntryActivity"
             android:exported="false" />
@@ -77,7 +85,6 @@
         <activity
             android:name=".ui.auth.GoogleCompleteProfileActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.role.RoleActivity"
             android:exported="false" />
@@ -90,7 +97,6 @@
         <activity
             android:name=".ui.register.SolicitanteExtraActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.home.HomeActivity"
             android:exported="false" />
@@ -100,18 +106,15 @@
         <activity
             android:name=".ui.home.UserChatsActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.chat.ChatDetailActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.profile.ProfileActivity"
             android:exported="false" />
         <activity
             android:name=".ui.profile.WorkerProfileActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.provider.home.ProviderHomeActivity"
             android:exported="false" />
@@ -130,7 +133,6 @@
         <activity
             android:name=".ui.provider.plans.ProviderPlansActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.request.NewRequestActivity"
             android:exported="false"
@@ -141,12 +143,11 @@
         <activity
             android:name=".ui.support.ReviewsActivity"
             android:exported="false" />
-
         <activity
             android:name=".MainActivity"
             android:exported="false" />
         <activity android:name=".ui.support.ReviewActivity1" />
-        <activity android:name=".ui.support.QueEsSigtiActivity"/>
+        <activity android:name=".ui.support.QueEsSigtiActivity" />
     </application>
 
 </manifest>
