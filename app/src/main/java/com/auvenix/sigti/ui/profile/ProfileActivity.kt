@@ -1,8 +1,10 @@
 package com.auvenix.sigti.ui.profile
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -10,18 +12,16 @@ import com.auvenix.sigti.R
 import com.auvenix.sigti.databinding.ActivityProfileBinding
 import com.auvenix.sigti.session.SessionManager
 import com.auvenix.sigti.ui.auth.LoginActivity
-import com.auvenix.sigti.ui.provider.plans.ProviderPlansActivity
 import com.auvenix.sigti.ui.home.HomeActivity
 import com.auvenix.sigti.ui.home.UserMapActivity
+import com.auvenix.sigti.ui.provider.catalog.ProviderCatalogActivity
+import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
 import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
 import com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity
-import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
-import com.auvenix.sigti.ui.provider.catalog.ProviderCatalogActivity
+import com.auvenix.sigti.ui.support.QueEsSigtiActivity
+import com.bumptech.glide.Glide // 🔥 Importación de Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import android.net.Uri
-import com.auvenix.sigti.ui.support.QueEsSigtiActivity
-import android.widget.TextView
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -72,6 +72,24 @@ class ProfileActivity : AppCompatActivity() {
                     }
 
                     binding.tvProfileName.text = "$nombre $apPaterno $apMaterno".trim()
+
+                    // 🔥 LA MAGIA DE LA FOTO CON GLIDE (AHORA REDONDA) 🔥
+                    val urlFoto = doc.getString("url_selfie")
+                    if (!urlFoto.isNullOrEmpty()) {
+                        Glide.with(this)
+                            .load(urlFoto)
+                            .circleCrop() // 🔥 RECORTE CIRCULAR AQUÍ
+                            .placeholder(android.R.drawable.ic_menu_gallery)
+                            .error(android.R.drawable.ic_menu_gallery)
+                            .into(binding.ivProfilePic)
+                    } else {
+                        // También recortamos la imagen por defecto
+                        Glide.with(this)
+                            .load(android.R.drawable.ic_menu_gallery)
+                            .circleCrop() // 🔥 RECORTE CIRCULAR AQUÍ TAMBIÉN
+                            .into(binding.ivProfilePic)
+                    }
+                    // -----------------------------------
 
                     if (rol == "PRESTADOR") {
                         binding.tvProfilePlan.text = "Prestador | $plan"
@@ -205,6 +223,7 @@ class ProfileActivity : AppCompatActivity() {
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         finish()
     }
+
     private fun mostrarDialogConfirmacion(
         titulo: String,
         mensaje: String,
