@@ -42,20 +42,15 @@ class AuthEntryActivity : AppCompatActivity() {
             .build()
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        // ── Registro manual ────────────────────────────────────
+        // 🔥 CORRECCIÓN: Registro manual (Va directo a elegir rol, sin mochila falsa)
         binding.btnAcceptContinue.setOnClickListener {
-            val rolRecibido = intent.getStringExtra("EXTRA_ROLE") ?: "SOLICITANTE"
             val intent = Intent(this, RoleActivity::class.java)
-            intent.putExtra("EXTRA_ROLE", rolRecibido)
             startActivity(intent)
         }
 
         // ── Google Sign-In ─────────────────────────────────────
-// ── Google Sign-In ─────────────────────────────────────
         binding.btnGoogle.setOnClickListener {
-            // 🔥 EL TRUCO: Le decimos a Google que olvide cualquier cuenta guardada
             googleSignInClient.signOut().addOnCompleteListener {
-                // Una vez que ya la olvidó, ahora sí lanzamos la ventanita
                 startActivityForResult(googleSignInClient.signInIntent, RC_SIGN_IN)
             }
         }
@@ -108,16 +103,12 @@ class AuthEntryActivity : AppCompatActivity() {
                             FcmTokenManager.saveCurrentToken()
                             redireccionarSegunRol(uid)
                         } else {
-                            // 🔥 AQUÍ ESTÁ LA MAGIA ARREGLADA
-                            // Obtenemos el rol que haya elegido antes (si no, por defecto Solicitante)
-                            val rolRecibido = intent.getStringExtra("EXTRA_ROLE") ?: "SOLICITANTE"
-
-                            // Lo mandamos DIRECTO a completar sus datos
+                            // Usuario nuevo por Google: lo mandamos a completar perfil
                             val intentGoogle = Intent(this, GoogleCompleteProfileActivity::class.java).apply {
-                                putExtra("EXTRA_NOMBRE_COMPLETO", user.displayName) // Coincide perfecto con tu otra pantalla
+                                putExtra("EXTRA_NOMBRE_COMPLETO", user.displayName)
                                 putExtra("EXTRA_EMAIL", user.email)
                                 putExtra("EXTRA_UID", uid)
-                                putExtra("EXTRA_ROL", rolRecibido)
+                                putExtra("EXTRA_ROL", "SOLICITANTE")
                             }
                             startActivity(intentGoogle)
                             finish()

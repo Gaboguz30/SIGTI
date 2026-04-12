@@ -41,6 +41,9 @@ class HomeActivity : AppCompatActivity() {
         rvWorkers.layoutManager = LinearLayoutManager(this)
         etSearch = findViewById(R.id.etSearch)
 
+        // 🔥 CARGAMOS EL NOMBRE DEL USUARIO PARA EL SALUDO 🔥
+        cargarNombreUsuario()
+
         val soloLetrasFilter = android.text.InputFilter { source, start, end, dest, dstart, dend ->
             for (i in start until end) {
                 val char = source[i]
@@ -75,6 +78,28 @@ class HomeActivity : AppCompatActivity() {
         btnNotifications.setOnClickListener {
             val bottomSheet = com.auvenix.sigti.notifications.NotificationsBottomSheet()
             bottomSheet.show(supportFragmentManager, "NotificationsSheet")
+        }
+    }
+
+    // 🔥 FUNCIÓN PARA CARGAR EL NOMBRE DEL USUARIO DESDE FIREBASE 🔥
+    private fun cargarNombreUsuario() {
+        val tvSaludo = findViewById<TextView>(R.id.tvSaludoNombre)
+
+        if (myUid.isNotEmpty()) {
+            db.collection("users").document(myUid).get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val nombre = document.getString("nombre") ?: "Usuario"
+                        tvSaludo.text = "Hola, $nombre "
+                    } else {
+                        tvSaludo.text = "Hola 👋"
+                    }
+                }
+                .addOnFailureListener {
+                    tvSaludo.text = "Hola 👋"
+                }
+        } else {
+            tvSaludo.text = "Hola 👋"
         }
     }
 

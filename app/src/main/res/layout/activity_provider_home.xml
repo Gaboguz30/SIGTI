@@ -130,7 +130,7 @@
                         android:layout_weight="1"
                         android:layout_marginEnd="8dp"
                         app:cardCornerRadius="18dp"
-                        app:cardElevation="3dp"
+                        app:cardElevation="0dp"
                         app:cardBackgroundColor="#FFFFFF">
 
                         <LinearLayout
@@ -166,7 +166,7 @@
                         android:layout_weight="1"
                         android:layout_marginStart="8dp"
                         app:cardCornerRadius="18dp"
-                        app:cardElevation="3dp"
+                        app:cardElevation="0dp"
                         app:cardBackgroundColor="#FFFFFF">
 
                         <LinearLayout

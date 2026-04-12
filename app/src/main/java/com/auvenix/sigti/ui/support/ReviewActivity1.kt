@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import android.widget.TextView
 import android.widget.ImageView
@@ -21,6 +20,7 @@ import android.widget.AutoCompleteTextView
 import android.net.Uri
 import android.content.Intent
 import android.app.Activity
+import com.auvenix.sigti.ui.profile.WorkerProfileActivity
 import com.google.firebase.storage.FirebaseStorage
 import java.util.UUID
 
@@ -33,7 +33,7 @@ class ReviewActivity1 : AppCompatActivity() {
     lateinit var db: FirebaseFirestore
     lateinit var providerId: String
     lateinit var inputRequestId: AutoCompleteTextView
-    var selectedServiceId: String = ""
+    var selectedRequestId: String = "" // 🔥 Cambiado a Request ID
     var selectedFileUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +52,6 @@ class ReviewActivity1 : AppCompatActivity() {
 
         // 🔹 HEADER
         val header = findViewById<View>(R.id.header)
-
         val title = header.findViewById<TextView>(R.id.tvHeaderTitle)
         title.text = "Reseñar"
 
@@ -85,46 +84,53 @@ class ReviewActivity1 : AppCompatActivity() {
         inputDescription = findViewById(R.id.inputDescription)
         btnSubmitReview = findViewById(R.id.btnSubmitReport)
 
-        // 🔹 TRAER SERVICIOS DEL PRESTADOR (SUBCOLECCIÓN CORRECTA)
-        db.collection("users")
-            .document(providerId)
-            .collection("services")
+        // 🔥 CARGAR TRABAJOS CON CANDADOS (Completed y No Reseñados) 🔥
+        db.collection("requests")
+            .whereEqualTo("clientId", clientId)
+            .whereEqualTo("providerId", providerId)
+            .whereEqualTo("status", "completed")
             .get()
             .addOnSuccessListener { docs ->
-
-                if (docs.isEmpty) {
-                    Toast.makeText(this, "No hay servicios", Toast.LENGTH_SHORT).show()
-                }
-
-                val serviceMap = HashMap<String, String>()
-                val serviceNames = mutableListOf<String>()
+                val requestMap = HashMap<String, String>()
+                val requestNames = mutableListOf<String>()
 
                 for (doc in docs) {
-                    val name = doc.getString("name") ?: "Servicio ${doc.id}"
-                    serviceMap[name] = doc.id
-                    serviceNames.add(name)
+                    // Verificamos si ya fue reseñado (si el campo no existe, asume false)
+                    val isReviewed = doc.getBoolean("isReviewed") ?: false
+
+                    if (!isReviewed) {
+                        val title = doc.getString("title") ?: "Trabajo"
+                        val fecha = doc.getString("fecha") ?: ""
+                        val displayName = "$title ($fecha)"
+
+                        requestMap[displayName] = doc.id
+                        requestNames.add(displayName)
+                    }
+                }
+
+                if (requestNames.isEmpty()) {
+                    Toast.makeText(this, "No tienes trabajos pendientes por reseñar con este prestador", Toast.LENGTH_LONG).show()
+                    btnSubmitReview.isEnabled = false // Bloqueamos si no hay qué reseñar
                 }
 
                 val adapter = ArrayAdapter(
                     this,
                     android.R.layout.simple_dropdown_item_1line,
-                    serviceNames
+                    requestNames
                 )
 
                 inputRequestId.setAdapter(adapter)
 
-                inputRequestId.setOnClickListener {
-                    inputRequestId.showDropDown()
-                }
-
-                inputRequestId.setOnFocusChangeListener { _, hasFocus ->
-                    if (hasFocus) inputRequestId.showDropDown()
-                }
+                inputRequestId.setOnClickListener { inputRequestId.showDropDown() }
+                inputRequestId.setOnFocusChangeListener { _, hasFocus -> if (hasFocus) inputRequestId.showDropDown() }
 
                 inputRequestId.setOnItemClickListener { parent, _, position, _ ->
                     val selectedName = parent.getItemAtPosition(position).toString()
-                    selectedServiceId = serviceMap[selectedName] ?: ""
+                    selectedRequestId = requestMap[selectedName] ?: ""
                 }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Error al cargar tu historial de trabajos", Toast.LENGTH_SHORT).show()
             }
 
         // 🔹 BOTÓN ENVIAR RESEÑA
@@ -138,39 +144,26 @@ class ReviewActivity1 : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            if (selectedServiceId.isEmpty()) {
-                Toast.makeText(this, "Selecciona un servicio", Toast.LENGTH_SHORT).show()
+            if (selectedRequestId.isEmpty()) {
+                Toast.makeText(this, "Selecciona el trabajo que quieres reseñar", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            db.collection("reviews")
-                .whereEqualTo("clientId", clientId)
-                .whereEqualTo("serviceId", selectedServiceId)
-                .get()
-                .addOnSuccessListener { result ->
-
-                    if (!result.isEmpty) {
-                        Toast.makeText(this, "Ya reseñaste este servicio", Toast.LENGTH_SHORT).show()
-                    } else {
-                        guardarReseña(clientId)
-                    }
-                }
+            guardarReseña(clientId)
         }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-
         if (requestCode == 100 && resultCode == Activity.RESULT_OK) {
             selectedFileUri = data?.data
             Toast.makeText(this, "Archivo seleccionado", Toast.LENGTH_SHORT).show()
         }
     }
 
-    // 🔥 FUNCIÓN FUERA DE onCreate (YA CORRECTA)
     fun guardarReseña(clientId: String) {
-        // 1. Bloqueamos el botón para evitar múltiples clics
         btnSubmitReview.isEnabled = false
+        btnSubmitReview.text = "Enviando..."
 
         db.collection("users").document(clientId)
             .get()
@@ -180,15 +173,14 @@ class ReviewActivity1 : AppCompatActivity() {
                 val userName = "$nombre $apP".trim()
 
                 if (selectedFileUri != null) {
-                    // Si hay una imagen, primero la subimos
                     subirImagenYGuardar(clientId, userName)
                 } else {
-                    // Si no hay imagen, guardamos la reseña directamente
                     enviarFirestore(clientId, userName, "")
                 }
             }
             .addOnFailureListener {
                 btnSubmitReview.isEnabled = true
+                btnSubmitReview.text = "Enviar reseña"
                 Toast.makeText(this, "Error al obtener datos del usuario", Toast.LENGTH_SHORT).show()
             }
     }
@@ -200,18 +192,16 @@ class ReviewActivity1 : AppCompatActivity() {
 
         fileRef.putFile(selectedFileUri!!)
             .continueWithTask { task ->
-                if (!task.isSuccessful) {
-                    task.exception?.let { throw it }
-                }
+                if (!task.isSuccessful) { task.exception?.let { throw it } }
                 fileRef.downloadUrl
             }
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val downloadUri = task.result.toString()
-                    // Una vez tenemos la URL pública, guardamos en Firestore
                     enviarFirestore(clientId, userName, downloadUri)
                 } else {
                     btnSubmitReview.isEnabled = true
+                    btnSubmitReview.text = "Enviar reseña"
                     Toast.makeText(this, "Error al subir imagen", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -225,19 +215,30 @@ class ReviewActivity1 : AppCompatActivity() {
             "rating" to ratingBar.rating.toInt(),
             "comment" to inputDescription.text.toString(),
             "created_at" to com.google.firebase.Timestamp.now(),
-            "imageUrl" to imageUrl // Aquí ya va la URL de Firebase, no el content://
+            "imageUrl" to imageUrl
         )
 
         db.collection("reviews")
             .add(review)
             .addOnSuccessListener {
-                Toast.makeText(this, "Reseña enviada con éxito", Toast.LENGTH_SHORT).show()
-                finish()
+
+                // 🔥 MARCAMOS EL TRABAJO COMO "YA RESEÑADO"
+                db.collection("requests").document(selectedRequestId)
+                    .update("isReviewed", true)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "¡Gracias por tu reseña!", Toast.LENGTH_SHORT).show()
+
+                        // 🔥 MANDAMOS AL CLIENTE AL PERFIL DEL TRABAJADOR
+                        val intent = Intent(this, WorkerProfileActivity::class.java)
+                        intent.putExtra("EXTRA_WORKER_UID", providerId)
+                        startActivity(intent)
+                        finish() // Cerramos esta pantalla para que no pueda volver atrás
+                    }
             }
             .addOnFailureListener {
                 btnSubmitReview.isEnabled = true
+                btnSubmitReview.text = "Enviar reseña"
                 Toast.makeText(this, "Error al guardar la reseña", Toast.LENGTH_SHORT).show()
             }
     }
-
 }

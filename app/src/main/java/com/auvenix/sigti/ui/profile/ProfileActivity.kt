@@ -1,8 +1,10 @@
 package com.auvenix.sigti.ui.profile
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -10,18 +12,16 @@ import com.auvenix.sigti.R
 import com.auvenix.sigti.databinding.ActivityProfileBinding
 import com.auvenix.sigti.session.SessionManager
 import com.auvenix.sigti.ui.auth.LoginActivity
-import com.auvenix.sigti.ui.provider.plans.ProviderPlansActivity
 import com.auvenix.sigti.ui.home.HomeActivity
 import com.auvenix.sigti.ui.home.UserMapActivity
+import com.auvenix.sigti.ui.provider.catalog.ProviderCatalogActivity
+import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
 import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
 import com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity
-import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
-import com.auvenix.sigti.ui.provider.catalog.ProviderCatalogActivity
+import com.auvenix.sigti.ui.support.QueEsSigtiActivity
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import android.net.Uri
-import com.auvenix.sigti.ui.support.QueEsSigtiActivity
-import android.widget.TextView
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -29,7 +29,6 @@ class ProfileActivity : AppCompatActivity() {
     private val auth = FirebaseAuth.getInstance()
     private val db = FirebaseFirestore.getInstance()
     private lateinit var sessionManager: SessionManager
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,9 +62,10 @@ class ProfileActivity : AppCompatActivity() {
                     val apMaterno = doc.getString("apMaterno") ?: ""
                     val rol = doc.getString("role") ?: "SOLICITANTE"
                     val plan = doc.getString("plan_actual") ?: "FREE"
+
+                    // 🔥 Aquí sacamos el estado real de Firebase
                     val isAvailable = doc.getBoolean("online") ?: false
 
-                    // Si el rol en Firebase es diferente al que tenía el teléfono, lo actualiza.
                     if (sessionManager.getRole() != rol) {
                         sessionManager.saveRole(rol)
                         configurarBottomMenu(rol)
@@ -73,8 +73,30 @@ class ProfileActivity : AppCompatActivity() {
 
                     binding.tvProfileName.text = "$nombre $apPaterno $apMaterno".trim()
 
+                    // Búsqueda inteligente de la foto
+                    var urlFoto = doc.getString("url_selfie")
+                    if (urlFoto.isNullOrEmpty()) {
+                        val documentacion = doc.get("documentacion") as? Map<*, *>
+                        urlFoto = documentacion?.get("url_selfie")?.toString()
+                    }
+
+                    if (!urlFoto.isNullOrEmpty()) {
+                        Glide.with(this)
+                            .load(urlFoto)
+                            .circleCrop()
+                            .placeholder(android.R.drawable.ic_menu_gallery)
+                            .error(android.R.drawable.ic_menu_gallery)
+                            .into(binding.ivProfilePic)
+                    } else {
+                        Glide.with(this)
+                            .load(android.R.drawable.ic_menu_gallery)
+                            .circleCrop()
+                            .into(binding.ivProfilePic)
+                    }
+
                     if (rol == "PRESTADOR") {
                         binding.tvProfilePlan.text = "Prestador | $plan"
+                        // 🔥 Le pasamos el estado real al Switch
                         configurarComoPrestador(isAvailable)
                     } else {
                         binding.tvProfilePlan.text = "Solicitante"
@@ -87,14 +109,20 @@ class ProfileActivity : AppCompatActivity() {
             }
     }
 
+    // 🔥 SOLUCIÓN 1: MANTENER EL ESTADO DEL SWITCH
     private fun configurarComoPrestador(isAvailable: Boolean) {
         binding.llStatus.visibility = View.VISIBLE
         binding.vDividerPref1.visibility = View.VISIBLE
         binding.llUpgradePlan.visibility = View.VISIBLE
         binding.vDividerPref2.visibility = View.VISIBLE
 
+        // 1. Quitamos el listener temporalmente para que no dispare actualizaciones falsas
+        binding.switchStatus.setOnCheckedChangeListener(null)
+
+        // 2. Pintamos el switch como está guardado en Firebase
         binding.switchStatus.isChecked = isAvailable
 
+        // 3. Volvemos a poner el listener para cambios futuros
         binding.switchStatus.setOnCheckedChangeListener { _, isChecked ->
             auth.currentUser?.uid?.let { uid ->
                 db.collection("users").document(uid).update("online", isChecked)
@@ -154,14 +182,13 @@ class ProfileActivity : AppCompatActivity() {
     private fun cerrarSesion() {
         auth.signOut()
         sessionManager.clearToken()
-        sessionManager.clearAll() // Limpiamos todo al salir
+        sessionManager.clearAll()
         val intent = Intent(this, LoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
     }
 
-    // 🔥 MENÚ DINÁMICO CON NAVEGACIÓN SUAVE
     private fun configurarBottomMenu(rol: String) {
         binding.bottomNavigation.menu.clear()
 
@@ -196,7 +223,6 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-    // 🔥 LA FUNCIÓN MÁGICA
     private fun irAPantalla(activityClass: Class<*>) {
         if (this::class.java == activityClass) return
         val intent = Intent(this, activityClass)
@@ -205,13 +231,13 @@ class ProfileActivity : AppCompatActivity() {
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         finish()
     }
+
     private fun mostrarDialogConfirmacion(
         titulo: String,
         mensaje: String,
         onConfirm: () -> Unit
     ) {
         val view = layoutInflater.inflate(R.layout.dialog_confirmacion, null)
-
         val tvTitulo = view.findViewById<TextView>(R.id.tvTitulo)
         val tvMensaje = view.findViewById<TextView>(R.id.tvMensaje)
         val btnSi = view.findViewById<TextView>(R.id.btnSi)
@@ -220,22 +246,15 @@ class ProfileActivity : AppCompatActivity() {
         tvTitulo.text = titulo
         tvMensaje.text = mensaje
 
-        val dialog = AlertDialog.Builder(this)
-            .setView(view)
-            .create()
-
+        val dialog = AlertDialog.Builder(this).setView(view).create()
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
         dialog.show()
-
-        // 🔥 animación
         dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
 
         btnSi.setOnClickListener {
             onConfirm()
             dialog.dismiss()
         }
-
         btnNo.setOnClickListener {
             dialog.dismiss()
         }

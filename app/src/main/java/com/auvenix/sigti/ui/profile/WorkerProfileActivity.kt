@@ -2,6 +2,7 @@ package com.auvenix.sigti.ui.profile
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import android.widget.RatingBar
@@ -19,7 +20,6 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.auvenix.sigti.ui.support.Review
 import com.auvenix.sigti.ui.support.ReviewAdapter
 
@@ -55,14 +55,14 @@ class WorkerProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_worker_profile)
-        val header = findViewById<View>(R.id.header)
 
+        val header = findViewById<View>(R.id.header)
         val title = header.findViewById<TextView>(R.id.tvHeaderTitle)
         title.text = "Perfil"
         val back = header.findViewById<ImageView>(R.id.btnBackHeader)
 
         back.setOnClickListener {
-            finish() // Aquí no usamos la función mágica porque es el botón normal de regresar
+            finish()
         }
 
         workerId = intent.getStringExtra("EXTRA_WORKER_UID") ?: ""
@@ -83,16 +83,9 @@ class WorkerProfileActivity : AppCompatActivity() {
 
 
     private fun setupTabs() {
-
         val tabLayout = findViewById<TabLayout>(R.id.tabLayout)
         val rvServices = findViewById<RecyclerView>(R.id.rvServices)
         val rvReviews = findViewById<RecyclerView>(R.id.rvReviews)
-        val header = findViewById<View>(R.id.header)
-        val back = header.findViewById<ImageView>(R.id.btnBackHeader)
-
-        back.setOnClickListener {
-            finish()
-        }
 
         tabLayout.addTab(tabLayout.newTab().setText("Servicios"))
         tabLayout.addTab(tabLayout.newTab().setText("Reseñas"))
@@ -102,7 +95,6 @@ class WorkerProfileActivity : AppCompatActivity() {
         rvReviews.visibility = View.GONE
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-
             override fun onTabSelected(tab: TabLayout.Tab) {
                 when (tab.position) {
                     0 -> { // Servicios
@@ -133,7 +125,6 @@ class WorkerProfileActivity : AppCompatActivity() {
         ivProfilePic = findViewById(R.id.ivProfilePic)
         setupTabs()
         setupReviews()
-
     }
 
     private fun setupRecycler() {
@@ -191,15 +182,17 @@ class WorkerProfileActivity : AppCompatActivity() {
                     tvProfession.visibility = View.GONE
                 }
 
+                // 🔥 ESTRELLAS Y NÚMEROS EN TIEMPO REAL 🔥
                 db.collection("reviews")
                     .whereEqualTo("technician_uid", workerId)
-                    .get()
-                    .addOnSuccessListener { reviews ->
+                    .addSnapshotListener { reviews, e ->
+                        if (e != null || reviews == null) return@addSnapshotListener
+
                         var total = 0f
                         val count = reviews.size()
 
                         for (r in reviews) {
-                            val rating = r.getLong("rating")?.toFloat() ?: 0f
+                            val rating = r.getDouble("rating")?.toFloat() ?: r.getLong("rating")?.toFloat() ?: 0f
                             total += rating
                         }
 
@@ -218,19 +211,23 @@ class WorkerProfileActivity : AppCompatActivity() {
             }
     }
 
+    // 🔥 LISTA DE RESEÑAS EN TIEMPO REAL 🔥
     private fun setupReviews() {
         rvReviews.layoutManager = LinearLayoutManager(this)
+        reviewAdapter = ReviewAdapter(reviewList)
+        rvReviews.adapter = reviewAdapter
 
         db.collection("reviews")
             .whereEqualTo("technician_uid", workerId)
-            .get()
-            .addOnSuccessListener { documents ->
+            .addSnapshotListener { documents, e ->
+                if (e != null || documents == null) return@addSnapshotListener
+
                 reviewList.clear()
 
                 for (doc in documents) {
                     val user = doc.getString("userName") ?: "Usuario"
                     val comment = doc.getString("comment") ?: ""
-                    val rating = doc.getLong("rating")?.toFloat() ?: 0f
+                    val rating = doc.getDouble("rating")?.toFloat() ?: doc.getLong("rating")?.toFloat() ?: 0f
                     val timestamp = doc.getTimestamp("created_at")?.toDate()
 
                     val formato = java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale.getDefault())
@@ -240,8 +237,7 @@ class WorkerProfileActivity : AppCompatActivity() {
                     reviewList.add(Review(user, date, comment, rating, imageUrl))
                 }
 
-                reviewAdapter = ReviewAdapter(reviewList)
-                rvReviews.adapter = reviewAdapter
+                reviewAdapter.notifyDataSetChanged()
             }
     }
 
@@ -297,7 +293,6 @@ class WorkerProfileActivity : AppCompatActivity() {
         }
     }
 
-    // 🔥 NAVEGACIÓN SUAVE APLICADA
     private fun setupBottomNav() {
         val nav = findViewById<BottomNavigationView>(R.id.bottomNavigationProfile)
 
@@ -313,7 +308,6 @@ class WorkerProfileActivity : AppCompatActivity() {
         }
     }
 
-    // 🔥 LA FUNCIÓN MÁGICA
     private fun irAPantalla(activityClass: Class<*>) {
         if (this::class.java == activityClass) return
         val intent = Intent(this, activityClass)
