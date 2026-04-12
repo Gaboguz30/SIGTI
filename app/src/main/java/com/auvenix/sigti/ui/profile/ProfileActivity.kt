@@ -18,6 +18,7 @@ import com.auvenix.sigti.ui.provider.catalog.ProviderCatalogActivity
 import com.auvenix.sigti.ui.provider.chat.ProviderChatActivity
 import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
 import com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity
+import com.auvenix.sigti.ui.support.MyReportsActivity // 🔥 Importamos la nueva pantalla
 import com.auvenix.sigti.ui.support.QueEsSigtiActivity
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
@@ -63,7 +64,6 @@ class ProfileActivity : AppCompatActivity() {
                     val rol = doc.getString("role") ?: "SOLICITANTE"
                     val plan = doc.getString("plan_actual") ?: "FREE"
 
-                    // 🔥 Aquí sacamos el estado real de Firebase
                     val isAvailable = doc.getBoolean("online") ?: false
 
                     if (sessionManager.getRole() != rol) {
@@ -73,7 +73,6 @@ class ProfileActivity : AppCompatActivity() {
 
                     binding.tvProfileName.text = "$nombre $apPaterno $apMaterno".trim()
 
-                    // Búsqueda inteligente de la foto
                     var urlFoto = doc.getString("url_selfie")
                     if (urlFoto.isNullOrEmpty()) {
                         val documentacion = doc.get("documentacion") as? Map<*, *>
@@ -96,7 +95,6 @@ class ProfileActivity : AppCompatActivity() {
 
                     if (rol == "PRESTADOR") {
                         binding.tvProfilePlan.text = "Prestador | $plan"
-                        // 🔥 Le pasamos el estado real al Switch
                         configurarComoPrestador(isAvailable)
                     } else {
                         binding.tvProfilePlan.text = "Solicitante"
@@ -109,20 +107,15 @@ class ProfileActivity : AppCompatActivity() {
             }
     }
 
-    // 🔥 SOLUCIÓN 1: MANTENER EL ESTADO DEL SWITCH
     private fun configurarComoPrestador(isAvailable: Boolean) {
         binding.llStatus.visibility = View.VISIBLE
         binding.vDividerPref1.visibility = View.VISIBLE
         binding.llUpgradePlan.visibility = View.VISIBLE
         binding.vDividerPref2.visibility = View.VISIBLE
 
-        // 1. Quitamos el listener temporalmente para que no dispare actualizaciones falsas
         binding.switchStatus.setOnCheckedChangeListener(null)
-
-        // 2. Pintamos el switch como está guardado en Firebase
         binding.switchStatus.isChecked = isAvailable
 
-        // 3. Volvemos a poner el listener para cambios futuros
         binding.switchStatus.setOnCheckedChangeListener { _, isChecked ->
             auth.currentUser?.uid?.let { uid ->
                 db.collection("users").document(uid).update("online", isChecked)
@@ -144,6 +137,11 @@ class ProfileActivity : AppCompatActivity() {
 
         binding.btnChangePassword.setOnClickListener {
             startActivity(Intent(this, ChangePasswordActivity::class.java))
+        }
+
+        // 🔥 AQUÍ ESTÁ EL NUEVO BOTÓN DE MIS REPORTES 🔥
+        binding.btnMyReports.setOnClickListener {
+            startActivity(Intent(this, MyReportsActivity::class.java))
         }
 
         binding.llUpgradePlan.setOnClickListener {

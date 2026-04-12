@@ -16,6 +16,9 @@
         android:theme="@style/Theme.SIGTI"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".ui.support.MyReportsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.support.SolucionRapidaActivity"
             android:exported="false" />
         <activity

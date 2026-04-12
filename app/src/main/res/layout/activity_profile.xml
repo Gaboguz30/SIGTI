@@ -347,6 +347,41 @@
                                 app:tint="#BDBDBD"/>
                         </LinearLayout>
 
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="#EEEEEE"
+                            android:layout_marginVertical="4dp"/>
+
+                        <LinearLayout
+                            android:id="@+id/btnMyReports"
+                            android:layout_width="match_parent"
+                            android:layout_height="56dp"
+                            android:gravity="center_vertical"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:background="?attr/selectableItemBackground">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@android:drawable/ic_dialog_alert"
+                                app:tint="#E53935"/> <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="12dp"
+                            android:fontFamily="@font/poppins_medium"
+                            android:text="Mis Reportes"
+                            android:textColor="#424242"
+                            android:textSize="15sp" />
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_flecha1"
+                                app:tint="#BDBDBD"/>
+                        </LinearLayout>
+
                     </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>
@@ -359,7 +394,6 @@
                     android:layout_marginBottom="12dp"
                     android:fontFamily="@font/poppins_medium"/>
 
-                <!-- 🔴 AYUDA -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/llAyuda"
                     android:layout_width="match_parent"
@@ -397,7 +431,6 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- 🔴 TERMINOS -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/llTerminos"
                     android:layout_width="match_parent"
@@ -471,7 +504,3 @@
         app:menu="@menu/bottom_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
-

@@ -26,36 +26,37 @@
                 android:id="@+id/header"
                 layout="@layout/header_main"/>
 
-
-            <!-- ID SERVICIO -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="ID del servicio"
+                android:text="Servicio a reportar"
                 android:textSize="15sp"
                 android:textColor="@color/black"
                 android:fontFamily="@font/poppins_medium"
                 android:layout_marginTop="24dp"/>
 
             <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:endIconMode="dropdown_menu"
                 app:boxCornerRadiusTopStart="16dp"
                 app:boxCornerRadiusTopEnd="16dp"
                 app:boxCornerRadiusBottomStart="16dp"
                 app:boxCornerRadiusBottomEnd="16dp">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <AutoCompleteTextView
                     android:id="@+id/inputRequestId"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Elige que servicio fue"
-                    android:fontFamily="@font/poppins_regular"/>
+                    android:layout_height="56dp"
+                    android:hint="Selecciona el servicio en progreso"
+                    android:fontFamily="@font/poppins_regular"
+                    android:padding="12dp"
+                    android:textSize="16sp"
+                    android:focusable="false"
+                    android:clickable="true"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-
-            <!-- TIPO INCIDENTE -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -82,12 +83,38 @@
                     android:fontFamily="@font/poppins_regular"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-
-            <!-- FECHA -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Fecha"
+                android:text="Fecha de reporte"
+                android:textSize="15sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppins_medium"
+                android:layout_marginTop="16dp"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:boxCornerRadiusTopStart="16dp"
+                app:boxCornerRadiusTopEnd="16dp"
+                app:boxCornerRadiusBottomStart="16dp"
+                app:boxCornerRadiusBottomEnd="16dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/inputDateReport"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Fecha actual"
+                    android:focusable="false"
+                    android:clickable="false"
+                    android:fontFamily="@font/poppins_regular"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Fecha del incidente"
                 android:textSize="15sp"
                 android:textColor="@color/black"
                 android:fontFamily="@font/poppins_medium"
@@ -105,15 +132,15 @@
                 app:boxCornerRadiusBottomEnd="16dp">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/inputDate"
+                    android:id="@+id/inputDateIncident"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Seleccionar fecha"
+                    android:hint="¿Cuándo ocurrió?"
                     android:focusable="false"
+                    android:clickable="true"
                     android:fontFamily="@font/poppins_regular"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- DESCRIPCIÓN -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -142,7 +169,6 @@
                     android:fontFamily="@font/poppins_regular"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- EVIDENCIA -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -163,7 +189,6 @@
                 app:cornerRadius="12dp"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
 
-            <!-- BOTÓN FINAL -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSubmitReport"
                 android:layout_width="match_parent"
@@ -180,21 +205,4 @@
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
-
-    <!-- BOTTOM NAV -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationReport"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:background="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/bottom_nav_menu"
-        app:itemIconTint="@color/selector_nav_blue"
-        app:itemTextColor="@color/selector_nav_blue"
-        app:labelVisibilityMode="labeled"
-        app:itemRippleColor="@android:color/transparent"/>
-
-
-
 </androidx.constraintlayout.widget.ConstraintLayout>
