@@ -142,6 +142,21 @@ class ChatDetailActivity : AppCompatActivity() {
         val roomId = if (myUid < targetUid) "${myUid}_$targetUid" else "${targetUid}_$myUid"
 
         chatRef = FirebaseDatabase.getInstance().getReference("chats").child(roomId)
+        chatRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (msg in snapshot.children) {
+
+                    val sender = msg.child("sender_uid").getValue(String::class.java)
+
+                    if (sender != myUid) {
+                        msg.ref.child("seen").setValue(true)
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
+
 
         chatRef.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(s: DataSnapshot, p: String?) {
@@ -153,12 +168,24 @@ class ChatDetailActivity : AppCompatActivity() {
                 val hora = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(time))
                 val mine = sender == myUid
 
-                chatMessages.add(ChatMessage(msg, mine, hora, false, type))
+                val seen = s.child("seen").getValue(Boolean::class.java) ?: false
+
+                chatMessages.add(ChatMessage(msg, mine, hora, seen, type))
                 adapter.notifyItemInserted(chatMessages.size - 1)
                 rv.scrollToPosition(chatMessages.size - 1)
             }
 
-            override fun onChildChanged(s: DataSnapshot, p: String?) {}
+            override fun onChildChanged(s: DataSnapshot, p: String?) {
+                val key = s.key ?: return
+
+                val index = chatMessages.indexOfFirst { true } // simple actualización
+
+                if (index != -1) {
+                    val seen = s.child("seen").getValue(Boolean::class.java) ?: false
+                    chatMessages[index] = chatMessages[index].copy(seen = seen)
+                    adapter.notifyItemChanged(index)
+                }
+            }
             override fun onChildRemoved(s: DataSnapshot) {}
             override fun onChildMoved(s: DataSnapshot, p: String?) {}
             override fun onCancelled(e: DatabaseError) {}
