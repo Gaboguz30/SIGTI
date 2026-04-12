@@ -26,6 +26,7 @@ class ChatAdapter(
         val tvRightTime: TextView = itemView.findViewById(R.id.tvRightTime)
         val imgLeft: ImageView = itemView.findViewById(R.id.imgLeft)
         val imgRight: ImageView = itemView.findViewById(R.id.imgRight)
+        val imgCheck: ImageView = itemView.findViewById(R.id.imgCheck)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ChatViewHolder {
@@ -61,7 +62,7 @@ class ChatAdapter(
 
                 holder.imgRight.visibility = View.GONE
                 holder.tvRightMessage.visibility = View.VISIBLE
-                holder.tvRightMessage.text = "📎 Archivo"
+                holder.tvRightMessage.text = "Archivo"
 
                 holder.tvRightMessage.setOnClickListener {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(message.message))
@@ -75,8 +76,15 @@ class ChatAdapter(
                 holder.tvRightMessage.text = message.message
             }
 
-            holder.tvRightTime.text =
-                message.time + if (message.seen) " ✓✓" else " ✓"
+            holder.tvRightTime.text = message.time
+
+            if (message.seen) {
+                holder.imgCheck.setImageResource(R.drawable.ic_check_double)
+                holder.imgCheck.setColorFilter(android.graphics.Color.parseColor("#2979FF")) // azul
+            } else {
+                holder.imgCheck.setImageResource(R.drawable.ic_check_single)
+                holder.imgCheck.setColorFilter(android.graphics.Color.parseColor("#9E9E9E")) // gris
+            }
 
         } else {
 

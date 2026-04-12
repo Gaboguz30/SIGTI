@@ -77,7 +77,6 @@ class ChatDetailActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         val myUid = auth.currentUser?.uid ?: return
-        // 🔥 ESTADO EN LÍNEA
         val userStatusRef = FirebaseDatabase.getInstance().getReference("status").child(myUid)
 
         userStatusRef.setValue("online")
@@ -111,6 +110,9 @@ class ChatDetailActivity : AppCompatActivity() {
         rv.adapter = adapter
 
         conversationsRef = FirebaseDatabase.getInstance().getReference("conversations")
+        conversationsRef.child(myUid).child(targetUid)
+            .child("unreadCount")
+            .setValue(0)
 
         db.collection("users")
             .document(targetUid)
@@ -171,6 +173,7 @@ class ChatDetailActivity : AppCompatActivity() {
             chatRef.push().setValue(
                 mapOf(
                     "message" to texto,
+                    "type" to "text", // 🔥 IMPORTANTE
                     "sender_uid" to myUid,
                     "timestamp" to time,
                     "seen" to false
@@ -184,21 +187,29 @@ class ChatDetailActivity : AppCompatActivity() {
                 "unreadCount" to 0
             )
 
-            val dataOther = mapOf(
-                "lastMessage" to texto,
-                "timestamp" to time,
-                "withName" to myName,
-                "unreadCount" to 1
-            )
+            val otherRef = conversationsRef.child(targetUid).child(myUid)
+
+            otherRef.get().addOnSuccessListener { snapshot ->
+
+                val currentUnread = snapshot.child("unreadCount")
+                    .getValue(Int::class.java) ?: 0
+
+                val dataOther = mapOf(
+                    "lastMessage" to texto,
+                    "timestamp" to time,
+                    "withName" to myName,
+                    "unreadCount" to currentUnread + 1
+                )
+
+                otherRef.updateChildren(dataOther)
+            }
 
             conversationsRef.child(myUid).child(targetUid).updateChildren(dataMe)
-            conversationsRef.child(targetUid).child(myUid).updateChildren(dataOther)
 
             input.setText("")
         }
     }
 
-    // 🔥 NAVEGACIÓN SUAVE DINÁMICA (Decide qué menú mostrar)
     private fun setupBottomNavigation() {
         val nav = findViewById<BottomNavigationView>(R.id.bottomNavigationChat)
 

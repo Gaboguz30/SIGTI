@@ -160,16 +160,16 @@ class HomeActivity : AppCompatActivity() {
                 .addOnSuccessListener { document ->
                     if (document.exists()) {
                         val nombre = document.getString("nombre") ?: "Usuario"
-                        tvSaludo.text = "Hola, $nombre 👋"
+                        tvSaludo.text = "Hola, $nombre "
                     } else {
-                        tvSaludo.text = "Hola 👋"
+                        tvSaludo.text = "Hola "
                     }
                 }
                 .addOnFailureListener {
-                    tvSaludo.text = "Hola 👋"
+                    tvSaludo.text = "Hola "
                 }
         } else {
-            tvSaludo.text = "Hola 👋"
+            tvSaludo.text = "Hola "
         }
     }
 
