@@ -80,10 +80,10 @@ class ChatAdapter(
 
             if (message.seen) {
                 holder.imgCheck.setImageResource(R.drawable.ic_check_double)
-                holder.imgCheck.setColorFilter(android.graphics.Color.WHITE)
+                holder.imgCheck.setColorFilter(android.graphics.Color.parseColor("white")) // azul
             } else {
                 holder.imgCheck.setImageResource(R.drawable.ic_check_single)
-                holder.imgCheck.setColorFilter(android.graphics.Color.WHITE)
+                holder.imgCheck.setColorFilter(android.graphics.Color.parseColor("#9E9E9E")) // gris
             }
 
         } else {
