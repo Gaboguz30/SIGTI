@@ -23,6 +23,11 @@ import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
 import com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity
 import com.auvenix.sigti.ui.provider.catalog.ProviderCatalogActivity
 import com.auvenix.sigti.ui.provider.profile.ProviderProfileActivity
+import com.google.firebase.database.ValueEventListener
+import android.net.Uri
+import androidx.activity.result.contract.ActivityResultContracts
+import com.google.firebase.storage.FirebaseStorage
+import java.util.UUID
 
 class ChatDetailActivity : AppCompatActivity() {
 
@@ -40,6 +45,12 @@ class ChatDetailActivity : AppCompatActivity() {
     private var myName = "Usuario"
     private var myRole = ""
 
+    private val pickFile = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let {
+            uploadFile(it)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_detail)
@@ -55,12 +66,22 @@ class ChatDetailActivity : AppCompatActivity() {
         val rv = findViewById<RecyclerView>(R.id.rvChatMessages)
         val input = findViewById<EditText>(R.id.etMessageInput)
         val send = findViewById<ImageView>(R.id.btnSendMessage)
+        val attach = findViewById<ImageView>(R.id.btnAttach)
+
+        attach.setOnClickListener {
+            pickFile.launch("*/*")
+        }
         val subtitle = findViewById<TextView>(R.id.tvChatSubtitle)
 
         tvUnreadBanner = findViewById(R.id.tvUnreadBanner)
 
         auth = FirebaseAuth.getInstance()
         val myUid = auth.currentUser?.uid ?: return
+        // 🔥 ESTADO EN LÍNEA
+        val userStatusRef = FirebaseDatabase.getInstance().getReference("status").child(myUid)
+
+        userStatusRef.setValue("online")
+        userStatusRef.onDisconnect().setValue("offline")
 
         targetUid = intent.getStringExtra("serviceId") ?: ""
         if (targetUid.isEmpty()) {
@@ -69,7 +90,21 @@ class ChatDetailActivity : AppCompatActivity() {
             return
         }
 
-        subtitle.text = "En línea"
+        val statusRef = FirebaseDatabase.getInstance().getReference("status").child(targetUid)
+
+        statusRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val status = snapshot.getValue(String::class.java)
+
+                if (status == "online") {
+                    subtitle.text = "En línea"
+                } else {
+                    subtitle.text = "Desconectado"
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
 
         rv.layoutManager = LinearLayoutManager(this).apply { stackFromEnd = true }
         adapter = ChatAdapter(chatMessages)
@@ -109,13 +144,14 @@ class ChatDetailActivity : AppCompatActivity() {
         chatRef.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(s: DataSnapshot, p: String?) {
                 val msg = s.child("message").value?.toString() ?: return
+                val type = s.child("type").value?.toString() ?: "text"
                 val sender = s.child("sender_uid").getValue(String::class.java) ?: ""
                 val time = s.child("timestamp").getValue(Long::class.java) ?: 0
 
                 val hora = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(time))
                 val mine = sender == myUid
 
-                chatMessages.add(ChatMessage(msg, mine, hora, false))
+                chatMessages.add(ChatMessage(msg, mine, hora, false, type))
                 adapter.notifyItemInserted(chatMessages.size - 1)
                 rv.scrollToPosition(chatMessages.size - 1)
             }
@@ -205,5 +241,31 @@ class ChatDetailActivity : AppCompatActivity() {
         startActivity(intent)
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         finish()
+    }
+
+    private fun uploadFile(uri: Uri) {
+        val storageRef = FirebaseStorage.getInstance().reference
+        val fileRef = storageRef.child("chat_files/${UUID.randomUUID()}")
+
+        val type = contentResolver.getType(uri)
+        val messageType = if (type?.startsWith("image") == true) "image" else "file"
+
+        fileRef.putFile(uri).addOnSuccessListener {
+            fileRef.downloadUrl.addOnSuccessListener { downloadUrl ->
+
+                val time = System.currentTimeMillis()
+                val myUid = FirebaseAuth.getInstance().currentUser!!.uid
+
+                chatRef.push().setValue(
+                    mapOf(
+                        "message" to downloadUrl.toString(),
+                        "type" to messageType,
+                        "sender_uid" to myUid,
+                        "timestamp" to time,
+                        "seen" to false
+                    )
+                )
+            }
+        }
     }
 }

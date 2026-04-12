@@ -148,6 +148,7 @@
             android:exported="false" />
         <activity android:name=".ui.support.ReviewActivity1" />
         <activity android:name=".ui.support.QueEsSigtiActivity" />
+        <activity android:name=".ui.chat.FullScreenImageActivity"/>
     </application>
 
 </manifest>

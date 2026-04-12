@@ -12,6 +12,24 @@ import com.auvenix.sigti.ui.provider.home.RequestModel
 import com.google.android.material.button.MaterialButton
 import java.util.Locale
 
+enum class JobStatus {
+    PENDING,
+    IN_PROGRESS,
+    PENDING_CLIENT_CONFIRMATION,
+    COMPLETED,
+    REJECTED;
+
+    companion object {
+        fun from(status: String): JobStatus {
+            return try {
+                valueOf(status.uppercase(Locale.getDefault()))
+            } catch (e: Exception) {
+                PENDING
+            }
+        }
+    }
+}
+
 class JobAdapter(
     private val jobList: List<RequestModel>,
     private val userRole: String,
@@ -39,6 +57,42 @@ class JobAdapter(
         private val btnComplete: MaterialButton = itemView.findViewById(R.id.btnCompleteJob)
         private val tvWaiting: TextView = itemView.findViewById(R.id.tvJobWaiting)
 
+        private fun showWaiting(text: String, colorHex: String, bgRes: Int) {
+            tvWaiting.visibility = View.VISIBLE
+            tvWaiting.text = text
+            tvWaiting.setTextColor(Color.parseColor(colorHex))
+            tvWaiting.setBackgroundResource(bgRes)
+        }
+
+        private fun showButton(text: String) {
+            btnComplete.visibility = View.VISIBLE
+            btnComplete.text = text
+            animateButton(btnComplete)
+        }
+
+        private fun animateButton(view: View) {
+            view.scaleX = 0.8f
+            view.scaleY = 0.8f
+            view.alpha = 0f
+
+            view.animate()
+                .scaleX(1f)
+                .scaleY(1f)
+                .alpha(1f)
+                .setDuration(200)
+                .start()
+        }
+
+        private fun setStatusIcon(status: JobStatus) {
+            when (status) {
+                JobStatus.PENDING -> btnChat.setImageResource(R.drawable.ic_clock1)
+                JobStatus.IN_PROGRESS -> btnChat.setImageResource(R.drawable.ic_work)
+                JobStatus.PENDING_CLIENT_CONFIRMATION -> btnChat.setImageResource(R.drawable.ic_warning)
+                JobStatus.COMPLETED -> btnChat.setImageResource(R.drawable.ic_check)
+                JobStatus.REJECTED -> btnChat.setImageResource(R.drawable.ic_cancel)
+            }
+        }
+
         fun bind(job: RequestModel) {
 
             // 🔥 ADIÓS EMOJIS, HOLA DISEÑO LIMPIO
@@ -55,44 +109,61 @@ class JobAdapter(
             tvWaiting.setTextColor(Color.parseColor("#F57C00"))
             btnChat.visibility = View.VISIBLE
 
-            // 🔥 LA MAGIA DE LOS ESTADOS CORREGIDA
-            when (job.status) {
-                "pending" -> { // 🔥 ESTO FALTABA PARA LAS NUEVAS SOLICITUDES
-                    btnComplete.visibility = View.GONE
-                    tvWaiting.visibility = View.VISIBLE
-                    tvWaiting.text = if (userRole == "PRESTADOR") "Revisa tu pantalla de Inicio" else "A la espera de respuesta..."
+            val status = JobStatus.from(job.status)
+            setStatusIcon(status)
+
+            btnComplete.visibility = View.GONE
+            tvWaiting.visibility = View.GONE
+            btnChat.visibility = View.VISIBLE
+
+            when (status) {
+
+                JobStatus.PENDING -> {
+                    showWaiting(
+                        "Esperando confirmación",
+                        "#EF6C00",
+                        R.drawable.bg_status_pending
+                    )
                 }
-                "in_progress" -> {
+
+                JobStatus.IN_PROGRESS -> {
                     if (userRole == "PRESTADOR") {
-                        btnComplete.visibility = View.VISIBLE
-                        btnComplete.text = "Finalizar"
-                        tvWaiting.visibility = View.GONE
+                        showButton("Finalizar")
                     } else {
-                        btnComplete.visibility = View.GONE
-                        tvWaiting.visibility = View.VISIBLE
-                        tvWaiting.text = "Trabajo en proceso..."
+                        showWaiting(
+                            "En proceso",
+                            "#1976D2",
+                            R.drawable.bg_status_progress
+                        )
                     }
                 }
-                "pending_client_confirmation" -> {
+
+                JobStatus.PENDING_CLIENT_CONFIRMATION -> {
                     if (userRole == "PRESTADOR") {
-                        btnComplete.visibility = View.GONE
-                        tvWaiting.visibility = View.VISIBLE
-                        tvWaiting.text = "Esperando confirmación..."
+                        showWaiting(
+                            "Esperando confirmación...",
+                            "#F57C00",
+                            R.drawable.bg_status_pending
+                        )
                     } else {
-                        btnComplete.visibility = View.VISIBLE
-                        btnComplete.text = "Aceptar por $${job.priceOffer}"
-                        tvWaiting.visibility = View.GONE
+                        showButton("Aceptar por $${job.priceOffer}")
                     }
                 }
-                "completed" -> {
-                    btnComplete.visibility = View.GONE
-                    tvWaiting.visibility = View.GONE
+
+                JobStatus.COMPLETED -> {
+                    showWaiting(
+                        "Finalizado",
+                        "#388E3C",
+                        R.drawable.bg_status_completed
+                    )
                 }
-                "rejected" -> {
-                    btnComplete.visibility = View.GONE
-                    tvWaiting.visibility = View.VISIBLE
-                    tvWaiting.text = "Solicitud Rechazada"
-                    tvWaiting.setTextColor(Color.parseColor("#D32F2F"))
+
+                JobStatus.REJECTED -> {
+                    showWaiting(
+                        "Solicitud rechazada",
+                        "#D32F2F",
+                        R.drawable.bg_status_rejected
+                    )
                     btnChat.visibility = View.GONE
                 }
             }
