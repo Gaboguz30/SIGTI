@@ -46,7 +46,6 @@ class ProviderChatActivity : AppCompatActivity() {
 
         binding.chipTodos.typeface = poppins
         binding.chipNoLeidos.typeface = poppins
-        binding.chipFavoritos.typeface = poppins
 
         val title = findViewById<TextView>(R.id.tvHeaderTitle)
         title.text = "Bandeja de Entrada"
@@ -66,12 +65,6 @@ class ProviderChatActivity : AppCompatActivity() {
             adapter.notifyDataSetChanged()
         }
 
-        binding.chipFavoritos.setOnClickListener {
-            val favoritos = fullList.filter { it.name.contains("A") }
-            adapter.chatList.clear()
-            adapter.chatList.addAll(favoritos)
-            adapter.notifyDataSetChanged()
-        }
 
         myRole = sessionManager.getRole() ?: "SOLICITANTE"
         setupBottomNavigation()
