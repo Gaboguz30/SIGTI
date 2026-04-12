@@ -26,6 +26,16 @@
             android:textColor="@color/black"
             android:textSize="14sp"/>
 
+        <ImageView
+            android:id="@+id/imgLeft"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:adjustViewBounds="true"
+            android:background="@drawable/bg_image_chat"
+            android:padding="2dp"
+            android:visibility="gone"
+            android:scaleType="centerCrop"/>
+
         <TextView
             android:id="@+id/tvLeftTime"
             android:layout_width="wrap_content"
@@ -34,6 +44,8 @@
             android:textColor="#888"
             android:layout_gravity="end"
             android:layout_marginTop="2dp"/>
+
+
     </LinearLayout>
 
 
@@ -48,6 +60,15 @@
         android:background="@drawable/bg_chat_right"
         android:backgroundTint="#1976D2"
         android:padding="10dp">
+        <ImageView
+            android:id="@+id/imgRight"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:adjustViewBounds="true"
+            android:background="@drawable/bg_image_chat"
+            android:padding="2dp"
+            android:visibility="gone"
+            android:scaleType="centerCrop"/>
 
         <TextView
             android:id="@+id/tvRightMessage"
@@ -56,14 +77,30 @@
             android:textColor="@android:color/white"
             android:textSize="14sp"/>
 
-        <TextView
-            android:id="@+id/tvRightTime"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:textColor="#E3F2FD"
-            android:layout_gravity="end"
-            android:layout_marginTop="2dp"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_gravity="end">
+
+            <TextView
+                android:id="@+id/tvRightTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="16:59"
+                android:textSize="11sp"
+                android:textColor="#EEEEEE"/>
+
+            <ImageView
+                android:id="@+id/imgCheck"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_marginStart="4dp"
+                android:src="@drawable/ic_check_single"
+                android:tint="#9E9E9E"/>
+
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

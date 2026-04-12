@@ -23,6 +23,11 @@ import com.auvenix.sigti.ui.provider.home.ProviderHomeActivity
 import com.auvenix.sigti.ui.provider.jobs.ProviderJobsActivity
 import com.auvenix.sigti.ui.provider.catalog.ProviderCatalogActivity
 import com.auvenix.sigti.ui.provider.profile.ProviderProfileActivity
+import com.google.firebase.database.ValueEventListener
+import android.net.Uri
+import androidx.activity.result.contract.ActivityResultContracts
+import com.google.firebase.storage.FirebaseStorage
+import java.util.UUID
 
 class ChatDetailActivity : AppCompatActivity() {
 
@@ -40,6 +45,12 @@ class ChatDetailActivity : AppCompatActivity() {
     private var myName = "Usuario"
     private var myRole = ""
 
+    private val pickFile = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let {
+            uploadFile(it)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_detail)
@@ -55,12 +66,21 @@ class ChatDetailActivity : AppCompatActivity() {
         val rv = findViewById<RecyclerView>(R.id.rvChatMessages)
         val input = findViewById<EditText>(R.id.etMessageInput)
         val send = findViewById<ImageView>(R.id.btnSendMessage)
+        val attach = findViewById<ImageView>(R.id.btnAttach)
+
+        attach.setOnClickListener {
+            pickFile.launch("*/*")
+        }
         val subtitle = findViewById<TextView>(R.id.tvChatSubtitle)
 
         tvUnreadBanner = findViewById(R.id.tvUnreadBanner)
 
         auth = FirebaseAuth.getInstance()
         val myUid = auth.currentUser?.uid ?: return
+        val userStatusRef = FirebaseDatabase.getInstance().getReference("status").child(myUid)
+
+        userStatusRef.setValue("online")
+        userStatusRef.onDisconnect().setValue("offline")
 
         targetUid = intent.getStringExtra("serviceId") ?: ""
         if (targetUid.isEmpty()) {
@@ -69,13 +89,30 @@ class ChatDetailActivity : AppCompatActivity() {
             return
         }
 
-        subtitle.text = "En línea"
+        val statusRef = FirebaseDatabase.getInstance().getReference("status").child(targetUid)
+
+        statusRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val status = snapshot.getValue(String::class.java)
+
+                if (status == "online") {
+                    subtitle.text = "En línea"
+                } else {
+                    subtitle.text = "Desconectado"
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
 
         rv.layoutManager = LinearLayoutManager(this).apply { stackFromEnd = true }
         adapter = ChatAdapter(chatMessages)
         rv.adapter = adapter
 
         conversationsRef = FirebaseDatabase.getInstance().getReference("conversations")
+        conversationsRef.child(myUid).child(targetUid)
+            .child("unreadCount")
+            .setValue(0)
 
         db.collection("users")
             .document(targetUid)
@@ -105,22 +142,50 @@ class ChatDetailActivity : AppCompatActivity() {
         val roomId = if (myUid < targetUid) "${myUid}_$targetUid" else "${targetUid}_$myUid"
 
         chatRef = FirebaseDatabase.getInstance().getReference("chats").child(roomId)
+        chatRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for (msg in snapshot.children) {
+
+                    val sender = msg.child("sender_uid").getValue(String::class.java)
+
+                    if (sender != myUid) {
+                        msg.ref.child("seen").setValue(true)
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        })
+
 
         chatRef.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(s: DataSnapshot, p: String?) {
                 val msg = s.child("message").value?.toString() ?: return
+                val type = s.child("type").value?.toString() ?: "text"
                 val sender = s.child("sender_uid").getValue(String::class.java) ?: ""
                 val time = s.child("timestamp").getValue(Long::class.java) ?: 0
 
                 val hora = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(time))
                 val mine = sender == myUid
 
-                chatMessages.add(ChatMessage(msg, mine, hora, false))
+                val seen = s.child("seen").getValue(Boolean::class.java) ?: false
+
+                chatMessages.add(ChatMessage(msg, mine, hora, seen, type))
                 adapter.notifyItemInserted(chatMessages.size - 1)
                 rv.scrollToPosition(chatMessages.size - 1)
             }
 
-            override fun onChildChanged(s: DataSnapshot, p: String?) {}
+            override fun onChildChanged(s: DataSnapshot, p: String?) {
+                val key = s.key ?: return
+
+                val index = chatMessages.indexOfFirst { true } // simple actualización
+
+                if (index != -1) {
+                    val seen = s.child("seen").getValue(Boolean::class.java) ?: false
+                    chatMessages[index] = chatMessages[index].copy(seen = seen)
+                    adapter.notifyItemChanged(index)
+                }
+            }
             override fun onChildRemoved(s: DataSnapshot) {}
             override fun onChildMoved(s: DataSnapshot, p: String?) {}
             override fun onCancelled(e: DatabaseError) {}
@@ -135,6 +200,7 @@ class ChatDetailActivity : AppCompatActivity() {
             chatRef.push().setValue(
                 mapOf(
                     "message" to texto,
+                    "type" to "text", // 🔥 IMPORTANTE
                     "sender_uid" to myUid,
                     "timestamp" to time,
                     "seen" to false
@@ -148,21 +214,29 @@ class ChatDetailActivity : AppCompatActivity() {
                 "unreadCount" to 0
             )
 
-            val dataOther = mapOf(
-                "lastMessage" to texto,
-                "timestamp" to time,
-                "withName" to myName,
-                "unreadCount" to 1
-            )
+            val otherRef = conversationsRef.child(targetUid).child(myUid)
+
+            otherRef.get().addOnSuccessListener { snapshot ->
+
+                val currentUnread = snapshot.child("unreadCount")
+                    .getValue(Int::class.java) ?: 0
+
+                val dataOther = mapOf(
+                    "lastMessage" to texto,
+                    "timestamp" to time,
+                    "withName" to myName,
+                    "unreadCount" to currentUnread + 1
+                )
+
+                otherRef.updateChildren(dataOther)
+            }
 
             conversationsRef.child(myUid).child(targetUid).updateChildren(dataMe)
-            conversationsRef.child(targetUid).child(myUid).updateChildren(dataOther)
 
             input.setText("")
         }
     }
 
-    // 🔥 NAVEGACIÓN SUAVE DINÁMICA (Decide qué menú mostrar)
     private fun setupBottomNavigation() {
         val nav = findViewById<BottomNavigationView>(R.id.bottomNavigationChat)
 
@@ -205,5 +279,31 @@ class ChatDetailActivity : AppCompatActivity() {
         startActivity(intent)
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
         finish()
+    }
+
+    private fun uploadFile(uri: Uri) {
+        val storageRef = FirebaseStorage.getInstance().reference
+        val fileRef = storageRef.child("chat_files/${UUID.randomUUID()}")
+
+        val type = contentResolver.getType(uri)
+        val messageType = if (type?.startsWith("image") == true) "image" else "file"
+
+        fileRef.putFile(uri).addOnSuccessListener {
+            fileRef.downloadUrl.addOnSuccessListener { downloadUrl ->
+
+                val time = System.currentTimeMillis()
+                val myUid = FirebaseAuth.getInstance().currentUser!!.uid
+
+                chatRef.push().setValue(
+                    mapOf(
+                        "message" to downloadUrl.toString(),
+                        "type" to messageType,
+                        "sender_uid" to myUid,
+                        "timestamp" to time,
+                        "seen" to false
+                    )
+                )
+            }
+        }
     }
 }

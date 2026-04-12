@@ -81,17 +81,6 @@
                     app:chipBackgroundColor="@color/chip_selector_bg"
                     android:textColor="@color/chip_selector_text"/>
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/chipFavoritos"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Favoritos"
-                    style="@style/Widget.MaterialComponents.Chip.Choice"
-                    android:fontFamily="@font/poppins_medium"
-                    app:chipCornerRadius="50dp"
-                    app:chipStrokeWidth="0dp"
-                    app:chipBackgroundColor="@color/chip_selector_bg"
-                    android:textColor="@color/chip_selector_text"/>^`
             </com.google.android.material.chip.ChipGroup>
 
             <androidx.recyclerview.widget.RecyclerView

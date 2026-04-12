@@ -56,7 +56,6 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- 🔥 CHAT (FUERA DEL SCROLL) -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvChatMessages"
         android:layout_width="0dp"
@@ -73,40 +72,61 @@
         android:id="@+id/llInputArea"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="#FAFAFA"
+        android:background="@android:color/transparent"
         android:orientation="horizontal"
-        android:padding="8dp"
+        android:padding="10dp"
         android:layout_marginBottom="10dp"
         android:gravity="center_vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        >
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:background="@drawable/bg_input_premium"
+        android:elevation="4dp"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="10dp">
+
+        <ImageView
+            android:id="@+id/btnAttach"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginStart="6dp"
+            android:src="@drawable/ic_file"
+            app:tint="#9E9E9E" />
 
         <EditText
             android:id="@+id/etMessageInput"
             android:layout_width="0dp"
-            android:layout_height="42dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/rounded_edittext"
+            android:background="@android:color/transparent"
             android:hint="Escribe tu mensaje..."
             android:textSize="14sp"
-            android:textColor="@color/black"
+            android:textColor="#000"
             android:textColorHint="#9E9E9E"
             android:fontFamily="@font/poppins_regular"
-            android:paddingHorizontal="14dp"/>
+            android:paddingHorizontal="8dp"
+            />
+    </LinearLayout>
 
         <ImageView
             android:id="@+id/btnSendMessage"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:layout_marginStart="6dp"
+            android:layout_marginStart="8dp"
             android:background="@drawable/bg_send_circle"
-            android:padding="10dp"
+            android:padding="12dp"
             android:src="@android:drawable/ic_menu_send"
             app:tint="@color/white"/>
+
     </LinearLayout>
 
-    <!-- NAV (OCULTO PERO EXISTE PARA NO ROMPER KOTLIN) -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationChat"
         android:layout_width="0dp"

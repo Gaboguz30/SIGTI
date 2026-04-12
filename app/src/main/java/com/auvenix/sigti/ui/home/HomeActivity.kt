@@ -162,14 +162,14 @@ class HomeActivity : AppCompatActivity() {
                         val nombre = document.getString("nombre") ?: "Usuario"
                         tvSaludo.text = "Hola, $nombre "
                     } else {
-                        tvSaludo.text = "Hola 👋"
+                        tvSaludo.text = "Hola "
                     }
                 }
                 .addOnFailureListener {
-                    tvSaludo.text = "Hola 👋"
+                    tvSaludo.text = "Hola "
                 }
         } else {
-            tvSaludo.text = "Hola 👋"
+            tvSaludo.text = "Hola "
         }
     }
 

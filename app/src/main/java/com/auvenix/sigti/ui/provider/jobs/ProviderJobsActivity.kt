@@ -126,7 +126,11 @@ class ProviderJobsActivity : AppCompatActivity() {
                 binding.tvTabContentStatus.visibility = View.GONE
             }
 
-            adapter.notifyDataSetChanged()
+            if (jobList.isEmpty()) {
+                adapter.notifyDataSetChanged()
+            } else {
+                adapter.notifyItemRangeChanged(0, jobList.size)
+            }
         }
     }
 
