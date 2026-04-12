@@ -6,18 +6,19 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.auvenix.sigti.R
 import com.auvenix.sigti.ui.profile.ProfileActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.firestore.FirebaseFirestore
-import android.widget.LinearLayout
-import android.widget.ImageView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class HomeActivity : AppCompatActivity() {
 
@@ -41,9 +42,10 @@ class HomeActivity : AppCompatActivity() {
         rvWorkers.layoutManager = LinearLayoutManager(this)
         etSearch = findViewById(R.id.etSearch)
 
-        // 🔥 CARGAMOS EL NOMBRE DEL USUARIO PARA EL SALUDO 🔥
+        // 1. Cargamos el saludo dinámico
         cargarNombreUsuario()
 
+        // 2. Filtro para el buscador
         val soloLetrasFilter = android.text.InputFilter { source, start, end, dest, dstart, dend ->
             for (i in start until end) {
                 val char = source[i]
@@ -63,6 +65,7 @@ class HomeActivity : AppCompatActivity() {
             }
         })
 
+        // 3. Adapter de los trabajadores
         workerAdapter = WorkerAdapter(filteredList) { worker ->
             val intent = Intent(this, com.auvenix.sigti.ui.profile.WorkerProfileActivity::class.java)
             intent.putExtra("EXTRA_WORKER_UID", worker.uid)
@@ -70,18 +73,85 @@ class HomeActivity : AppCompatActivity() {
         }
         rvWorkers.adapter = workerAdapter
 
+        // 4. Inicializar UI y Datos
         configurarChips()
         descargarPrestadoresDeFirestore()
         setupBottomNavigation()
 
+        // 5. Botón Notificaciones
         val btnNotifications = findViewById<View>(R.id.btnNotifications)
         btnNotifications.setOnClickListener {
             val bottomSheet = com.auvenix.sigti.notifications.NotificationsBottomSheet()
             bottomSheet.show(supportFragmentManager, "NotificationsSheet")
         }
+
+        // 🔥 6. EL CHISMOSO DE LAS RESEÑAS PENDIENTES 🔥
+        revisarTrabajosPendientesDeResena()
     }
 
-    // 🔥 FUNCIÓN PARA CARGAR EL NOMBRE DEL USUARIO DESDE FIREBASE 🔥
+    // 🔥 EL CHISMOSO EN TIEMPO REAL A PRUEBA DE BALAS 🔥
+    private fun revisarTrabajosPendientesDeResena() {
+        if (myUid.isEmpty()) return
+
+        db.collection("requests")
+            .whereEqualTo("clientId", myUid)
+            .whereEqualTo("status", "completed")
+            // No filtramos isReviewed aquí para que Firebase no ignore los nulos
+            .addSnapshotListener { snapshots, e ->
+                if (e != null || snapshots == null || snapshots.isEmpty) {
+                    return@addSnapshotListener
+                }
+
+                for (doc in snapshots.documents) {
+                    // Si no existe, asume que es false
+                    val isReviewed = doc.getBoolean("isReviewed") ?: false
+
+                    if (!isReviewed) {
+                        val providerId = doc.getString("providerId") ?: continue
+                        val providerName = doc.getString("providerName") ?: "tu prestador"
+
+                        mostrarDialogoCalificar(providerId, providerName)
+                        break // Muestra la alerta y se detiene
+                    }
+                }
+            }
+    }
+
+    // 🔥 CUADRO DE DIÁLOGO PERSONALIZADO (DISEÑO PREMIUM) 🔥
+    private fun mostrarDialogoCalificar(providerId: String, providerName: String) {
+        // Inflamos tu XML personalizado
+        val view = layoutInflater.inflate(R.layout.dialog_review_prompt, null)
+
+        val tvMensaje = view.findViewById<TextView>(R.id.tvDialogMessage)
+        val btnMasTarde = view.findViewById<View>(R.id.btnDialogLater)
+        val btnContinuar = view.findViewById<View>(R.id.btnDialogContinue)
+
+        tvMensaje.text = "Tu trabajo con $providerName ha concluido. ¡Ayúdanos a mejorar calificando su servicio!"
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(view)
+            .create()
+
+        // Fondo transparente para que luzca el MaterialCardView
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
+        // Opcional: animación suave
+        dialog.window?.attributes?.windowAnimations = R.style.DialogAnimation
+
+        dialog.show()
+
+        btnMasTarde.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        btnContinuar.setOnClickListener {
+            val intent = Intent(this, com.auvenix.sigti.ui.support.ReviewActivity1::class.java)
+            intent.putExtra("providerId", providerId)
+            startActivity(intent)
+            dialog.dismiss()
+        }
+    }
+    // ------------------------------------------------
+
     private fun cargarNombreUsuario() {
         val tvSaludo = findViewById<TextView>(R.id.tvSaludoNombre)
 
@@ -90,7 +160,7 @@ class HomeActivity : AppCompatActivity() {
                 .addOnSuccessListener { document ->
                     if (document.exists()) {
                         val nombre = document.getString("nombre") ?: "Usuario"
-                        tvSaludo.text = "Hola, $nombre "
+                        tvSaludo.text = "Hola, $nombre 👋"
                     } else {
                         tvSaludo.text = "Hola 👋"
                     }
@@ -231,7 +301,6 @@ class HomeActivity : AppCompatActivity() {
         chipPintor.setOnClickListener { activarChip(it as LinearLayout, "Pintor") }
     }
 
-    // 🔥 NAVEGACIÓN SUAVE
     private fun setupBottomNavigation() {
         val bottomNavigation = findViewById<BottomNavigationView>(R.id.bottomNavigation)
         bottomNavigation.selectedItemId = R.id.nav_home
@@ -271,7 +340,6 @@ class HomeActivity : AppCompatActivity() {
             .addOnFailureListener { callback(null) }
     }
 
-    // 🔥 LA FUNCIÓN MÁGICA
     private fun irAPantalla(activityClass: Class<*>) {
         if (this::class.java == activityClass) return
         val intent = Intent(this, activityClass)
