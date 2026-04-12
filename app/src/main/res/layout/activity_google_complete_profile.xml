@@ -30,6 +30,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="¡Bienvenido a SIGTI!"
+                android:fontFamily="@font/poppins_bold"
+
                 android:textColor="@color/black"
                 android:textSize="26sp"
                 android:textStyle="bold" />
@@ -39,6 +41,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Verifica que tu nombre sea correcto y dinos cuándo naciste."
+                android:fontFamily="@font/poppins_medium"
                 android:textSize="14sp" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -56,6 +59,7 @@
                     android:id="@+id/etNombre"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_regular"
                     android:inputType="textCapWords" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -74,6 +78,7 @@
                     android:id="@+id/etApPaterno"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_regular"
                     android:inputType="textCapWords" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -92,6 +97,7 @@
                     android:id="@+id/etApMaterno"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_regular"
                     android:inputType="textCapWords" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -102,6 +108,7 @@
                 android:layout_marginTop="16dp"
                 app:boxBackgroundMode="outline"
                 app:boxCornerRadiusTopStart="10dp"
+                android:fontFamily="@font/poppins_regular"
                 app:boxCornerRadiusTopEnd="10dp"
                 app:boxCornerRadiusBottomStart="10dp"
                 app:boxCornerRadiusBottomEnd="10dp"
@@ -111,6 +118,7 @@
                     android:id="@+id/etFechaNac"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_regular"
                     android:focusable="false"
                     android:clickable="true" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -125,6 +133,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="56dp"
                     android:backgroundTint="@color/sigti_blue"
+                    android:fontFamily="@font/poppins_medium"
                     android:text="Continuar"
                     app:cornerRadius="8dp" />
 

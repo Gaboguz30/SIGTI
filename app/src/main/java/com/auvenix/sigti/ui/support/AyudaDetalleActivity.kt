@@ -57,7 +57,7 @@ class AyudaDetalleActivity : AppCompatActivity() {
         }
 
         // 🔹 Adaptador para la lista
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, opciones)
+        val adapter = ArrayAdapter(this, R.layout.item_opcion, R.id.tvItemOpcion, opciones)
         listView.adapter = adapter
 
         // 🔥 AQUÍ ESTÁ EL PUENTE CORREGIDO 🔥

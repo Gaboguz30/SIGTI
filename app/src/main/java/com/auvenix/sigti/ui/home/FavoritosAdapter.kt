@@ -7,13 +7,16 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.auvenix.sigti.R
+import com.bumptech.glide.Glide
+import android.graphics.Color
 
-// 🔥 Creamos un modelo rápido para manejar los favoritos
 data class FavoriteWorker(
-    val favoriteDocId: String, // El ID del documento en Firebase para poder borrarlo
+    val favoriteDocId: String,
     val providerId: String,
     val name: String,
-    val profession: String
+    val profession: String,
+    val photoUrl: String,
+    val availability: String // 🔥 NUEVO
 )
 
 class FavoritosAdapter(
@@ -25,6 +28,8 @@ class FavoritosAdapter(
         val txtNombre: TextView = itemView.findViewById(R.id.txtNombre)
         val txtServicio: TextView = itemView.findViewById(R.id.txtServicio)
         val btnFavorito: ImageView = itemView.findViewById(R.id.btnFavorito)
+        val imgFoto: ImageView = itemView.findViewById(R.id.imgFoto) // 🔥 NUEVO
+        val txtDisponibilidad: TextView = itemView.findViewById(R.id.txtDisponibilidad)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -41,7 +46,22 @@ class FavoritosAdapter(
         holder.txtNombre.text = fav.name
         holder.txtServicio.text = fav.profession
 
-        // Al darle clic al corazón en esta pantalla, disparamos la función de borrar
+        // 🔥 CARGAR IMAGEN
+        Glide.with(holder.itemView.context)
+            .load(fav.photoUrl)
+            .placeholder(R.drawable.ic_profile)
+            .error(R.drawable.ic_profile)
+            .circleCrop()
+            .into(holder.imgFoto)
+
+        holder.txtDisponibilidad.text = fav.availability
+
+        if (fav.availability == "Disponible") {
+            holder.txtDisponibilidad.setTextColor(Color.parseColor("#16A34A"))
+        } else {
+            holder.txtDisponibilidad.setTextColor(Color.parseColor("#DC2626"))
+        }
+
         holder.btnFavorito.setOnClickListener {
             onRemoveClick(fav)
         }

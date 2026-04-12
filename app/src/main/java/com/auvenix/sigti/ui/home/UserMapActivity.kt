@@ -86,9 +86,32 @@ class UserMapActivity : AppCompatActivity() {
                         .addOnSuccessListener { prov ->
                             if (prov.exists()) {
                                 val nombre = "${prov.getString("nombre") ?: ""} ${prov.getString("apPaterno") ?: ""}".trim()
-                                val oficio = prov.getString("oficio") ?: "Servicio Profesional"
+                                val oficiosRaw = prov.get("oficios")
+                                var oficio = "Servicio Profesional"
 
-                                lista.add(FavoriteWorker(favDocId, providerId, nombre, oficio))
+                                if (oficiosRaw is List<*> && oficiosRaw.isNotEmpty()) {
+                                    val primerOficio = oficiosRaw[0]
+                                    if (primerOficio is Map<*, *>) {
+                                        oficio = primerOficio["nombre"]?.toString() ?: "Servicio Profesional"
+                                    }
+                                }
+
+                                val online = prov.getBoolean("online") ?: false
+                                val disponibilidad = if (online) "Disponible" else "No disponible"
+
+                                val documentacion = prov.get("documentacion") as? Map<*, *>
+                                val foto = documentacion?.get("url_selfie")?.toString() ?: ""
+
+                                lista.add(
+                                    FavoriteWorker(
+                                        favDocId,
+                                        providerId,
+                                        nombre,
+                                        oficio,
+                                        foto,
+                                        disponibilidad
+                                    )
+                                )
                                 adapter.notifyDataSetChanged()
                             }
                         }

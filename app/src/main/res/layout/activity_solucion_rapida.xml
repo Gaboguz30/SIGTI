@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F7FB"
-    android:orientation="vertical">
+    android:background="#F5F7FB">
 
-    <include
-        android:id="@+id/header"
-        layout="@layout/header_main" />
-
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -21,15 +19,23 @@
             android:orientation="vertical"
             android:padding="20dp">
 
+            <!-- HEADER -->
+            <include
+                android:id="@+id/header"
+                layout="@layout/header_main" />
+
+            <!-- TITULO -->
             <TextView
                 android:id="@+id/tvTituloProblema"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:fontFamily="@font/poppins_bold"
                 android:text="Título del problema"
                 android:textColor="#1F3B64"
                 android:textSize="20sp" />
 
+            <!-- CARD SOLUCIÓN -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -43,14 +49,15 @@
                     android:id="@+id/tvTextoSolucion"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/poppins_regular"
                     android:padding="16dp"
+                    android:fontFamily="@font/poppins_regular"
                     android:text="Cargando solución..."
                     android:textColor="#424242"
                     android:textSize="15sp"
                     android:lineSpacingExtra="4dp"/>
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- TEXTO AYUDA -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -69,6 +76,7 @@
                 android:textColor="#757575"
                 android:textSize="14sp" />
 
+            <!-- BOTÓN LLAMAR -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLlamar"
                 android:layout_width="match_parent"
@@ -83,6 +91,7 @@
                 app:iconTint="@color/white"
                 app:iconGravity="textStart" />
 
+            <!-- BOTÓN WHATSAPP -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnWhatsApp"
                 android:layout_width="match_parent"
@@ -97,6 +106,7 @@
                 app:strokeColor="#128C7E"
                 app:strokeWidth="1dp" />
 
+            <!-- BOTÓN CORREO -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCorreo"
                 android:layout_width="match_parent"
@@ -112,5 +122,7 @@
                 app:strokeWidth="1dp" />
 
         </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

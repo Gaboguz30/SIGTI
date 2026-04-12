@@ -54,7 +54,6 @@
             android:clickable="true"
             android:focusable="true"
             android:padding="6dp"
-            android:src="@android:drawable/presence_online"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/btnEditService"
             app:layout_constraintTop_toTopOf="parent"

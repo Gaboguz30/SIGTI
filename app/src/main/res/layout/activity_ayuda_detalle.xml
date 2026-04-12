@@ -5,10 +5,18 @@
     android:background="#F5F7FB"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+    <!-- HEADER -->
     <include
         android:id="@+id/header"
         layout="@layout/header_main"/>
 
+    <!-- TITULO -->
     <TextView
         android:id="@+id/tvCategoriaSeleccionada"
         android:layout_width="match_parent"
@@ -19,13 +27,16 @@
         android:textSize="16sp"
         android:textColor="#1F3B64"/>
 
+    <!-- LISTA -->
     <ListView
         android:id="@+id/lvSubOpciones"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:divider="#E0E0E0"
         android:dividerHeight="1dp"
         android:paddingHorizontal="16dp"
         android:footerDividersEnabled="false"/>
 
 </LinearLayout>
+    </LinearLayout>
